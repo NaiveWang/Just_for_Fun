@@ -1,0 +1,3 @@
+# Well...
+### This repository is just for recording some excises, learning steps, 
+### cause I wanna see my chart.
