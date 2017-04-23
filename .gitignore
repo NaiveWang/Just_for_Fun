@@ -51,3 +51,6 @@ Microcontroller/MCS51/Clock59/main.LST
 *.M51
 *.hex
 *.cbp
+*.iml
+*.xml
+*.layout
