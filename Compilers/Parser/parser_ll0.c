@@ -9,6 +9,7 @@ void Error(int n)
     {
         case 0:p("unknown error");break;
         case 1:p("code ended\n");break;
+        case 2:p("You Bastard.\n");break;
     }
 }
 void LL0parser(char *start)

@@ -54,3 +54,4 @@ Microcontroller/MCS51/Clock59/main.LST
 *.iml
 *.xml
 *.layout
+*.exe
