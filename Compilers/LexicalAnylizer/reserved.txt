@@ -33,10 +33,7 @@ ASSIGN =
 ADD +
 SUB -
 MUL *
-DIV /
-MOD %
-BIG >
-LIT <
+DIVLIT <
 AND &
 OR |
 XOR ^
@@ -51,7 +48,9 @@ ARRAY_L [
 ARRAY_R ]
 SEMI ;
 COMMA ,
-COLON :
+COLON : /
+MOD %
+BIG >
 QMARK ?
 QUO '
 DQUO "

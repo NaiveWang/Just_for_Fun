@@ -1,0 +1,7 @@
+-1 main
+1 char
+1 int
+1 long
+1 float
+1 double
+1 void
