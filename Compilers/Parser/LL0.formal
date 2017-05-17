@@ -1,3 +1,5 @@
-<STMS>-><STMT><STMS>
-<STMT>-><ID><ASSIGN><EXPR><SEMI>|<BRACE_L><STMS><BRACE_R>
-<EXPR>-><IM>|<ID>
+<E>-><T><E'>
+<E'>-><+><T><E'>|<$>
+<T>-><F><T'>
+<T'>-><*><F><T'>|<$>
+<F>-><(><E><)>|<ID>|<IM>

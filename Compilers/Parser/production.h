@@ -7,9 +7,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define N_LEN 64//length of nonterminal term
+#define N_LEN 16//length of nonterminal term
 #define BUFF 1024
-#define P(X) printf("DEBUG PASS:%c\n",X)
+#define PT(X) printf("DEBUG PASS:%c\n",X)
 typedef struct term_chain_list
 {
     char val[N_LEN];
@@ -107,6 +107,7 @@ void Pinit(char *fn)
         o_P = o_P->next;
     }
     fclose(fp);
+    //PT(65);
     fp = fopen("reserved_symbol.txt","r");
     {
         s_table *sbt = malloc(sizeof(s_table));
@@ -148,4 +149,26 @@ void addID(char *s)
     p->attr=0;
     p->next = SBT;
     SBT = p;
+}
+void Pchecker()
+{
+    pds *p = P;
+    while(p)
+    {
+        right *r=p->val;
+        printf("%s->\n",p->left);
+        while(r)
+        {
+            printf(">>>");
+            term *t=r->val;
+            while(t)
+            {
+                printf("%s ",t->val);
+                t=t->next;
+            }
+            printf("\n");
+            r=r->next;
+        }
+        p=p->next;
+    }
 }

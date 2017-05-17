@@ -97,7 +97,7 @@ def Checker(s):
                 return len(a[1])
     return IDChecker(s)
 
-file = open('easy.ec')
+file = open('example.ec')
 
 text = file.read()
 file.close()
