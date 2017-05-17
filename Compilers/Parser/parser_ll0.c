@@ -6,7 +6,7 @@
 #define DEFAULT 0
 #define ERROR 1//occurred
 
-char *phase;
+//char *phase;
 int tag;
 void Error(int n)
 {
