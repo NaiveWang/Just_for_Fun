@@ -52,7 +52,6 @@ void getTerm()
     bf_ofst++;
     *bt_ofst = 0;
 }
-
 void Pinit(char *fn)
 {
     FILE *fp = fopen(fn,"r");
