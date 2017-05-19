@@ -243,38 +243,47 @@ void p3s()
         i=i->next;
     }
 }
+int IsTermMatch(term *t)
+{
+
+    if(IsNon(t->val))
+    {//nonterminal
+        static SETN *s;
+        static pds *p;
+        static info *i;
+        s=getFOLLOW(p_findF->left);
+        p=P;
+        i=ifo;
+        while(s)
+        {
+            addFOLLOW(t->val,s->val);
+            s=s->next;
+        }
+        //can t derives epsilon??
+        while(p)
+        {//printf("+++");
+            if(!strcmp(t->val,p->left))
+            {
+                return (int)i->scan_tag;
+            }
+            p=p->next;
+            i=i->next;
+        }
+    }
+    return 0;
+}
 int p3r(term *t)
 {
+    //printf("%s ",t->val);
     if(t->next)
     {
-        if(p3r(t->next));
-    }
-    else if(IsNon(t->val))
-    {//nonterminal
-        SETN *temps=getFOLLOW(p_findF->left);
-        info *i=ifo;
-        pds *p=P;
-        while(temps)
+        if(p3r(t->next))
         {
-            addFOLLOW(temps->val,p_findF->left);
-            temps=temps->next;
+            return IsTermMatch(t);
         }
-
-        while(i)
-        {
-            if(strcmp(t->val,p->left)) continue;
-            else
-            {
-                if(i->scan_tag) return 1;
-                return 0;
-            }
-            i=i->next;
-            p=p->next;
-        }
-
+        return 0;
     }
-    //other case, can't get it
-    return 0;
+    else return IsTermMatch(t);
 }
 void LL1init()
 {
@@ -488,8 +497,10 @@ void DEBUG_0()
 int main(void)
 {
     Pinit("LL0.formal");
+    OpenLex("stmt.out");
     LL1init();
     DEBUG_0();
+    LL1_parser("E");
     Pclose();
     return 0;
 }
