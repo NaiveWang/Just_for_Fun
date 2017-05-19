@@ -6,6 +6,8 @@
 #define T_EMPTY 1
 #define T_SCANNED 1
 #define T_ERROR 2
+#define MODIFIED 1
+#define COMPLETE 0
 
 typedef struct Node_of_set_of_first_follow
 {
@@ -20,6 +22,7 @@ typedef struct augmented_production_info
     SETN *FOLLOW;
     struct augmented_production_info *next;
 }info;
+
 info *ifo;
 pds *p_findF;
 right *r_findF;
@@ -39,6 +42,7 @@ void init_aug()
         temp->scan_tag=T_DEFAULT;
         p=p->next;
     }
+    temp=ifo;
     ifo=ifo->next;
     free(temp);
 }
@@ -48,7 +52,7 @@ char ISScanned(char *p)
     info *ti=ifo;
     while(tp)
     {
-        if(~strcmp(p,tp->left))
+        if(!strcmp(p,tp->left))
         {
             if(ti->scan_tag==T_DEFAULT) return 0;
             else return 1;
@@ -65,7 +69,7 @@ void setTagS(char *s)
     info *i=ifo;
     while(p)
     {
-        if(~strcmp(p->left,s))
+        if(!strcmp(p->left,s))
         {
             i->scan_tag=T_SCANNED;
             return;
@@ -89,8 +93,9 @@ void addFIRST(char *p,char *t,right *r)
     info *ti=ifo;
     while(tp)
     {
-        if(~strcmp(tp->left,p))
+        if(!strcmp(tp->left,p))
         {
+            //printf(">>>ADD %s TO %s\n",tp->left,p);
             SETN *ts=malloc(sizeof(SETN));
             strcpy(ts->val,t);
             ts->nextP=r;
@@ -98,6 +103,74 @@ void addFIRST(char *p,char *t,right *r)
             ti->FIRST=ts;
             //to enable the correction function,
             //modify this block of code.
+            return;
+        }
+        tp=tp->next;
+        ti=ti->next;
+    }
+}
+SETN* getFIRST(char *s)
+{
+    pds *p=P;
+    info *i=ifo;
+    while(p)
+    {
+        if(!strcmp(s,p->left))
+        {
+            return i->FIRST;
+        }
+        p=p->next;
+        i=i->next;
+    }
+    return NULL;
+}
+SETN* getFOLLOW(char *s)
+{
+    pds *p=P;
+    info *i=ifo;
+    while(p)
+    {
+        if(!strcmp(s,p->left))
+        {
+            return i->FOLLOW;
+        }
+        p=p->next;
+        i=i->next;
+    }
+    return NULL;
+}
+void addFOLLOW(char *p,char *t)
+{
+    pds *tp=P;
+    info *ti=ifo;
+    while(tp)
+    {
+        if(!strcmp(tp->left,p))
+        {
+            if(ti->FOLLOW)
+            {//if the set is not empty.
+                SETN *fow=ti->FOLLOW;
+                if(!strcmp(t,fow->val)) return;
+                while(fow->next)
+                {
+                    //if some element's equal,return.
+                    if(!strcmp(t,fow->next->val)) return;
+                    fow=fow->next;
+                }
+                fow->next=malloc(sizeof(SETN));
+                tag=MODIFIED;
+                fow=fow->next;
+                fow->next=NULL;
+                strcpy(fow->val,t);
+            }
+            else
+            {//the set is empty
+                ti->FOLLOW=malloc(sizeof(SETN));
+                tag=MODIFIED;
+                ti->FOLLOW->next=NULL;
+                strcpy(ti->FOLLOW->val,t);
+            }
+            return;
         }
         tp=tp->next;
         ti=ti->next;
@@ -107,11 +180,15 @@ void FindFIRST(char *start)
 {
     if(!IsNon(start))
     {//encounter a terminal,add it to FIRST
-        addFIRST(p_findF->left,start,r_findF);
+        //printf("LEFT:%s ADD:%s\n",p_findF->left,start);
+
         if(*start=='$')//there may cause some pitfalls.
         {//term may inducts to $, the empty term.
+            //printf("%s maybe a E\n",r_findF->val->val);
             tag=T_EMPTY;
+            return;
         }
+        addFIRST(p_findF->left,start,r_findF);
     }
     else if(ISScanned(start))
     {//this nonterminal has been scanned.
@@ -130,6 +207,10 @@ void FindFIRST(char *start)
                 FindFIRST(t->val);
                 if(tag==T_EMPTY)
                 {//is current term can induct a $
+                    if(!t->next)
+                    {//if it's a rightmost epsilon.
+                        return;
+                    }
                     tag=T_DEFAULT;
                     t=t->next;
                     continue;
@@ -140,12 +221,68 @@ void FindFIRST(char *start)
         }
     }
 }
+void p3s()
+{
+    pds *p=P;
+    info *i=ifo;
+    SETN *s;
+    while(p)
+    {
+        s=i->FIRST;
+        while(s)
+        {
+            if(*(s->val)=='$')
+            {
+                break;
+            }
+            s=s->next;
+        }
+        if(s)i->scan_tag=1;
+        else i->scan_tag=0;
+        p=p->next;
+        i=i->next;
+    }
+}
+int p3r(term *t)
+{
+    if(t->next)
+    {
+        if(p3r(t->next));
+    }
+    else if(IsNon(t->val))
+    {//nonterminal
+        SETN *temps=getFOLLOW(p_findF->left);
+        info *i=ifo;
+        pds *p=P;
+        while(temps)
+        {
+            addFOLLOW(temps->val,p_findF->left);
+            temps=temps->next;
+        }
+
+        while(i)
+        {
+            if(strcmp(t->val,p->left)) continue;
+            else
+            {
+                if(i->scan_tag) return 1;
+                return 0;
+            }
+            i=i->next;
+            p=p->next;
+        }
+
+    }
+    //other case, can't get it
+    return 0;
+}
 void LL1init()
 {
     term *t;
     init_aug();//get augmented chain table.
     tag=T_DEFAULT;
     p_findF=P;
+    info *i;
     while(p_findF)//get FIRST
     {//each nonterminal.
         r_findF=p_findF->val;
@@ -157,19 +294,102 @@ void LL1init()
                 setTagD();
                 FindFIRST(t->val);
                 if(tag==T_EMPTY)
-                {//is current term can induct a $
+                {//is current term can induct a $ directly
                     tag=T_DEFAULT;
-                    t=t->next;
+                    //add epsilon, if current term is a epsilon.
+                    if(*t->val=='$') addFIRST(p_findF->left,t->val,r_findF);
+                    t=t->next;//printf("%s\n",t->val);
                     continue;
                 }
                 break;
             }
             r_findF=r_findF->next;
         }
+        //DEBUG_0();
         p_findF=p_findF->next;
     }
-
     //get FOLLOW
+    ///Phase 1:add $ to start symbol;
+    addFOLLOW(P->left,"$");
+    ///Phase 2:for each production
+    p_findF=P;
+    while(p_findF)
+    {
+        r_findF=p_findF->val;
+        while(r_findF)
+        {//traversal of productions.
+            t=r_findF->val;
+            while(t->next)
+            {//t,Xi;t->next,Xi+1
+                if(IsNon(t->val))
+                {
+                    if(IsNon(t->next->val))
+                    {//a nonterminal, add first set
+                        SETN *first=getFIRST(t->next->val);
+                        while(first)
+                        {
+                            addFOLLOW(t->val,first->val);
+                            first=first->next;
+                        }
+                    }
+                    else addFOLLOW(t->val,t->next->val);
+                }
+                t=t->next;
+            }
+            r_findF=r_findF->next;
+        }
+        p_findF=p_findF->next;
+
+    }
+    ///Phase 3:the most perplexing section.
+    //set tag to make sure which nonterminal has epsilon.
+    p3s();
+    do{
+        tag=COMPLETE;
+        //let's do the fucking job.
+        p_findF=P;
+        while(p_findF)
+        {
+            r_findF=p_findF->val;
+            while(r_findF)
+            {//for each production.
+                printf("%s %s\n",p_findF->left,r_findF->val->val);
+                p3r(r_findF->val);
+                r_findF=r_findF->next;
+            }
+            p_findF=p_findF->next;
+        }
+    }while(tag==MODIFIED);
+    //the final step.
+    p_findF=P;
+    i=ifo;
+    while(p_findF)
+    {//for each nonterminal A
+        SETN *set;
+        r_findF=p_findF->val;
+        while(r_findF)
+        {//each A->a
+            set=i->FIRST;
+            while(set)
+            {
+                if(r_findF==set->nextP && *(set->val)=='$')
+                {//if there's a epsilon in FIRST(a)
+                    //printf("%s\n",p_findF->left);//checked.
+                    SETN *flw=i->FOLLOW;//FOLLOW(A)
+                    while(flw)
+                    {//for each b in FOLLOW(A)
+                        //add to FIRST(A)
+                        if(*(flw->val)!='$') addFIRST(p_findF->left,flw->val,set->nextP);
+                        flw=flw->next;
+                    }
+                }
+                set=set->next;
+            }
+            r_findF=r_findF->next;
+        }
+        p_findF=p_findF->next;
+        i=i->next;
+    }
 }
 void LL1_r(char *current_t)//recursing part of LL1 parser.
 {
@@ -200,12 +420,12 @@ void LL1_r(char *current_t)//recursing part of LL1 parser.
         info *i=ifo;
         while(p)
         {//find next production precisely
-            if(~strcmp(current_t,p->left))
+            if(!strcmp(current_t,p->left))
             {//got the left(current term)
                 SETN *n=i->FIRST;
                 while(n)
                 {
-                    if(~strcmp(buffer_lex,n->val))
+                    if(!strcmp(buffer_lex,n->val))
                     {
                         term *t_next=n->nextP->val;
                         while(t_next)
@@ -241,25 +461,35 @@ void DEBUG_0()
 {//Display FIRST & FOLLOW
     pds *p=P;
     info *i=ifo;
-    SETN *s;
+    SETN *s1,*s2;
+    printf("\n>>>DEBUG SECTION 0 START<<<\n");
     while(p)
     {
-        printf("Nonterminal: %s\nFIRST:",p->left);
-        s=i->FIRST;
-        while(s)
+        printf("NONTERMINAL: %s\n----FIRST:",p->left);
+        s1=i->FIRST;
+        s2=i->FOLLOW;
+        while(s1)
         {
-            printf("%s ",s->val);
-            s=s->next;
+            printf("%s ",s1->val);
+            s1=s1->next;
+        }
+        printf("\n----FOLLOW:");
+        while(s2)
+        {
+            printf("%s ",s2->val);
+            s2=s2->next;
         }
         printf("\n");
         p=p->next;
         i=i->next;
     }
+    printf(">>>DEBUG SECTION 0 ENDS<<<\n\n");
 }
 int main(void)
 {
     Pinit("LL0.formal");
     LL1init();
     DEBUG_0();
+    Pclose();
     return 0;
 }

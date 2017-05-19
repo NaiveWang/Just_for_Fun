@@ -171,3 +171,29 @@ void Pchecker()
         p=p->next;
     }
 }
+void Pclose()
+{
+    right *r,*tr;
+    term *t,*tt;
+    pds *pt=P;
+    while(P)
+    {
+        r=P->val;
+        pt=P;
+        while(r)
+        {
+            tr=r;
+            t=r->val;
+            while(t)
+            {
+                tt=t;
+                t=t->next;
+                free(tt);
+            }
+            r=r->next;
+            free(tr);
+        }
+        P=P->next;
+        free(pt);
+    }
+}
