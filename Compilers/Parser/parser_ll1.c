@@ -405,7 +405,7 @@ void LL1init()
 void LL1_r(char *current_t)//recursing part of LL1 parser.
 {
     right *r=IsNon(current_t);
-    printf("%s>>>%s\n",buffer_lex,current_t);
+    //printf("%s>>>%s\n",buffer_lex,current_t);
     if(r==NULL)
     {//products a terminal.
         //printf("%s is a terminal.\n",current_t);
@@ -418,6 +418,7 @@ void LL1_r(char *current_t)//recursing part of LL1 parser.
             tag_err=T_ERROR;
             printf("###Not Equal.\n");
             expected=current_t;
+            //printf("%s\n",expected);
             return;
         }
         else
@@ -476,13 +477,15 @@ void LL1_parser(char *start_t)
     initScanner();
     timerStart();
     //Sleep(1000);
-    LL1_r(start_t);
     expected=NULL;
+    LL1_r(start_t);
+
 
     if(tag_err==T_ERROR)
     {
         //printf("***%s\n",buffer_lex);
         printf("Syntax Error.\n");
+        printf("%X\n",expected);
         if(expected)
         {
             printf("The parser may expect : %s\n",expected);
@@ -495,7 +498,7 @@ void LL1_parser(char *start_t)
     }
     else
     {
-        printf("Syntax Check Pass.\n");
+        printf("Syntax Checking Passed, Congratulations!\n");
         printf("cost %ld milliseconds.\n",timerEnd());
     }
 }
@@ -531,8 +534,10 @@ int main(void)
 {
     Pinit("LL0.formal");
     OpenLex("stmt.out");
+    timerStart();
     LL1init();
-    DEBUG_0();
+    printf("Building LL1 Parsing table : %ld ms.\n",timerEnd());
+    //DEBUG_0();
     LL1_parser("BLOCK");
     Pclose();
     return 0;
