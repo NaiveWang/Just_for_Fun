@@ -19,14 +19,23 @@ void CloseLex()
 {
     fclose(source);
 }
+char* initScanner()
+{
+    fscanf(source,"%s",buffer_lex);
+    return buffer_lex;
+}
 char* nextPhase()
 {
-    if(fscanf(source,"%s",buffer_lex)!=EOF)
+    if(buffer_lex[0]&&fscanf(source,"%s",buffer_lex)!=EOF)
     {
         //printf("%s",buffer_lex);
         return buffer_lex;
     }
-    else return NULL;
+    else
+    {
+        buffer_lex[0]=0;
+        return NULL;
+    }
 }
 void usingChain()
 {

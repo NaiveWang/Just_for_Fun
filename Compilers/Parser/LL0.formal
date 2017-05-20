@@ -1,5 +1,4 @@
-<E>-><T><E'>
-<E'>-><+><T><E'>|<$>
-<T>-><F><T'>
-<T'>-><*><F><T'>|<$>
-<F>-><(><E><)>|<ID>
+<STMT>-><IF><(><EXPR><)><BLOCK>|<WHILE><(><EXPR><)><BLOCK>|<EXPR><;>
+<EXPR>-><ID><=><EXPR>|<IM>
+<BLOCK>-><STMT>|<{><STMTS><}>
+<STMTS>-><STMT><STMTS>|<$>

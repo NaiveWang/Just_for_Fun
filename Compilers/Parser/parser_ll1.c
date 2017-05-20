@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "production.h"
 #include "scan_toolkit.h"
+#include "timer.h"
 
 #define T_DEFAULT 0
 #define T_EMPTY 1
@@ -28,6 +29,7 @@ pds *p_findF;
 right *r_findF;
 char tag;
 char tag_err;
+char *expected;
 void init_aug()
 {
     pds *p=P;
@@ -362,7 +364,7 @@ void LL1init()
             r_findF=p_findF->val;
             while(r_findF)
             {//for each production.
-                printf("%s %s\n",p_findF->left,r_findF->val->val);
+                //printf("%s %s\n",p_findF->left,r_findF->val->val);
                 p3r(r_findF->val);
                 r_findF=r_findF->next;
             }
@@ -403,18 +405,28 @@ void LL1init()
 void LL1_r(char *current_t)//recursing part of LL1 parser.
 {
     right *r=IsNon(current_t);
+    printf("%s>>>%s\n",buffer_lex,current_t);
     if(r==NULL)
     {//products a terminal.
-        if(strcmp(buffer_lex,current_t))
+        //printf("%s is a terminal.\n",current_t);
+        if(*current_t=='$')
+        {//if the terminal is an epsilon.
+            return;
+        }
+        else if(strcmp(buffer_lex,current_t))
         {//a terminal fits, return and continue.
             tag_err=T_ERROR;
+            printf("###Not Equal.\n");
+            expected=current_t;
             return;
         }
         else
         {
+            //printf("Equal.\n");
             if(nextPhase()) return;
             else//input stream ends too early.
             {
+                printf("###Stream ends.\n");
                 tag_err=T_ERROR;
                 return;
             }
@@ -443,11 +455,13 @@ void LL1_r(char *current_t)//recursing part of LL1 parser.
                             if(tag==T_ERROR) return;//wrong once, all wrong.
                             t_next=t_next->next;
                         }
+                        return;
                     }
                     n=n->next;
                 }
                 //can't find next production means
                 //that there's a syntax error.
+                printf("###No production matched.\n");
                 tag_err=T_ERROR;
                 return;
             }
@@ -459,11 +473,30 @@ void LL1_r(char *current_t)//recursing part of LL1 parser.
 }
 void LL1_parser(char *start_t)
 {
-    nextPhase();
+    initScanner();
+    timerStart();
+    //Sleep(1000);
     LL1_r(start_t);
-    if(tag==T_ERROR)
+    expected=NULL;
+
+    if(tag_err==T_ERROR)
+    {
+        //printf("***%s\n",buffer_lex);
+        printf("Syntax Error.\n");
+        if(expected)
+        {
+            printf("The parser may expect : %s\n",expected);
+        }
+    }
+    else if(nextPhase())
     {
         printf("Syntax Error.\n");
+        printf("Input Stream Remains.\n");
+    }
+    else
+    {
+        printf("Syntax Check Pass.\n");
+        printf("cost %ld milliseconds.\n",timerEnd());
     }
 }
 void DEBUG_0()
@@ -500,7 +533,7 @@ int main(void)
     OpenLex("stmt.out");
     LL1init();
     DEBUG_0();
-    LL1_parser("E");
+    LL1_parser("BLOCK");
     Pclose();
     return 0;
 }
