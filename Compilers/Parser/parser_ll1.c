@@ -2,7 +2,12 @@
 #include "production.h"
 #include "scan_toolkit.h"
 #include "timer.h"
-
+/**
+ * LL(1) parser
+ * without production checking.
+ * if U choose an input production set,
+ * U'll get a wrong LL(1) parser.
+ */
 #define T_DEFAULT 0
 #define T_EMPTY 1
 #define T_SCANNED 1
@@ -537,7 +542,7 @@ int main(void)
     timerStart();
     LL1init();
     printf("Building LL1 Parsing table : %ld ms.\n",timerEnd());
-    //DEBUG_0();
+    DEBUG_0();
     LL1_parser("BLOCK");
     Pclose();
     return 0;

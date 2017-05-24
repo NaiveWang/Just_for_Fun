@@ -3,6 +3,8 @@
  * and to pack it's function set to a module,
  * which can make things easier.
  **/
+#ifndef PRODUCTION_H
+#define PRODUCTION_H
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -197,3 +199,4 @@ void Pclose()
         free(pt);
     }
 }
+#endif
