@@ -57,6 +57,11 @@ void getTerm()
 void Pinit(char *fn)
 {
     FILE *fp = fopen(fn,"r");
+    if(!fp)
+    {
+        printf("Can not open the file.\n");
+        return;
+    }
     pds *o_P;
     o_P = malloc(sizeof(pds));
     P=o_P;
@@ -140,6 +145,20 @@ right* IsNon(char *s)
             continue;
         }
         return p->val;
+    }
+    return 0;
+}
+pds* IsNonP(char *s)
+{
+    pds *p=P;
+    while(p)
+    {
+        if(strcmp(s,p->left))
+        {
+            p=p->next;
+            continue;
+        }
+        return p;
     }
     return 0;
 }
