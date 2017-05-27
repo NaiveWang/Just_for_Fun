@@ -1,4 +1,5 @@
 #include <stdio.h>
+#define LR
 #include "production.h"
 #include "scan_toolkit.h"
 /**
@@ -7,10 +8,11 @@
  */
 #define STACK 4096
 #define paddr(X) printf("%X\n",X)
+#define END "$"
 
 typedef enum type_of_element
 {
-    REDUCE=0,SHIFT,ACC
+    REDUCE,SHIFT,ACC
 }e_type;
 typedef enum tag_of_augmented_production
 {
@@ -42,15 +44,31 @@ typedef struct chain_for_trans_tables
     char *via;
     struct chain_for_trans_tables *next;
 }t_list;
+typedef struct chain_for_ptable_S_node
+{
+    t_table *current;
+    e_type act;
+    void *trans;
+    struct chain_for_ptable_S_node *next;
+}psnode;
+typedef struct chain_for_parsing_table
+{
+    char *sybl;
+    psnode *val;
+    struct chain_for_parsing_table *next;
+}ptable;
+#include "FOLLOW.h"
 /** Global Variables Section **/
-char* symbol[STACK];
+char *symbol[STACK];
 char **psb;
-void* states[STACK];
-void **pst;
+t_table *states[STACK];
+t_table **pst;
 term *TERMINAL;
 a_pdtn *aP;
 a_tag tc;//transition closure tag.
 t_list *DFAL;
+ptable *ACTION;
+ptable *GOTO;
 /** Functions Section **/
 /* Debug Functions */
 void showTERMINAL()
@@ -101,6 +119,38 @@ void showClosure(t_table *tt)
     }
     printf("+++++++++++++\n");
 }
+void showPtable()
+{
+    ptable *p=ACTION;
+    psnode *ps;
+    printf("ACTION:\n");
+    while(p)
+    {
+        ps=p->val;
+        printf("%s:\n",p->sybl);
+        while(ps)
+        {
+            printf("<%X %3X %3X>\n",ps->act,ps->current,ps->trans);
+            ps=ps->next;
+        }
+        printf("\n");
+        p=p->next;
+    }
+    printf("GOTO:\n");
+    p=GOTO;
+    while(p)
+    {
+        ps=p->val;
+        printf("%s:",p->sybl);
+        while(ps)
+        {
+            printf("<%X %3X %3X>\n",ps->act,ps->current,ps->trans);
+            ps=ps->next;
+        }
+        printf("\n");
+        p=p->next;
+    }
+}
 /* utility functions */
 void getTerminal()
 {//Checked.
@@ -138,6 +188,11 @@ void getTerminal()
         }
         p=p->next;
     }
+    //add end sign
+    t=malloc(sizeof(term));
+    strcpy(t->val,END);
+    t->next=TERMINAL;
+    TERMINAL=t;
 }
 void initAugProduction()
 {//before getting the proper production.
@@ -320,6 +375,183 @@ void assignGOTO(t_list *l,t_table *gto)
         tt=tt->next;
     }
 }
+void initPTB()
+/* warning: make sure the TERMINAL
+ * set has been initialized.
+ * or U'll get a totally wrong
+ * result.
+ **/
+{
+    ptable *pt;
+    pds *p=P;
+    term *t=TERMINAL;
+    ACTION=NULL;
+    GOTO=NULL;
+    while(p)
+    {//spawning GOTO first...
+        pt=malloc(sizeof(ptable));
+        pt->sybl=p->left;
+        pt->next=GOTO;
+        pt->val=NULL;
+        GOTO=pt;
+        p=p->next;
+    }
+
+    while(t)
+    {//spawning GOTO first...
+        pt=malloc(sizeof(ptable));
+        pt->sybl=t->val;
+        pt->next=ACTION;
+        pt->val=NULL;
+        ACTION=pt;
+        t=t->next;
+    }
+
+}
+void addACTION(char *s,e_type e,t_table *cur,void *next)
+{
+    ptable *p=ACTION;
+    psnode *ps;
+    while(p)
+    {
+        if(!strcmp(p->sybl,s))
+        {
+            {//check section, could be removed.
+                //Checking: if there's an overriding
+                ps=p->val;
+                while(ps)
+                {
+                    if(ps->act==e && ps->current==cur)
+                    {
+                        printf("ACTION Overriding Occurred.\n");
+                        return;
+                    }
+                    ps=ps->next;
+                }
+            }
+            ps=malloc(sizeof(psnode));
+            ps->act=e;
+            ps->trans=next;
+            ps->current=cur;
+            ps->next=p->val;
+            p->val=ps;
+            return;
+        }
+        p=p->next;
+    }
+    printf("Error\n");
+}
+void addGOTO(char *s,e_type e,t_table *cur,void *next)
+{
+    ptable *p=GOTO;
+    psnode *ps;
+    while(p)
+    {
+        if(!strcmp(p->sybl,s))
+        {
+            {//check section, could be removed.
+                //Checking: if there's an overriding
+                //in GOTO section, this procedure is necessary
+                //it's for reducing redundancy.
+                ps=p->val;
+                while(ps)
+                {
+                    if(ps->act==e && ps->trans==next && ps->current==cur)
+                    {
+                        //printf("GOTO Overriding Occurred.\n");
+                        return;
+                    }
+                    ps=ps->next;
+                }
+            }
+            ps=malloc(sizeof(psnode));
+            ps->act=e;
+            ps->trans=next;
+            ps->current=cur;
+            ps->next=p->val;
+            p->val=ps;
+            return;
+        }
+        p=p->next;
+    }
+    printf("Error\n");
+}
+psnode* findACTION(char *s,t_table *t)
+{
+    static ptable *p;
+    static psnode *ps;
+    p=ACTION;
+    while(p)
+    {
+        if(!strcmp(p->sybl,s))
+        {
+            ps=p->val;
+            while(ps)
+            {
+                if(ps->current==t) return ps;
+                ps=ps->next;
+            }
+        }
+        p=p->next;
+    }
+    return NULL;
+}
+t_table* findGOTO(char *s,t_table *t)
+{
+    static ptable *p;
+    static psnode *ps;
+    p=GOTO;
+    while(p)
+    {
+        if(!strcmp(p->sybl,s))
+        {
+            ps=p->val;
+            while(ps)
+            {
+                if(ps->current==t) return (t_table*)ps->trans;
+                ps=ps->next;
+            }
+        }
+        p=p->next;
+    }
+    return NULL;
+}
+char* matchSymbol(char *s)
+{
+    static term *t;
+    static pds *p;
+    t=TERMINAL;
+    while(t)
+    {
+        if(!strcmp(t->val,s)) return t->val;
+        t=t->next;
+    }
+    p=P;
+    while(p)
+    {
+        if(!strcmp(p->left,s)) return p->left;
+        p=p->next;
+    }
+    return NULL;
+}
+void POPsymbol()
+{
+    psb--;
+}
+void PUSHsymbol(char *s)
+{
+    *psb=s;
+    psb++;
+}
+void POPstate()
+{
+    pst--;
+}
+void PUSHstate(t_table *t)
+{
+    *pst=t;
+    pst++;
+}
 /* Our Lead Functions */
 void init_SLR()
 {
@@ -327,7 +559,7 @@ void init_SLR()
     a_pdtn *a;
     t_list *scan,*newp;
     initAugProduction();
-    showAproduction();
+    //showAproduction();
     a=aP;
     //showAproduction();
     DFAL=malloc(sizeof(t_list));
@@ -395,26 +627,109 @@ void init_SLR()
             }
             t=t->next;
         }
-        paddr(scan->val);
-        showClosure(scan->val);
+        //paddr(scan->val);
+        //showClosure(scan->val);
         scan=scan->next;
     }
-    //the first closure is done.
+    //the automaton has been done, +1S.
+    getTerminal();
+    initPTB();
+    LL1init();//actually, it's getting FOLLOW here...
+    //constructing the SLR parsing table.
+    scan=DFAL;
+    while(scan)
+    {//for each I
+        t_table *ttb=scan->val;
+        while(ttb)
+        {//for each item in I
+            if(ttb->item->stage==NULL)
+            {//the dot is in the tail.
+                //reducing with this production.
+                //the first case, if it's S->E$
+                if(ttb->item->left==P) addACTION(END,ACC,scan->val,NULL);
+                //for each terminal in FOLLOW(A) (A->XXXX.)
+                else
+                {
+                    SETN *f=getFOLLOW(ttb->item->left->left);
+                    while(f)
+                    {
+                        addACTION(f->val,REDUCE,scan->val,ttb->item);
+                        f=f->next;
+                    }
+                }
+            }
+            else if(IsNonP(ttb->item->stage->val))
+            {//after the dot is a nonterminal.
+                //add something into GOTO.
+                addGOTO(ttb->item->stage->val,SHIFT,scan->val,ttb->GOTO);
+            }
+            else
+            {//after the dot is a terminal/
+                //shift to next state.
+                addACTION(ttb->item->stage->val,SHIFT,scan->val,ttb->GOTO);
+            }
+            ttb=ttb->next;
+        }
+        scan=scan->next;
+    }
 }
 void SLR()
 {
-    ;
+    char *mapped;
+    a_pdtn *pdtn;
+    psnode *ac;
+    static term *t;
+    //initializing the stack.
+    psb=symbol;
+    pst=states+1;
+    *states=DFAL->val;
+    //printf("init\n");
+    mapped=matchSymbol(initScanner());
+    for(;;)
+    {
+        ac=findACTION(mapped,*(pst-1));
+        switch(ac->act)
+        {
+        case SHIFT:
+            PUSHstate((t_table*)ac->trans);
+            PUSHsymbol(mapped);
+            printf("shift\n");
+            break;
+        case REDUCE:
+            //pop n symbol refers current production.
+            pdtn=(a_pdtn*)ac->trans;
+            t=pdtn->riht->val;
+            while(t)
+            {
+                POPsymbol();
+                t=t->next;
+            }
+            PUSHsymbol(pdtn->left->left);
+            POPstate();
+            PUSHstate(findGOTO(*(psb-1),*(pst-1)));
+            printf("reduce\n");
+            break;
+        case ACC:
+            printf("Hurray!\n");
+            return;
+        default:
+            printf("Wrong Input\n");
+            return;
+        }
+        mapped=matchSymbol(nextPhase());
+    }
 }
 /* Main Functions */
-t_table *test;
 int main(void)
 {
     Pinit("SLR.formal");
-    getTerminal();
-    showTERMINAL();
     init_SLR();
+    //showTERMINAL();
+    //DEBUG_0();
+    //showPtable();
     //showAproduction();
-    //OpenLex("stmt.out");
+    OpenLex("SLR.out");
+    SLR();
     Pclose();
     return 0;
 }

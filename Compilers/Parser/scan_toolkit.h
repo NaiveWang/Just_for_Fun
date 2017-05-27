@@ -1,3 +1,5 @@
+#ifndef SCAN_TOOLKIT_H
+#define SCAN_TOOLKIT_H
 #include <stdio.h>
 #define LEXBUF 512
 #define PLEN 16
@@ -99,3 +101,4 @@ char IsE(char *s)
 	if(*s == '$') return 1;
 	return 0;
 }
+#endif
