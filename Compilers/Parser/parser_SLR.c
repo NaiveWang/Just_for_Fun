@@ -151,6 +151,16 @@ void showPtable()
         p=p->next;
     }
 }
+void showp(pds *p,right *r)
+{
+    term *t=r->val;
+    printf("%s->",p->left);
+    while(t)
+    {
+        printf("%s ",t->val);
+        t=t->next;
+    }
+}
 /* utility functions */
 void getTerminal()
 {//Checked.
@@ -688,12 +698,18 @@ void SLR()
     for(;;)
     {
         ac=findACTION(mapped,*(pst-1));
+        if(ac==NULL)
+        {
+            printf("Syntax Error.\n");
+            return;
+        }
         switch(ac->act)
         {
         case SHIFT:
             PUSHstate((t_table*)ac->trans);
             PUSHsymbol(mapped);
-            printf("shift\n");
+            mapped=matchSymbol(nextPhase());
+            printf("shift %s\n",mapped);
             break;
         case REDUCE:
             //pop n symbol refers current production.
@@ -701,22 +717,23 @@ void SLR()
             t=pdtn->riht->val;
             while(t)
             {
-                POPsymbol();
+                POPsymbol();POPstate();
                 t=t->next;
             }
             PUSHsymbol(pdtn->left->left);
-            POPstate();
+
             PUSHstate(findGOTO(*(psb-1),*(pst-1)));
-            printf("reduce\n");
+            printf("reduce ");
+            showp(pdtn->left,pdtn->riht);
+            printf("\n");
             break;
         case ACC:
-            printf("Hurray!\n");
+            printf("\nParsing Success, Hurray!\n");
             return;
         default:
             printf("Wrong Input\n");
             return;
         }
-        mapped=matchSymbol(nextPhase());
     }
 }
 /* Main Functions */
