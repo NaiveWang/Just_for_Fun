@@ -189,12 +189,12 @@ void setTag0Empty()
         a=a->next;
     }
 }
-a_pdtn* findAP(pds *p,term *t)
+a_pdtn* findAP(pds *p,right *r,term *t)
 {
     a_pdtn *a=aP;
     while(a)
     {
-        if(a->left==p && a->stage==t) return a;
+        if(a->left==p && a->riht==r && a->stage==t) return a;
         a=a->next;
     }
     return NULL;
@@ -346,8 +346,6 @@ void init_SLR()
     while(scan)
     {//make new closures here.
         //paddr(scan);
-        showClosure(scan->val);
-        printf("CURR\n");
         t_table *t=scan->val;//paddr(t);paddr(DFAL->val);
         //t_table *tgoto;
         setTag0Empty();
@@ -362,20 +360,20 @@ void init_SLR()
                 t_table *ttl0;
                 t_table *ttt=t->next;
                 ttl->val=NULL;
-                addToClosure(findAP(t->item->left,t->item->stage->next),&ttl->val);
+                addToClosure(findAP(t->item->left,t->item->riht,t->item->stage->next),&ttl->val);
                 t->item->tag0=EX_TB;
                 while(ttt)
                 {
                     if(ttt->item->tag0==EMPTY && !strcmp(t->item->stage->val,ttt->item->stage->val))
                     {//finding the same GOTO function.
-                        addToClosure(findAP(ttt->item->left,ttt->item->stage->next),&ttl->val);
+                        addToClosure(findAP(ttt->item->left,ttt->item->riht,ttt->item->stage->next),&ttl->val);
                         ttt->item->tag0=EX_TB;
                     }
                     ttt=ttt->next;
                 }
                 //spawning CLOSURE.
                 spawnCLOSURE(&ttl->val);
-                showClosure(ttl->val);
+                //showClosure(ttl->val);
                 //checking the spawned CLOSURE.
                 ttl0=ListCmp(ttl);
                 //paddr(ttl0);
@@ -397,7 +395,8 @@ void init_SLR()
             }
             t=t->next;
         }
-        //paddr(scan->val);
+        paddr(scan->val);
+        showClosure(scan->val);
         scan=scan->next;
     }
     //the first closure is done.
