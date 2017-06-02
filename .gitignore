@@ -57,3 +57,8 @@ Microcontroller/MCS51/Clock59/main.LST
 *.exe
 *.o
 *.o
+*.LST
+Microcontroller/MCS51/PCA9685driver/obj/Release/main.obj
+*.obj
+Microcontroller/MCS51/SERVO/SERVO.depend
+*.depend

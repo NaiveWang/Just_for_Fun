@@ -13,7 +13,7 @@ void Error(int n)
     switch(n)
     {
         case 0:p("Unknown error  ");break;
-        case 1:p("Code fuckin' ended\n");break;
+        case 1:p("Code ended\n");break;
         case 2:p("Syntax Error\n");break;
         default:p("You Bloody Bastard.\n");break;
     }
@@ -97,7 +97,7 @@ void LL0parser(char *start)
 int main(void)
 {
     Pinit("LL0.formal");
-    OpenLex("stmt.out");
+    OpenLex("ll0.out");
     usingChain();
     CloseLex();
     tag=DEFAULT;

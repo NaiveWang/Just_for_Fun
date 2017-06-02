@@ -1,0 +1,4 @@
+<STMT>-><IF><(><EXPR><)><BLOCK>|<WHILE><(><EXPR><)><BLOCK>|<EXPR><;>
+<EXPR>-><ID><=><EXPR>|<IM>
+<BLOCK>-><STMT>|<{><STMTS><}>
+<STMTS>-><STMT><STMTS>|<$>

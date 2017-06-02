@@ -83,7 +83,7 @@ void sr(char *start)
 int main(void)
 {
     Pinit("sr.formal");
-    OpenLex("stmt.out");
+    OpenLex("SLR.out");
     s_top=0;
     //printf("%s\n",findp()->left);
     sr("E");

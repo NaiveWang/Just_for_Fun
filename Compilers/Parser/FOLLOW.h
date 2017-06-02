@@ -28,6 +28,34 @@ right *r_findF;
 char tag;
 char tag_err;
 char *expected;
+void DEBUG_0()
+{//Display FIRST & FOLLOW
+    pds *p=P;
+    info *i=ifo;
+    SETN *s1,*s2;
+    printf("\n>>>DEBUG SECTION 0 START<<<\n");
+    while(p)
+    {
+        printf("NONTERMINAL: %s\n----FIRST:",p->left);
+        s1=i->FIRST;
+        s2=i->FOLLOW;
+        while(s1)
+        {
+            printf("%s ",s1->val);
+            s1=s1->next;
+        }
+        printf("\n----FOLLOW:");
+        while(s2)
+        {
+            printf("%s ",s2->val);
+            s2=s2->next;
+        }
+        printf("\n");
+        p=p->next;
+        i=i->next;
+    }
+    printf(">>>DEBUG SECTION 0 ENDS<<<\n\n");
+}
 void init_aug()
 {
     pds *p=P;
@@ -291,10 +319,10 @@ void LL1init()
     init_aug();//get augmented chain table.
     tag=T_DEFAULT;
     p_findF=P;
-#ifndef LR
-#define LR
+#ifdef LL1
+#define LL1
     info *i;
-#endif // LR
+#endif
     while(p_findF)//get FIRST
     {//each nonterminal.
         r_findF=p_findF->val;
@@ -373,8 +401,9 @@ void LL1init()
         }
     }while(tag==MODIFIED);
     //the final step.
-#ifndef LR
-#define LR
+    DEBUG_0();
+#ifdef LL1
+#define LL1
     p_findF=P;
     i=ifo;
     while(p_findF)
@@ -405,32 +434,4 @@ void LL1init()
         i=i->next;
     }
 #endif // LL1
-}
-void DEBUG_0()
-{//Display FIRST & FOLLOW
-    pds *p=P;
-    info *i=ifo;
-    SETN *s1,*s2;
-    printf("\n>>>DEBUG SECTION 0 START<<<\n");
-    while(p)
-    {
-        printf("NONTERMINAL: %s\n----FIRST:",p->left);
-        s1=i->FIRST;
-        s2=i->FOLLOW;
-        while(s1)
-        {
-            printf("%s ",s1->val);
-            s1=s1->next;
-        }
-        printf("\n----FOLLOW:");
-        while(s2)
-        {
-            printf("%s ",s2->val);
-            s2=s2->next;
-        }
-        printf("\n");
-        p=p->next;
-        i=i->next;
-    }
-    printf(">>>DEBUG SECTION 0 ENDS<<<\n\n");
 }

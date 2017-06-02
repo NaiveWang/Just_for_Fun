@@ -1,5 +1,5 @@
 #include <stdio.h>
-//#define LL1
+#define LL1
 #include "production.h"
 #include "FOLLOW.h"
 #include "scan_toolkit.h"
@@ -112,12 +112,12 @@ void LL1_parser(char *start_t)
 }
 int main(void)
 {
-    Pinit("LL0.formal");
-    OpenLex("stmt.out");
+    Pinit("LL1.formal");
+    OpenLex("ll1.out");
     timerStart();
     LL1init();
     printf("Building LL1 Parsing table : %ld ms.\n",timerEnd());
-    DEBUG_0();
+    //DEBUG_0();
     LL1_parser("BLOCK");
     Pclose();
     return 0;
