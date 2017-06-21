@@ -62,3 +62,14 @@ Microcontroller/MCS51/PCA9685driver/obj/Release/main.obj
 *.obj
 Microcontroller/MCS51/SERVO/SERVO.depend
 *.depend
+*.axf
+Microcontroller/STM32/FirstAsm/FirstAsm.build_log.htm
+*.htm
+*.map
+Microcontroller/STM32/FirstAsm/FirstAsm.lnp
+*.d
+Microcontroller/STM32/FirstAsm/FirstAsm.uvgui.Kook
+*.uvproj
+Microcontroller/STM32/FirstAsm/FirstAsm.uvopt
+*.html
+*.bak
