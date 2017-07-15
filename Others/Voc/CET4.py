@@ -52,17 +52,36 @@ while 1:
     con.commit()
 getQ()
 VIEW()
-
-f = open('CET4.txt', encoding='GBK')
-print(f)
-for r in f.readlines():
-    #print(r.find(' '))
-    #r[r.find(' ')]='#'
-    t=r.split(' ',1)
-    INSERT(t[0],t[1])
-    print(t)
-
-f.close()
 '''
+def IMPORT():
+    f = open('CET4.txt', encoding='GBK')
+    print(f)
+    for r in f.readlines():
+        #print(r.find(' '))
+        #r[r.find(' ')]='#'
+        t=r.split(' ',1)
+        INSERT(t[0],t[1])
+        print(t)
+
+    f.close()
+def SCAN():
+    conn = sqlite3.connect('CET4.db3')
+    #cconn = sqlite3.connect('CET4.db3')
+    c = conn.cursor()
+    for row in c.execute("SELECT * FROM CET4"):
+        if (row[3] == -1):
+            continue
+        print(row[0].__str__()+'---'+row[1])
+        i=input()
+        if(i=='y'):
+            conn.execute("UPDATE CET4 SET STATE=-1 WHERE id="+row[0].__str__())
+        elif(i=='q'):
+            break
+        else:
+            print(row[2])
+    conn.commit()
+    conn.close()
+    #cconn.close()
 con.close()
 VIEW()
+SCAN()
