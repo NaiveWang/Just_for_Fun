@@ -12,7 +12,7 @@ def get_page(kw):
     # url_learner=parse.quote(url_learner)
     url_learner += kw
     #print(url_learner)
-    print("Searching for "+kw)
+    print("Searching "+kw)
     try:
         response = request.urlopen(url_learner)
     except Exception:
@@ -47,13 +47,16 @@ def HParser(html_text):
         del(meaning[0])
         c2=1
         for eg in meaning:
-            #print(eg)
-            eg = eg.split('</div>', 1)
-            del eg[-1]
 
+            eg = eg.split('</div>', 1)
+            #print(eg)
+            del eg[-1]
+            #print(eg)
             eg=eg[0]
             #print(eg.find('<em class="mw_spm_it">'))
             eg=eg.replace('<em class="mw_spm_it">','')
+            eg=eg.replace('<span class="mw_spm_phrase">','')
+            eg=eg.replace('</span>','')
             eg=eg.replace('</em>', "")
             print('\texample '+c2.__str__()+": "+eg)
             c2+=1
