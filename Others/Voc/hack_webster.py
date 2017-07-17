@@ -3,18 +3,22 @@ from urllib import parse
 
 import socket
 socket.setdefaulttimeout(15)
+
+url_learner = 'http://www.learnersdictionary.com/definition/'
+url_dict='https://www.merriam-webster.com/dictionary/'
+
 def get_page(kw):
 
-    url_learner = 'http://www.learnersdictionary.com/definition/'
     # initilization ended
 
 
     # url_learner=parse.quote(url_learner)
-    url_learner += kw
+    url = url_learner+kw
     #print(url_learner)
     print("Searching "+kw)
     try:
-        response = request.urlopen(url_learner)
+        #print(url)
+        response = request.urlopen(url)
     except Exception:
         print('What the phuck did U just input??')
         return ''
