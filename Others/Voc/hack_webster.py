@@ -11,8 +11,13 @@ def get_page(kw):
 
     # url_learner=parse.quote(url_learner)
     url_learner += kw
-    print(url_learner)
-    response = request.urlopen(url_learner)
+    #print(url_learner)
+    print("Searching for "+kw)
+    try:
+        response = request.urlopen(url_learner)
+    except Exception:
+        print('What the phuck did U just input??')
+        return ''
     try:
         html = response.read()
     except Exception:
@@ -26,15 +31,12 @@ def get_page(kw):
 # <span class="def_text">$</span>
 # <div class="vi_content"><em class="mw_spm_it">improvisational</em>
 #word = input()
-text = open('Improvise.html').read()
-
 
 def HParser(html_text):
     html_text = html_text.split('def_text\">')
     del (html_text[0])
-    voca = "improvise"
     c1=1
-    print("\t\t"+voca)
+    #print("\t\t"+voca)
     for meaning in html_text:
         meaning = meaning.split('<', 1)
         print("meaning "+c1.__str__()+": "+meaning[0])
@@ -57,6 +59,16 @@ def HParser(html_text):
             c2+=1
         c1+=1
 
-w=input()
 
-HParser(get_page(w))
+print('Welcome to my dict script alpha version 1.1 !')
+print('Current Dictionary : Webster for English Learners.')
+while 1:
+    print('Keep your internet connected & input a word now, or type \'q\' to quit.')
+    w = input()
+    if w=='q':
+        break
+    try:
+        HParser(get_page(w))
+    except Exception:
+        continue
+
