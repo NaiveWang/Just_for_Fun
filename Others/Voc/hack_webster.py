@@ -58,7 +58,7 @@ def HParser(html_text):
             eg=eg.replace('<span class="mw_spm_phrase">','')
             eg=eg.replace('</span>','')
             eg=eg.replace('</em>', "")
-            print('\texample '+c2.__str__()+": "+eg)
+            print('\teg '+c2.__str__()+": "+eg)
             c2+=1
         c1+=1
 

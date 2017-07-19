@@ -87,6 +87,16 @@ def SCAN():
     conn.commit()
     conn.close()
     #cconn.close()
+def SCAN1():
+    conn = sqlite3.connect('CET4.db3')
+    #cconn = sqlite3.connect('CET4.db3')
+    c = conn.cursor()
+    c0=1
+    for row in c.execute("SELECT * FROM CET4 where state>0"):
+        print(c0.__str__()+' '+row[1])
+        c0+=1
+    conn.commit()
+    conn.close()
 con.close()
-VIEW()
-SCAN()
+#VIEW()
+SCAN1()
