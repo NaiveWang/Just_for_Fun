@@ -87,6 +87,29 @@ def SCAN():
     conn.commit()
     conn.close()
     #cconn.close()
+def SCAN1():
+    conn = sqlite3.connect('CET4.db3')
+    #cconn = sqlite3.connect('CET4.db3')
+    c = conn.cursor()
+    for row in c.execute("SELECT * FROM CET4 where state>0 ORDER BY state DESC"):
+        if (row[3] != 0):
+            continue
+        print('\n\n\n'+row[0].__str__()+'---'+row[1])
+        print('Press ENTER to get meaning.')
+        input()
+        print(row[2])
+        print('\t\t\tDid U get it? y to confirm/q to quit/others to mark.')
+        i=input()
+        if(i=='y'):
+            conn.execute("UPDATE CET4 SET STATE=-1 WHERE id="+row[0].__str__())
+        elif(i=='q'):
+            break
+        else:
+            conn.execute("UPDATE CET4 SET STATE=1 WHERE id=" + row[0].__str__())
+
+    conn.commit()
+    conn.close()
+    #cconn.close()
 con.close()
 VIEW()
 SCAN()
