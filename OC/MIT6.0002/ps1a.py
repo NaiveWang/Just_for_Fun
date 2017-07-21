@@ -25,6 +25,15 @@ def load_cows(filename):
     a dictionary of cow name (string), weight (int) pairs
     """
     # TODO: Your code here
+    f=open(filename)
+    t=f.read()
+    t=t.split('\n')
+    a=[[str,int]]
+    for i in t:
+        i=i.split(',')
+        a.append(i)
+    del(a[0])
+    return a
     pass
 
 # Problem 2
@@ -94,3 +103,4 @@ def compare_cow_transport_algorithms():
     """
     # TODO: Your code here
     pass
+print(load_cows('ps1_cow_data.txt'))
