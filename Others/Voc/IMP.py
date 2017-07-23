@@ -21,6 +21,7 @@ for r in file.readlines():
     r=r.split('#')
     r[1]=r[1]+r[2]
     r[1]=r[1].replace('\n','')
+    r[0]=r[0].replace('\n','')
     print(r[0]+'$$$'+r[1])
     try:
         con.execute("insert into voc(v,m,state,genre) values('%s','%s',0,1)"%(r[0],r[1]))

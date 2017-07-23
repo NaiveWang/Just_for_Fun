@@ -1,6 +1,37 @@
 import sqlite3
-con=sqlite3.connect("voc.db3")
-c=con.cursor()
-for r in c.execute("select * from voc"):
-    print(r)
+
+file="TOEFL.csv"
+con = sqlite3.connect("voc.db3")
+con1 = sqlite3.connect("CET4.db3")
+csr1 = con1.cursor()
+try:
+    con.execute("drop table voc")
+    con.execute("create table voc(id integer primary key AUTOINCREMENT, v varchar(45) unique, m varchar(200),state int, genre int)")
+except Exception:
+    print('??')
+
+
+for r in csr1.execute("select * from CET4"):
+    con.execute("insert into voc(v,m,state,genre) values('%s','%s',%d,0)"%(r[1],r[2],r[3]))
+con.commit()
+file=open(file)
+for r in file.readlines():
+    if r=='\n':
+        continue
+    r=r.split('#')
+    r[1]=r[1]+r[2]
+    r[1]=r[1].replace('\n','')
+    r[0]=r[0].replace('\n','')
+    print(r[0]+'$$$'+r[1])
+    try:
+        con.execute("insert into voc(v,m,state,genre) values('%s','%s',0,1)"%(r[0],r[1]))
+    except Exception:
+        try:
+            con.execute("update voc set m='%s' where v='%s'"%(r[1],r[0]))
+        except Exception:
+            continue
+        continue
+file.close()
+con.commit()
+con1.close()
 con.close()
