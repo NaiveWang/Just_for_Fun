@@ -20,14 +20,17 @@ for r in file.readlines():
         continue
     r=r.split('#')
     r[1]=r[1]+r[2]
+    r[1]=r[1].replace('\n','')
     print(r[0]+'$$$'+r[1])
     try:
         con.execute("insert into voc(v,m,state,genre) values('%s','%s',0,1)"%(r[0],r[1]))
     except Exception:
+        try:
+            con.execute("update voc set m='%s' where v='%s'"%(r[1],r[0]))
+        except Exception:
+            continue
         continue
-
-
+file.close()
 con.commit()
 con1.close()
 con.close()
-file.close()
