@@ -1,37 +1,41 @@
 import sqlite3
-
-file="TOEFL.csv"
-con = sqlite3.connect("voc.db3")
-con1 = sqlite3.connect("CET4.db3")
-csr1 = con1.cursor()
-try:
-    con.execute("drop table voc")
-    con.execute("create table voc(id integer primary key AUTOINCREMENT, v varchar(45) unique, m varchar(200),state int, genre int)")
-except Exception:
-    print('??')
-
-
-for r in csr1.execute("select * from CET4"):
-    con.execute("insert into voc(v,m,state,genre) values('%s','%s',%d,0)"%(r[1],r[2],r[3]))
-con.commit()
-file=open(file)
-for r in file.readlines():
-    if r=='\n':
-        continue
-    r=r.split('#')
-    r[1]=r[1]+r[2]
-    r[1]=r[1].replace('\n','')
-    r[0]=r[0].replace('\n','')
-    print(r[0]+'$$$'+r[1])
+database="voc.db3"
+table="voc"
+'''
+while 1:
+    v=input()
+    if v=='q':
+        break
     try:
-        con.execute("insert into voc(v,m,state,genre) values('%s','%s',0,1)"%(r[0],r[1]))
+        INSERT(v)
     except Exception:
-        try:
-            con.execute("update voc set m='%s' where v='%s'"%(r[1],r[0]))
-        except Exception:
-            continue
+        print("Already Existed")
         continue
-file.close()
-con.commit()
-con1.close()
-con.close()
+    con.commit()
+getQ()
+VIEW()
+'''
+def SCAN():
+    conn = sqlite3.connect(database)
+    #cconn = sqlite3.connect('CET4.db3')
+    c = conn.cursor()
+    for row in c.execute("SELECT * FROM %s"%table):
+        if (row[3] != 0):
+            continue
+        print('\n\n\n'+row[0].__str__()+'---'+row[1])
+        print('Press ENTER to get meaning.')
+        input()
+        print(row[2])
+        print('\tDid U get it? y to confirm/q to quit/others to mark.')
+        i=input()
+        if(i=='y'):
+            conn.execute("UPDATE %s SET STATE=-1 WHERE id="%table+row[0].__str__())
+        elif(i=='q'):
+            break
+        else:
+            conn.execute("UPDATE %s SET STATE=1 WHERE id="%table + row[0].__str__())
+
+    conn.commit()
+    conn.close()
+
+SCAN()
