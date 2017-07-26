@@ -37,5 +37,15 @@ def SCAN():
 
     conn.commit()
     conn.close()
+def EXPO():
+    conn=sqlite3.connect(database)
+    o=open('n_voc.txt', 'w')
+    c=conn.cursor()
+    i=1
+    for row in c.execute('SELECT * FROM %s'%table+' where state <> -1'):
+        o.writelines(i.__str__()+'\t\t'+row[3].__str__()+'\t\t'+row[4].__str__()+'\t\t'+row[1]+'\n')
+        i+=1
+    o.close()
+    conn.close()
 
-SCAN()
+EXPO()
