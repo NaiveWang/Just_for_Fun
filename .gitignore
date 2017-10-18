@@ -75,3 +75,5 @@ Microcontroller/STM32/FirstAsm/FirstAsm.uvopt
 *.bak
 
 Others/HeiBao
+
+Others/geckodriver\.log
