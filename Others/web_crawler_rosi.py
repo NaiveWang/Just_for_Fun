@@ -11,11 +11,12 @@ from urllib import parse
 # So here you can see, site 2 is a intermediate page, which is used to obtain the original site 3.
 site1="http://www.mmxyz.net/rosi-"
 site3="https://wvw.rosmms.com/pic/upload/"
+site4="http://img1.mmxyz.net/"
 picname0="rosimm-"#<1015
 picname1="rosmm-"
 mon={'一':'01','二':'02','三':'03','四':'04','五':'05','六':'06','七':'07','八':'08','九':'09','十':'10','十一':'11','十二':'12'}
 # at first, i got to parse site 1 first.
-def GetDate(number):
+def GetDate(number,con):
     site = site1+number.__str__()+'/'
     tr=3
     while 1 :
@@ -47,9 +48,12 @@ def GetDate(number):
     month=text[0]
     month=mon[month]
     print(year,month,day)
-    return year+'/'+month+'/'+day+'/'
+    if con=='0':
+        return year+'/'+month+'/'+day+'/'
+    else:
+        return year+'/'+month+'/'
 def GetDLurl(number):
-    temp0=GetDate(number)
+    temp0=GetDate(number,'0')
     if temp0 == -1:
         return -1
     url0=site3+temp0
@@ -74,7 +78,42 @@ def DownloadASet(number):
         except Exception:
             break
         cnt+=1
-ia=input()
-ib=input()
-for x in range(int(ia),int(ib)):
-    DownloadASet(x.__str__())
+def DownloadManual(num,y,m,d):
+    cnt=1
+    url=site3+y+'/'+m+'/'+d+'/'+picname0+num+'-'
+    while 1 :
+        tmpurl=url+cnt.__str__()+".jpg"
+        print("Downloading",tmpurl)
+        request.urlretrieve(tmpurl,num+"-"+cnt.__str__()+".jpg")
+        cnt+=1
+def DownloadASet2(number):
+    cnt=1
+    url=site4+GetDate(number,'')+'rosi-'+number+'-'
+    while 1 :
+        tmpurl=url+"%03d"%cnt+'.jpg'
+        print("Downloading",tmpurl)
+        try:
+            request.urlretrieve(tmpurl,number+"-"+cnt.__str__()+".jpg")
+        except Exception:
+            break
+        cnt+=1
+mode=input()
+if mode=='0':
+    ia=input()
+    ib=input()
+    for x in range(int(ia),int(ib)):
+        DownloadASet(x.__str__())
+elif mode=='1':
+    i=input()
+    DownloadASet(i.__str__())
+elif mode=='2':
+    a=input()
+    b=input()
+    c=input()
+    d=input()
+    DownloadManual(a,b,c,d)
+elif mode=='3':
+    ia=input()
+    ib=input()
+    for x in range(int(ia),int(ib)):
+        DownloadASet2(x.__str__())
