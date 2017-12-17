@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #define LINUX
 //#define REGS 256
-#define FLAGS 2
 #define STACK 262144
 #define INSTRUCTION 45
 /** This segment is the memory of VM**/
@@ -13,41 +12,85 @@ typedef struct InstructionDecodingTable
   int dataLength;
   void *(*i)();
 }idt;
-typedef struct InstructionLinkList
+typedef struct InstructionList
 {
   void *(*instruction)();
   int *data;
-  struct InstructionLinkList *prior,*next;
-}inode;
-
+}ielem;
+typedef struct DataList
+{
+  int size,length;
+  void *data;
+}delem;
 long reg;
 int insdata[4];
 
 char stack[STACK];
-char flag[FLAGS];
+int flag;
 int pc,sp;
 
+ielem *segi;
+delem *segd;
+int sizeofsegi,sizeofsegd;
+
 /** INSTRUCTION SET **/
-void *MOVC()
+void *HALT()
 {
+  exit(*insdata);
+}
+void *MOVC()
+{//source/destination
+  if(segd[*insdata].size == segd[*(insdata+2)].size)
+  {
+    char *temp0 = segd[*(insdata+2)].data+insdata[3];
+    char *temp1 = segd[*insdata].data+insdata[1];
+    *temp0=*temp1;
+  }
+  else
+  {
+    *insdata=-1;
+    *HALT();
+  }
 }
 void *MOVI()
-{
+{//source/destination
+  if(segd[*insdata].size == segd[*(insdata+2)].size)
+  {
+    int *temp0 = segd[*(insdata+2)].data+insdata[3];
+    int *temp1 = segd[*insdata].data+insdata[1];
+    *temp0=*temp1;
+  }
+  else
+  {
+    *insdata=-1;
+    *HALT();
+  }
 }
 void *MOVL()
-{
+{//source/destination
+  if(segd[*insdata].size == segd[*(insdata+2)].size)
+  {
+    long *temp0 = segd[*(insdata+2)].data+insdata[3];
+    long *temp1 = segd[*insdata].data+insdata[1];
+    *temp0=*temp1;
+  }
+  else
+  {
+    *insdata=-1;
+    *HALT();
+  }
 }
 void *JUMP()
 {
+  pc+=*insdata;
 }
 void *JMPF()
 {
+  if(*(insdata+1)&flag) pc+=*insdata;
 }
 void *JMPN()
 {
-}
-void *HALT()
-{
+  if(*(insdata+1)^flag) pc+=*insdata;
 }
 void *ADDC()
 {
@@ -183,7 +226,41 @@ int decoder(char* s)
 void readBin(char *s)
 {
   FILE *fp;
+  int seeker;
+
   fp=fopen(s,"rb");
+  //first is data section.
+  //get the data size
+  fread(&sizeofsegd,4,1,fp);
+
+  segd=calloc(sizeofsegd,sizeof(delem));
+  //read the data repeatly.
+  for(seeker=0;seeker<sizeofsegd;seeker++)
+  {
+    fread(&segd[seeker].size,4,1,fp);
+    fread(&segd[seeker].length,4,1,fp);
+    (segd+seeker)->data=malloc(segd[seeker].size * segd[seeker].length);
+    fread((segd+seeker)->data,segd[seeker].size,segd[seeker].length,fp);
+  }
+  //have read the data segment.
+  //now start reading the code.
+  //and with predecoding step.
+  fread(&sizeofsegi,4,1,fp);
+
+  segi=calloc(sizeofsegi,sizeof(ielem));
+  //the same as above.
+  int code;
+  for(seeker=0;seeker<sizeofsegi;seeker++)
+  {
+    fread(&code,4,1,fp);
+
+    int temp = decoder(&code);
+
+    segi[seeker].instruction=ins[temp].i;
+    segi[seeker].data=malloc(ins[temp].dataLength*sizeof(int));
+    //read the data of each instruction.
+    fread(segi[seeker].data,4,ins[temp].dataLength,fp);
+  }
 }
 
 void VMstart()
