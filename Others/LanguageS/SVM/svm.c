@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #define LINUX
 //#define REGS 256
-#define STACK 262144
+#define MOMORY 262144
 #define INSTRUCTION 45
 /** This segment is the memory of VM**/
 //char reg[REGS];
@@ -25,14 +25,41 @@ typedef struct DataList
 long reg;
 int insdata[4];
 
-char stack[STACK];
-int flag;
+char flag;//ZERO/SIGN/N/N/N/N/RRD/WRD
 int pc,sp;
 
 ielem *segi;
-delem *segd;
+delem segd[MOMORY];
 int sizeofsegi,sizeofsegd;
 
+/** Aux **/
+void* addrFetcher(int *x,int *y)
+{//Because of the performance, this function do not have boundary check.
+  return segd[*x].data + segd[*x].size * *y;
+}
+void changeFlagC(char *target)
+{
+  if(*target == 0) flag |= 0x01;
+  if(*target < 0) flag |= 0x02;
+}
+void changeFlagI(int *target)
+{
+  if(*target == 0) flag |= 0x01;
+  if(*target < 0) flag |= 0x02;
+}
+void changeFlagL(long *target)
+{
+  if(*target == 0) flag |= 0x01;
+  if(*target < 0) flag |= 0x02;
+}
+void ReadReady()
+{
+  flag &= 0x04;
+}
+void WriteReady()
+{
+  flag &= 0x08;
+}
 /** INSTRUCTION SET **/
 void *HALT()
 {
@@ -42,8 +69,8 @@ void *MOVC()
 {//source/destination
   if(segd[*insdata].size == segd[*(insdata+2)].size)
   {
-    char *temp0 = segd[*(insdata+2)].data+insdata[3];
-    char *temp1 = segd[*insdata].data+insdata[1];
+    char *temp0 = addrFetcher(insdata+2,insdata+3);
+    char *temp1 = addrFetcher(insdata,insdata+1);
     *temp0=*temp1;
   }
   else
@@ -56,8 +83,8 @@ void *MOVI()
 {//source/destination
   if(segd[*insdata].size == segd[*(insdata+2)].size)
   {
-    int *temp0 = segd[*(insdata+2)].data+insdata[3];
-    int *temp1 = segd[*insdata].data+insdata[1];
+    int *temp0 = addrFetcher(insdata+2,insdata+3);
+    int *temp1 = addrFetcher(insdata,insdata+1);
     *temp0=*temp1;
   }
   else
@@ -70,8 +97,8 @@ void *MOVL()
 {//source/destination
   if(segd[*insdata].size == segd[*(insdata+2)].size)
   {
-    long *temp0 = segd[*(insdata+2)].data+insdata[3];
-    long *temp1 = segd[*insdata].data+insdata[1];
+    long *temp0 = addrFetcher(insdata+2,insdata+3);
+    long *temp1 = addrFetcher(insdata,insdata+1);
     *temp0=*temp1;
   }
   else
@@ -93,7 +120,20 @@ void *JMPN()
   if(*(insdata+1)^flag) pc+=*insdata;
 }
 void *ADDC()
-{
+{//source1/source2/destination
+  if(segd[*insdata].size == segd[*(insdata+2)].size == segd[*(insdata+4)].size)
+  {
+    long *temp0 = addrFetcher(insdata+2,insdata+3);
+    long *temp1 = addrFetcher(insdata,insdata+1);
+    long *temp2 = addrFetcher(insdata+4,insdata+5);
+    *temp2 = temp0 + temp1;
+
+  }
+  else
+  {
+    *insdata=-1;
+    *HALT();
+  }
 }
 void *ADDI()
 {
@@ -206,7 +246,7 @@ void *PUTI()
 void *GETI()
 {
 }
-idt ins[INSTRUCTION]={  {"MOVC",2,MOVC},{"MOVI",2,MOVI},{"MOVL",2,MOVL},{"JUMP",2,JUMP},{"JMPF",2,JMPF},{"JMPN",2,JMPN},{"HALT",1,HALT},
+idt ins[INSTRUCTION]={  {"MOVC",4,MOVC},{"MOVI",4,MOVI},{"MOVL",4,MOVL},{"JUMP",1,JUMP},{"JMPF",2,JMPF},{"JMPN",2,JMPN},{"HALT",1,HALT},
                         {"ADDC",3,ADDC},{"ADDI",3,ADDI},{"ADDL",3,ADDL},{"SUBC",3,SUBC},{"SUBI",3,SUBI},{"SUBL",3,SUBL},{"MULC",3,MULC},
                         {"MULI",3,MULI},{"MULL",3,MULL},{"DIVC",3,DIVC},{"DIVI",3,DIVI},{"DIVL",3,DIVL},{"_CMP",2,_CMP},{"NEGC",2,NEGC},
                         {"NEGI",2,NEGI},{"NEGL",2,NEGL},{"NOTC",2,NOTC},{"NOTI",2,NOTI},{"NOTL",2,NOTL},{"EORC",3,EORC},{"EORI",3,EORI},
@@ -233,7 +273,6 @@ void readBin(char *s)
   //get the data size
   fread(&sizeofsegd,4,1,fp);
 
-  segd=calloc(sizeofsegd,sizeof(delem));
   //read the data repeatly.
   for(seeker=0;seeker<sizeofsegd;seeker++)
   {
@@ -262,7 +301,10 @@ void readBin(char *s)
     fread(segi[seeker].data,4,ins[temp].dataLength,fp);
   }
 }
-
+void RunABlock()//run a block of code without branch
+{
+  ;
+}
 void VMstart()
 {
   //reset pointer.
