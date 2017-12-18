@@ -54,11 +54,11 @@ void changeFlagL(long *target)
 }
 void ReadReady()
 {
-  flag &= 0x04;
+  flag &= 0xFD;
 }
 void WriteReady()
 {
-  flag &= 0x08;
+  flag &= 0xF7;
 }
 /** INSTRUCTION SET **/
 void *HALT()
@@ -123,11 +123,11 @@ void *ADDC()
 {//source1/source2/destination
   if(segd[*insdata].size == segd[*(insdata+2)].size == segd[*(insdata+4)].size)
   {
-    long *temp0 = addrFetcher(insdata+2,insdata+3);
-    long *temp1 = addrFetcher(insdata,insdata+1);
-    long *temp2 = addrFetcher(insdata+4,insdata+5);
-    *temp2 = temp0 + temp1;
-
+    char *temp0 = addrFetcher(insdata+2,insdata+3);
+    char *temp1 = addrFetcher(insdata,insdata+1);
+    char *temp2 = addrFetcher(insdata+4,insdata+5);
+    *temp2 = *temp0 + *temp1;
+    changeFlagC(temp2);
   }
   else
   {
@@ -136,31 +136,137 @@ void *ADDC()
   }
 }
 void *ADDI()
-{
+{//source1/source2/destination
+  if(segd[*insdata].size == segd[*(insdata+2)].size == segd[*(insdata+4)].size)
+  {
+    int *temp0 = addrFetcher(insdata+2,insdata+3);
+    int *temp1 = addrFetcher(insdata,insdata+1);
+    int *temp2 = addrFetcher(insdata+4,insdata+5);
+    *temp2 = *temp0 + *temp1;
+    changeFlagL(temp2);
+  }
+  else
+  {
+    *insdata=-1;
+    *HALT();
+  }
 }
 void *ADDL()
-{
+{//source1/source2/destination
+  if(segd[*insdata].size == segd[*(insdata+2)].size == segd[*(insdata+4)].size)
+  {
+    long *temp0 = addrFetcher(insdata+2,insdata+3);
+    long *temp1 = addrFetcher(insdata,insdata+1);
+    long *temp2 = addrFetcher(insdata+4,insdata+5);
+    *temp2 = *temp0 + *temp1;
+    changeFlagL(temp2);
+  }
+  else
+  {
+    *insdata=-1;
+    *HALT();
+  }
 }
 void *SUBC()
-{
+{//source1/source2/destination
+    if(segd[*insdata].size == segd[*(insdata+2)].size == segd[*(insdata+4)].size)
+    {
+      char *temp0 = addrFetcher(insdata+2,insdata+3);
+      char *temp1 = addrFetcher(insdata,insdata+1);
+      char *temp2 = addrFetcher(insdata+4,insdata+5);
+      *temp2 = *temp0 - *temp1;
+      changeFlagC(temp2);
+    }
+    else
+    {
+      *insdata=-1;
+      *HALT();
+    }
 }
 void *SUBI()
-{
+{//source1/source2/destination
+    if(segd[*insdata].size == segd[*(insdata+2)].size == segd[*(insdata+4)].size)
+    {
+      int *temp0 = addrFetcher(insdata+2,insdata+3);
+      int *temp1 = addrFetcher(insdata,insdata+1);
+      int *temp2 = addrFetcher(insdata+4,insdata+5);
+      *temp2 = *temp0 - *temp1;
+      changeFlagI(temp2);
+    }
+    else
+    {
+      *insdata=-1;
+      *HALT();
+    }
 }
 void *SUBL()
-{
+{//source1/source2/destination
+    if(segd[*insdata].size == segd[*(insdata+2)].size == segd[*(insdata+4)].size)
+    {
+      long *temp0 = addrFetcher(insdata+2,insdata+3);
+      long *temp1 = addrFetcher(insdata,insdata+1);
+      long *temp2 = addrFetcher(insdata+4,insdata+5);
+      *temp2 = *temp0 - *temp1;
+      changeFlagL(temp2);
+    }
+    else
+    {
+      *insdata=-1;
+      *HALT();
+    }
 }
 void *MULC()
 {
+  //source1/source2/destination
+      if(segd[*insdata].size == segd[*(insdata+2)].size == segd[*(insdata+4)].size)
+      {
+        char *temp0 = addrFetcher(insdata+2,insdata+3);
+        char *temp1 = addrFetcher(insdata,insdata+1);
+        char *temp2 = addrFetcher(insdata+4,insdata+5);
+        *temp2 = *temp0 * *temp1;
+        changeFlagC(temp2);
+      }
+      else
+      {
+        *insdata=-1;
+        *HALT();
+      }
 }
 void *MULI()
-{
+{//source1/source2/destination
+    if(segd[*insdata].size == segd[*(insdata+2)].size == segd[*(insdata+4)].size)
+    {
+      int *temp0 = addrFetcher(insdata+2,insdata+3);
+      int *temp1 = addrFetcher(insdata,insdata+1);
+      int *temp2 = addrFetcher(insdata+4,insdata+5);
+      *temp2 = *temp0 * *temp1;
+      changeFlagI(temp2);
+    }
+    else
+    {
+      *insdata=-1;
+      *HALT();
+    }
 }
 void *MULL()
-{
+{//source1/source2/destination
+    if(segd[*insdata].size == segd[*(insdata+2)].size == segd[*(insdata+4)].size)
+    {
+      long *temp0 = addrFetcher(insdata+2,insdata+3);
+      long *temp1 = addrFetcher(insdata,insdata+1);
+      long *temp2 = addrFetcher(insdata+4,insdata+5);
+      *temp2 = *temp0 * *temp1;
+      changeFlagL(temp2);
+    }
+    else
+    {
+      *insdata=-1;
+      *HALT();
+    }
 }
 void *DIVC()
 {
+  
 }
 void *DIVI()
 {
