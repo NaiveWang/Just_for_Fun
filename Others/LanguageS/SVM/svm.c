@@ -384,6 +384,7 @@ void readBin(char *s)
     //read the data of each instruction.
     fread(segi[seeker].data,4,ins[temp].dataLength,fp);
   }
+  fclose(fp);
 }
 void RunABlock()//run a block of code without branch
 {
@@ -392,7 +393,7 @@ void RunABlock()//run a block of code without branch
   {
     instruction=segi[pc].instruction;
     insdata=segi[pc].data;
-    *instruction;
+    *instruction();
   }
 }
 void VMstart()
@@ -405,9 +406,9 @@ void VMstart()
   }
 }
 
-int main(void)
+int main(char *argv)
 {
-  //readBin(*argv);
-  //VMstart();
+  readBin(argv);
+  VMstart();
   return 0;
 }
