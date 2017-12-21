@@ -313,6 +313,20 @@ void *NEGR()
   changeFlagR(d);
   pc++;
 }
+void *PUSH()
+{
+  segd[sp+sizeofsegd].size=insdata[0];
+  segd[sp+sizeofsegd].length=insdata[1];
+  segd[sp+sizeofsegd].data=malloc(insdata[0]*insdata[1]);
+  sp++;
+  pc++;
+}
+void *POP()
+{
+  sp--;
+  free(segd[sp+sizeofsegd].data);
+  pc++;
+}
 idt ins[INSTRUCTION]={  {"MOVC",4,MOVC},{"MOVI",4,MOVI},{"MOVL",4,MOVL},
                         {"JUMP",1,JUMP},{"JMPF",2,JMPF},{"JMPN",2,JMPN},
                         {"HALT",1,HALT},
@@ -391,7 +405,9 @@ void VMstart()
   }
 }
 
-int main(int argc,char **argv)
+int main(void)
 {
+  //readBin(*argv);
+  //VMstart();
   return 0;
 }
