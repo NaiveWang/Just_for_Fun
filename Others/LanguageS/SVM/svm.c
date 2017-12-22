@@ -22,7 +22,8 @@ typedef struct DataList
   int size,length;
   void *data;
 }delem;
-long reg;
+//long reg;
+/************************************ PROCESSOR INFO************************************/
 int *insdata;
 
 char flag;//ZERO/SIGN/N/N/N/N/RRD/WRD
@@ -31,7 +32,7 @@ int pc,sp;
 ielem *segi;
 delem segd[MOMORY];
 int sizeofsegi,sizeofsegd;
-
+/************************************ PROCESS INFO***************************************/
 /** Aux **/
 void* addrFetcher(int *x,int *y)
 {//Because of the performance, this function do not have boundary check.
