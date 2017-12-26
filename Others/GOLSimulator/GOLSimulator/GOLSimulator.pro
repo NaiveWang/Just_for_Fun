@@ -13,8 +13,12 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    goldisplayer.cpp \
+    golcore.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    goldisplayer.h \
+    golcore.h
 
 FORMS    += mainwindow.ui
