@@ -18,7 +18,12 @@ GOLCore::GOLCore(int x,int y)
 }
 GOLCore::GOLCore(char* fp)
 {
+    int x,y;
     save = fopen(fp,"rb");
+    fread(&x,sizeof(int),1,save);
+    fread(&y,sizeof(int),1,save);
+    GOLCore(x,y);
+    fread(this->map[0],sizeof(char),x*y,save);
     fclose(save);
 }
 
@@ -31,7 +36,7 @@ GOLCore::~GOLCore()
 }
 unsigned char* GOLCore::GOLSeek(int x, int y)
 {
-    return map[CacheMark] + x*size_x + y;
+    return map[(int )CacheMark] + x*size_x + y;
 }
 unsigned char* GOLCore::GOLSeekNext(int x, int y)
 {
@@ -77,4 +82,10 @@ void GOLCore::GOLNextFrame()
         else if(*GOLSeek(x,y)>1) *GOLSeekNext(x,y)=*GOLSeek(x,y)-1;
         if(GOLSeekNext(x,y)) this->alive++;
     }
+}
+void GOLCore::SaveGame(char *fp)
+{
+    save = fopen(fp,"wb");
+    fwrite(map[(int)CacheMark],sizeof(char),this->size_x * this->size_y,save);
+    fclose(save);
 }

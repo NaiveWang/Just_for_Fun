@@ -18,6 +18,7 @@ public:
     unsigned char* GOLSeekNext(int, int);
     int GOLEnvCounter(int, int);
     void GOLNextFrame();
+    void SaveGame(char*);
 
 private:
     char CacheMark;
