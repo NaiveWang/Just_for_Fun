@@ -51,12 +51,18 @@ OBJECTS_DIR   = ./
 SOURCES       = ../GOLSimulator/main.cpp \
 		../GOLSimulator/mainwindow.cpp \
 		../GOLSimulator/goldisplayer.cpp \
-		../GOLSimulator/golcore.cpp moc_mainwindow.cpp \
+		../GOLSimulator/golcore.cpp \
+		../GOLSimulator/golcontrolpanel.cpp \
+		../GOLSimulator/gollog.cpp \
+		../GOLSimulator/golchart.cpp moc_mainwindow.cpp \
 		moc_goldisplayer.cpp
 OBJECTS       = main.o \
 		mainwindow.o \
 		goldisplayer.o \
 		golcore.o \
+		golcontrolpanel.o \
+		gollog.o \
+		golchart.o \
 		moc_mainwindow.o \
 		moc_goldisplayer.o
 DIST          = /home/elvin/Qt5.7.0/5.7/gcc_64/mkspecs/features/spec_pre.prf \
@@ -214,10 +220,16 @@ DIST          = /home/elvin/Qt5.7.0/5.7/gcc_64/mkspecs/features/spec_pre.prf \
 		/home/elvin/Qt5.7.0/5.7/gcc_64/mkspecs/features/lex.prf \
 		../GOLSimulator/GOLSimulator.pro ../GOLSimulator/mainwindow.h \
 		../GOLSimulator/goldisplayer.h \
-		../GOLSimulator/golcore.h ../GOLSimulator/main.cpp \
+		../GOLSimulator/golcore.h \
+		../GOLSimulator/golcontrolpanel.h \
+		../GOLSimulator/gollog.h \
+		../GOLSimulator/golchart.h ../GOLSimulator/main.cpp \
 		../GOLSimulator/mainwindow.cpp \
 		../GOLSimulator/goldisplayer.cpp \
-		../GOLSimulator/golcore.cpp
+		../GOLSimulator/golcore.cpp \
+		../GOLSimulator/golcontrolpanel.cpp \
+		../GOLSimulator/gollog.cpp \
+		../GOLSimulator/golchart.cpp
 QMAKE_TARGET  = GOLSimulator
 DESTDIR       = 
 TARGET        = GOLSimulator
@@ -558,8 +570,8 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
-	$(COPY_FILE) --parents ../GOLSimulator/mainwindow.h ../GOLSimulator/goldisplayer.h ../GOLSimulator/golcore.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../GOLSimulator/main.cpp ../GOLSimulator/mainwindow.cpp ../GOLSimulator/goldisplayer.cpp ../GOLSimulator/golcore.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../GOLSimulator/mainwindow.h ../GOLSimulator/goldisplayer.h ../GOLSimulator/golcore.h ../GOLSimulator/golcontrolpanel.h ../GOLSimulator/gollog.h ../GOLSimulator/golchart.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../GOLSimulator/main.cpp ../GOLSimulator/mainwindow.cpp ../GOLSimulator/goldisplayer.cpp ../GOLSimulator/golcore.cpp ../GOLSimulator/golcontrolpanel.cpp ../GOLSimulator/gollog.cpp ../GOLSimulator/golchart.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../GOLSimulator/mainwindow.ui $(DISTDIR)/
 
 
@@ -1195,6 +1207,306 @@ goldisplayer.o: ../GOLSimulator/goldisplayer.cpp ../GOLSimulator/goldisplayer.h 
 
 golcore.o: ../GOLSimulator/golcore.cpp ../GOLSimulator/golcore.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o golcore.o ../GOLSimulator/golcore.cpp
+
+golcontrolpanel.o: ../GOLSimulator/golcontrolpanel.cpp ../GOLSimulator/golcontrolpanel.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtWidgets/QWidget \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtWidgets/qwidget.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qwindowdefs.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qglobal.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qconfig.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qfeatures.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qsystemdetection.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qprocessordetection.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qcompilerdetection.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qtypeinfo.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qtypetraits.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qisenum.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qsysinfo.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qlogging.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qflags.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qatomic.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qbasicatomic.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qgenericatomic.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qatomic_msvc.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qglobalstatic.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qmutex.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qnumeric.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qversiontagging.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qobjectdefs.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qnamespace.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qwindowdefs_win.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qobject.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qstring.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qchar.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qbytearray.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qrefcount.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qarraydata.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qstringbuilder.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qlist.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qalgorithms.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qiterator.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qhashfunctions.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qpair.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qbytearraylist.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qstringlist.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qregexp.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qstringmatcher.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qcoreevent.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qscopedpointer.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qmetatype.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qvarlengtharray.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qcontainerfwd.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qobject_impl.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qmargins.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qpaintdevice.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qrect.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qsize.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qpoint.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qpalette.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qcolor.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qrgb.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qrgba64.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qbrush.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qvector.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qmatrix.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qpolygon.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qregion.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qdatastream.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qiodevice.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qline.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qtransform.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qpainterpath.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qimage.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qpixelformat.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qpixmap.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qsharedpointer.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qshareddata.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qhash.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qfont.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qfontmetrics.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qfontinfo.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtWidgets/qsizepolicy.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qcursor.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qkeysequence.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qevent.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qvariant.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qmap.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qdebug.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qtextstream.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qlocale.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qset.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qcontiguouscache.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qurl.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qurlquery.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qfile.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qfiledevice.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qvector2d.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qtouchdevice.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o golcontrolpanel.o ../GOLSimulator/golcontrolpanel.cpp
+
+gollog.o: ../GOLSimulator/gollog.cpp ../GOLSimulator/gollog.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtWidgets/QWidget \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtWidgets/qwidget.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qwindowdefs.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qglobal.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qconfig.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qfeatures.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qsystemdetection.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qprocessordetection.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qcompilerdetection.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qtypeinfo.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qtypetraits.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qisenum.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qsysinfo.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qlogging.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qflags.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qatomic.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qbasicatomic.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qgenericatomic.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qatomic_msvc.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qglobalstatic.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qmutex.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qnumeric.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qversiontagging.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qobjectdefs.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qnamespace.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qwindowdefs_win.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qobject.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qstring.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qchar.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qbytearray.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qrefcount.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qarraydata.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qstringbuilder.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qlist.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qalgorithms.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qiterator.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qhashfunctions.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qpair.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qbytearraylist.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qstringlist.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qregexp.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qstringmatcher.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qcoreevent.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qscopedpointer.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qmetatype.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qvarlengtharray.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qcontainerfwd.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qobject_impl.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qmargins.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qpaintdevice.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qrect.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qsize.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qpoint.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qpalette.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qcolor.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qrgb.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qrgba64.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qbrush.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qvector.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qmatrix.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qpolygon.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qregion.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qdatastream.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qiodevice.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qline.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qtransform.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qpainterpath.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qimage.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qpixelformat.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qpixmap.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qsharedpointer.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qshareddata.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qhash.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qfont.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qfontmetrics.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qfontinfo.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtWidgets/qsizepolicy.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qcursor.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qkeysequence.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qevent.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qvariant.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qmap.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qdebug.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qtextstream.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qlocale.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qset.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qcontiguouscache.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qurl.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qurlquery.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qfile.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qfiledevice.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qvector2d.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qtouchdevice.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o gollog.o ../GOLSimulator/gollog.cpp
+
+golchart.o: ../GOLSimulator/golchart.cpp ../GOLSimulator/golchart.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtWidgets/QWidget \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtWidgets/qwidget.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qwindowdefs.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qglobal.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qconfig.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qfeatures.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qsystemdetection.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qprocessordetection.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qcompilerdetection.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qtypeinfo.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qtypetraits.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qisenum.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qsysinfo.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qlogging.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qflags.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qatomic.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qbasicatomic.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qgenericatomic.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qatomic_msvc.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qglobalstatic.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qmutex.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qnumeric.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qversiontagging.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qobjectdefs.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qnamespace.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qwindowdefs_win.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qobject.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qstring.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qchar.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qbytearray.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qrefcount.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qarraydata.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qstringbuilder.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qlist.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qalgorithms.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qiterator.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qhashfunctions.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qpair.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qbytearraylist.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qstringlist.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qregexp.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qstringmatcher.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qcoreevent.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qscopedpointer.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qmetatype.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qvarlengtharray.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qcontainerfwd.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qobject_impl.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qmargins.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qpaintdevice.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qrect.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qsize.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qpoint.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qpalette.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qcolor.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qrgb.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qrgba64.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qbrush.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qvector.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qmatrix.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qpolygon.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qregion.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qdatastream.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qiodevice.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qline.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qtransform.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qpainterpath.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qimage.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qpixelformat.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qpixmap.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qsharedpointer.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qshareddata.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qhash.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qfont.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qfontmetrics.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qfontinfo.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtWidgets/qsizepolicy.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qcursor.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qkeysequence.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qevent.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qvariant.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qmap.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qdebug.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qtextstream.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qlocale.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qset.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qcontiguouscache.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qurl.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qurlquery.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qfile.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtCore/qfiledevice.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qvector2d.h \
+		/home/elvin/Qt5.7.0/5.7/gcc_64/include/QtGui/qtouchdevice.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o golchart.o ../GOLSimulator/golchart.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp

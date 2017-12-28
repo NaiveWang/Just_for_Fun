@@ -15,10 +15,16 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     goldisplayer.cpp \
-    golcore.cpp
+    golcore.cpp \
+    golcontrolpanel.cpp \
+    gollog.cpp \
+    golchart.cpp
 
 HEADERS  += mainwindow.h \
     goldisplayer.h \
-    golcore.h
+    golcore.h \
+    golcontrolpanel.h \
+    gollog.h \
+    golchart.h
 
 FORMS    += mainwindow.ui

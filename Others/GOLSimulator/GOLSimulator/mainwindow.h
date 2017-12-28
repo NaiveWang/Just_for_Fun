@@ -2,21 +2,27 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QGridLayout>
 
-namespace Ui {
-class MainWindow;
-}
+#include "golchart.h"
+#include "golcontrolpanel.h"
+#include "goldisplayer.h"
+#include "gollog.h"
 
-class MainWindow : public QMainWindow
+class MainWindow : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
 private:
-    Ui::MainWindow *ui;
+    GOLChart chart;
+    GOLControlPanel cPanel;
+    GOLDisplayer disp;
+    GOLLog log;
+    QGridLayout layout;
 };
 
 #endif // MAINWINDOW_H
