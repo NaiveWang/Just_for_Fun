@@ -4,7 +4,7 @@ GOLDisplayer::GOLDisplayer(GOLCore *core, GOLLog *log, QGLWidget *parent) : QGLW
 {
     this->core = core;
     this->log = log;
-
+    this->setFixedSize(WINDOW_SIZE,WINDOW_SIZE);
     //this->setFormat(QSurfaceFormat::defaultFormat());
     //this->show();
 }
@@ -37,7 +37,7 @@ void GOLDisplayer::paintGL()
     {
         if(*core->GOLSeek(x,y)) color=255;
         else color=0;
-        glColor3ub(color,color,color);
+        glColor3ub(color,color & (*core->GOLSeek(x,y)|core->conf_color),color & (*core->GOLSeek(x,y)|core->conf_color));
         glBegin(GL_QUADS);
         glVertex2i(x,-y);
         glVertex2i(x+1,-y);
@@ -49,7 +49,11 @@ void GOLDisplayer::paintGL()
 }
 void GOLDisplayer::mouseMoveEvent(QMouseEvent *event)
 {
-
+    if(event->button()==Qt::RightButton)
+    {
+        core->GOLNextFrame();
+        updateGL();
+    }
 }
 
 void GOLDisplayer::mousePressEvent(QMouseEvent *event)

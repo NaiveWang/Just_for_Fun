@@ -11,10 +11,16 @@ GOLChart::GOLChart(GOLCore *core, QChartView *parent) : QChartView(parent)
     chart->addSeries(series);
     chart->createDefaultAxes();
     this->setChart(chart);
-    this->setFixedSize(5,3);
+    //this->setFixedSize(3,3);
     this->setRenderHint(QPainter::Antialiasing);
 
 }
+GOLChart::~GOLChart()
+{
+    delete(series);
+    delete(chart);
+}
+
 void GOLChart::ChartRefresh()
 {
     delete this->series;

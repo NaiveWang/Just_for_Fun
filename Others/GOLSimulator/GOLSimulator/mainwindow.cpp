@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //ui->setupUi(this);
     this->setFixedSize(1200,870);
 
-    core = new GOLCore(40,40);//for test use.
+    core = new GOLCore(30,30);//for test use.
     *core->map[0] = 1;
     //*(core->map[0] + 8) = 1;
     *(core->map[0] + 80) = 1;
@@ -24,9 +24,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     layout.addWidget(this->log,23,0,1,32);
     layout.addWidget(this->disp,0,0,23,23);
-    layout.addWidget(this->cPanel,0,23,17,9);
+    layout.addWidget(this->cPanel,0,23,13,9);
 
-    layout.addWidget(this->chart,13,23,6,9);
+    layout.addWidget(this->chart,13,23,11,9);
 
     this->chart->ChartRefresh();
     this->setLayout(&layout);
@@ -39,5 +39,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    delete(cPanel);
+    delete(chart);
+    delete(disp);
+    delete(log);
+    delete(core);
     //delete ui;
 }

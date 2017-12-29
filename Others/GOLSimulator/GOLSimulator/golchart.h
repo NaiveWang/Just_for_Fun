@@ -13,6 +13,7 @@ class GOLChart : public QChartView
     Q_OBJECT
 public:
     explicit GOLChart(GOLCore *core, QChartView *parent = 0);
+    ~GOLChart();
     void ChartRefresh();
 signals:
 

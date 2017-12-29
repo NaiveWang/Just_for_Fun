@@ -17,16 +17,15 @@ class GOLDisplayer : public QGLWidget
 public:
     GOLDisplayer(GOLCore*,GOLLog*,QGLWidget *parent = 0);
     ~GOLDisplayer();
-
-
-signals:
-public slots:
-protected:
     void initializeGL();
     void resizeGL(int, int);
     void paintGL();
     void mouseMoveEvent(QMouseEvent*);
     void mousePressEvent(QMouseEvent*);
+
+signals:
+public slots:
+
 private:
     GOLCore *core;
     GOLLog *log;
