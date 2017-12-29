@@ -6,7 +6,7 @@
 class GOLCore
 {
 public:
-#define CACHES 256
+#define CACHES 64
 #define CONF_INF 0x00000001
 #define CONF_LOG 0x00000002
     int conf;

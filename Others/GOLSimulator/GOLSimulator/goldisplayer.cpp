@@ -62,7 +62,7 @@ void GOLDisplayer::mousePressEvent(QMouseEvent *event)
 
         //log->PrintLog(s);
         x =x/(int)(WINDOW_SIZE/(double)core->size_x);
-        y =y/(int)(WINDOW_SIZE/(double)core->size_y);
+        y =(y-7)/(int)(WINDOW_SIZE/(double)core->size_y);//7 is fixed compensation.
         if(x<core->size_x && y<core->size_y)
             *core->GOLSeek(x,y)=*core->GOLSeek(x,y)?0:255;
         sprintf(s,"%d %d %d",*core->GOLSeek(x,y),x,y);

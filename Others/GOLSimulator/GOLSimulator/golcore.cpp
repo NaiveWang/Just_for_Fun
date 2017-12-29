@@ -1,5 +1,7 @@
 #include "golcore.h"
 
+#include <QDebug>
+
 GOLCore::GOLCore(int x,int y)
 {
 
@@ -36,11 +38,11 @@ GOLCore::~GOLCore()
 }
 unsigned char* GOLCore::GOLSeek(int x, int y)
 {
-    return map[(int )CacheMark] + x*size_x + y;
+    return map[(int)CacheMark] + x*size_x + y;
 }
 unsigned char* GOLCore::GOLSeekNext(int x, int y)
 {
-    return map[(CacheMark+1)%256] + x*size_x + y;
+    return map[(CacheMark+1)%CACHES] + x*size_x + y;
 }
 int GOLCore::GOLEnvCounter(int x, int y)
 {
@@ -48,40 +50,37 @@ int GOLCore::GOLEnvCounter(int x, int y)
     c=0;
     if(conf & CONF_INF)
     {
-        for(x=size_x;x--;)for(y=size_y;y--;)
-        {
-            if(GOLSeek((x+size_x+1)%size_x,(y+size_y+1)%size_y)) c++;
-            if(GOLSeek((x+size_x+1)%size_x,y)) c++;
-            if(GOLSeek((x+size_x+1)%size_x,(y+size_y-1)%size_y)) c++;
-
-            if(GOLSeek((x+size_x-1)%size_x,(y+size_y+1)%size_y)) c++;
-            if(GOLSeek((x+size_x-1)%size_x,y)) c++;
-            if(GOLSeek((x+size_x-1)%size_x,(y+size_y-1)%size_y)) c++;
-
-            if(GOLSeek(x,(y+size_y+1)%size_y)) c++;
-            if(GOLSeek(x,(y+size_y-1)%size_y)) c++;
-        }
+        ;
     }
     else
     {
-        for(x=size_x;x--;)for(y=size_y;y--;)
-        {
-            ;//if(x<0)
-        }
+        if(*GOLSeek((x+size_x+1)%size_x,(y+size_y+1)%size_y)) c++;
+        if(*GOLSeek((x+size_x+1)%size_x,y)) c++;
+        if(*GOLSeek((x+size_x+1)%size_x,(y+size_y-1)%size_y)) c++;
+
+        if(*GOLSeek((x+size_x-1)%size_x,(y+size_y+1)%size_y)) c++;
+        if(*GOLSeek((x+size_x-1)%size_x,y)) c++;
+        if(*GOLSeek((x+size_x-1)%size_x,(y+size_y-1)%size_y)) c++;
+
+        if(*GOLSeek(x,(y+size_y+1)%size_y)) c++;
+        if(*GOLSeek(x,(y+size_y-1)%size_y)) c++;
     }
+    //qDebug()<<x<<"@"<<y<<"@"<<c;
     return c;
 }
 void GOLCore::GOLNextFrame()
 {
     static int x,y;
-    this->alive[(CacheMark+1)%256]=0;
+    this->alive[(CacheMark+1)%CACHES]=0;
     for(x=size_x;x--;)for(y=size_y;y--;)
     {
         if(GOLEnvCounter(x,y) < 2 || GOLEnvCounter(x,y) > 3) *GOLSeekNext(x,y)=0;//died of underpopularity or crowdy.
         else if(GOLEnvCounter(x,y) == 3) *GOLSeekNext(x,y)=255;//repoduction
         else if(*GOLSeek(x,y)>1) *GOLSeekNext(x,y)=*GOLSeek(x,y)-1;
-        if(GOLSeekNext(x,y)) this->alive[(CacheMark+1)%256]++;
+        if(*GOLSeekNext(x,y)) this->alive[(CacheMark+1)%CACHES]++;
     }
+    CacheMark = (CacheMark+1)%CACHES;
+    qDebug()<<(int)CacheMark;
 }
 void GOLCore::SaveGame(char *fp)
 {

@@ -11,7 +11,7 @@ GOLChart::GOLChart(GOLCore *core, QChartView *parent) : QChartView(parent)
     chart->addSeries(series);
     chart->createDefaultAxes();
     this->setChart(chart);
-    this->setFixedSize(50,30);
+    this->setFixedSize(5,3);
     this->setRenderHint(QPainter::Antialiasing);
 
 }
