@@ -8,7 +8,7 @@
 #include "golcontrolpanel.h"
 #include "goldisplayer.h"
 #include "gollog.h"
-
+#include "golcore.h"
 class MainWindow : public QWidget
 {
     Q_OBJECT
@@ -18,11 +18,12 @@ public:
     ~MainWindow();
 
 private:
-    GOLChart chart;
-    GOLControlPanel cPanel;
-    GOLDisplayer disp;
-    GOLLog log;
+    GOLChart *chart;
+    GOLControlPanel *cPanel;
+    GOLDisplayer *disp;
+    GOLLog *log;
     QGridLayout layout;
+    GOLCore *core;
 };
 
 #endif // MAINWINDOW_H

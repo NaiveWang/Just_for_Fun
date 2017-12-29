@@ -74,13 +74,13 @@ int GOLCore::GOLEnvCounter(int x, int y)
 void GOLCore::GOLNextFrame()
 {
     static int x,y;
-    this->alive=0;
+    this->alive[(CacheMark+1)%256]=0;
     for(x=size_x;x--;)for(y=size_y;y--;)
     {
         if(GOLEnvCounter(x,y) < 2 || GOLEnvCounter(x,y) > 3) *GOLSeekNext(x,y)=0;//died of underpopularity or crowdy.
         else if(GOLEnvCounter(x,y) == 3) *GOLSeekNext(x,y)=255;//repoduction
         else if(*GOLSeek(x,y)>1) *GOLSeekNext(x,y)=*GOLSeek(x,y)-1;
-        if(GOLSeekNext(x,y)) this->alive++;
+        if(GOLSeekNext(x,y)) this->alive[(CacheMark+1)%256]++;
     }
 }
 void GOLCore::SaveGame(char *fp)

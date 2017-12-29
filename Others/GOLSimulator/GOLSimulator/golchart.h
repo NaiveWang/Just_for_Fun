@@ -1,17 +1,26 @@
 #ifndef GOLCHART_H
 #define GOLCHART_H
 
-#include <QWidget>
+#include <QtCharts>
+#include <QtCharts/QLineSeries>
+#include <QtCharts/QChartView>
+#include "golcore.h"
 
-class GOLChart : public QWidget
+QT_CHARTS_USE_NAMESPACE
+
+class GOLChart : public QChartView
 {
     Q_OBJECT
 public:
-    explicit GOLChart(QWidget *parent = 0);
-
+    explicit GOLChart(GOLCore *core, QChartView *parent = 0);
+    void ChartRefresh();
 signals:
 
 public slots:
+private:
+    GOLCore *core;
+    QLineSeries *series;
+    QChart *chart;
 };
 
 #endif // GOLCHART_H

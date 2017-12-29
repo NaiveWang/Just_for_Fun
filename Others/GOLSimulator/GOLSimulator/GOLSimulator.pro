@@ -5,6 +5,8 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT       += opengl
+QT       += charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -16,15 +18,15 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     goldisplayer.cpp \
     golcore.cpp \
-    golcontrolpanel.cpp \
     gollog.cpp \
+    golcontrolpanel.cpp \
     golchart.cpp
 
 HEADERS  += mainwindow.h \
     goldisplayer.h \
     golcore.h \
-    golcontrolpanel.h \
     gollog.h \
+    golcontrolpanel.h \
     golchart.h
 
 FORMS    += mainwindow.ui

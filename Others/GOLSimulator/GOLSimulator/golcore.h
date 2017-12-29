@@ -19,12 +19,13 @@ public:
     int GOLEnvCounter(int, int);
     void GOLNextFrame();
     void SaveGame(char*);
-
-private:
     char CacheMark;
+
+
     unsigned char *map[CACHES];
     int size_x,size_y;
-    int alive;
+    int alive[CACHES];
+private:
     FILE *logfp;
     FILE *save;
 };
