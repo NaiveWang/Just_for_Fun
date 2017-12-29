@@ -5,8 +5,13 @@
 
 class GOLChart : public QWidget
 {
+    Q_OBJECT
 public:
-    GOLChart();
+    explicit GOLChart(QWidget *parent = 0);
+
+signals:
+
+public slots:
 };
 
 #endif // GOLCHART_H

@@ -1,6 +1,6 @@
 #include "golchart.h"
 
-GOLChart::GOLChart()
+GOLChart::GOLChart(QWidget *parent) : QWidget(parent)
 {
-    //this->show();
+
 }

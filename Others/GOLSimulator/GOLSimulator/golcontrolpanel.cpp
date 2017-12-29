@@ -1,6 +1,6 @@
 #include "golcontrolpanel.h"
 
-GOLControlPanel::GOLControlPanel()
+GOLControlPanel::GOLControlPanel(QWidget *parent) : QWidget(parent)
 {
-    //this->show();
+
 }

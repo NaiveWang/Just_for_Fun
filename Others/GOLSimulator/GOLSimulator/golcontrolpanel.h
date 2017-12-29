@@ -5,8 +5,13 @@
 
 class GOLControlPanel : public QWidget
 {
+    Q_OBJECT
 public:
-    GOLControlPanel();
+    explicit GOLControlPanel(QWidget *parent = 0);
+
+signals:
+
+public slots:
 };
 
 #endif // GOLCONTROLPANEL_H
