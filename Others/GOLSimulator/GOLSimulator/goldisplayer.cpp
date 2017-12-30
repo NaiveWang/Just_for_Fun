@@ -1,5 +1,7 @@
 #include "goldisplayer.h"
 //#include <stdio.h>
+#include <QDebug>
+
 GOLDisplayer::GOLDisplayer(GOLCore *core, GOLLog *log, QGLWidget *parent) : QGLWidget(parent)
 {
     this->core = core;
@@ -45,15 +47,31 @@ void GOLDisplayer::paintGL()
         glVertex2i(x,-y-1);
         glEnd();
     }
+    if(core->conf_grid)//draw grid
+    {//qDebug()<<"drawing lines";
+        glColor3ub(0,150,90);
+        glLineWidth(1.0f);
+        for(x=core->size_x;--x;)
+        {
+            glBegin(GL_LINES);
+            glVertex2i(x,0);
+            glVertex2i(x,-core->size_y);
+            glEnd();
+        }
+        for(y=core->size_y;--y;)
+        {
+            glBegin(GL_LINES);
+            glVertex2i(0,-y);
+            glVertex2i(core->size_x,-y);
+            glEnd();;
+        }
+    }
+
     glFlush();
 }
 void GOLDisplayer::mouseMoveEvent(QMouseEvent *event)
 {
-    if(event->button()==Qt::RightButton)
-    {
-        core->GOLNextFrame();
-        updateGL();
-    }
+
 }
 
 void GOLDisplayer::mousePressEvent(QMouseEvent *event)

@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include <QApplication>
 
-#define VERSION "Cellular Automata Simulator V0.7 beta"
+#define VERSION "Cellular Automata Simulator V1.0 alpha"
 
 int main(int argc, char *argv[])
 {

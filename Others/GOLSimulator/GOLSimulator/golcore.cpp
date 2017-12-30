@@ -30,7 +30,11 @@ GOLCore::GOLCore(int x,int y)
     size_y = y;
     GOLAssignMap();
     GOLClear();
-    conf_color=0;
+    conf_color=-1;
+    conf_boundary=0;
+    conf_log=0;
+    conf_stall=0;
+    conf_grid=0;
     //initialize the random seed
     srand((unsigned)time(NULL));
 }
@@ -49,6 +53,32 @@ GOLCore::~GOLCore()
 {
     GOLDeleteMap();
 }
+void GOLCore::logInit()
+{
+    logfp = fopen("log.csv","w");
+    fprintf(logfp,"%d,%d\n",this->size_x,this->size_y);
+    for(int x=0;x<this->size_x;x++)
+    {
+        for(int y=0;y<this->size_y;y++)
+        {
+            if(*(map[(int)CacheMark]+x*size_x+y)) fprintf(logfp,"x");
+            else fprintf(logfp,"-");
+            if(y< this->size_x-1) fprintf(logfp,",");
+        }
+        fprintf(logfp,"\n");
+    }
+    steps=0;
+}
+void GOLCore::logRecord()
+{
+    fprintf(logfp,"%d,%d\n",steps,alive[(int)CacheMark]);
+    steps++;
+}
+void GOLCore::logSave()
+{
+    fclose(logfp);
+}
+
 unsigned char* GOLCore::GOLSeek(int x, int y)
 {
     return map[(int)CacheMark] + x*size_x + y;
@@ -61,12 +91,128 @@ int GOLCore::GOLEnvCounter(int x, int y)
 {
     static int c;
     c=0;
-    /**if(conf_boundary)
+    if(conf_boundary)
     {
-        ;
+        if(x==0)
+        {
+            if(y==0)
+            {//corner
+                if(*GOLSeek(x+1,y+1)) c++;
+                if(*GOLSeek(x+1,y)) c++;
+                //if(*GOLSeek(x+1,y-1)) c++;
+                if(*GOLSeek(x,y+1)) c++;
+                //if(*GOLSeek(x,y)) c++;
+                //if(*GOLSeek(x,y-1)) c++;
+                //if(*GOLSeek(x-1,y+1)) c++;
+                //if(*GOLSeek(x-1,y)) c++;
+                //if(*GOLSeek(x-1,y-1)) c++;
+            }
+            else if(y==size_y-1)
+            {//corner
+                //if(*GOLSeek(x+1,y+1)) c++;
+                if(*GOLSeek(x+1,y)) c++;
+                if(*GOLSeek(x+1,y-1)) c++;
+                //if(*GOLSeek(x,y+1)) c++;
+                //if(*GOLSeek(x,y)) c++;
+                if(*GOLSeek(x,y-1)) c++;
+                //if(*GOLSeek(x-1,y+1)) c++;
+                //if(*GOLSeek(x-1,y)) c++;
+                //if(*GOLSeek(x-1,y-1)) c++;
+            }
+            else
+            {//edge
+                if(*GOLSeek(x+1,y+1)) c++;
+                if(*GOLSeek(x+1,y)) c++;
+                if(*GOLSeek(x+1,y-1)) c++;
+                if(*GOLSeek(x,y+1)) c++;
+                //if(*GOLSeek(x,y)) c++;
+                if(*GOLSeek(x,y-1)) c++;
+                //if(*GOLSeek(x-1,y+1)) c++;
+                //if(*GOLSeek(x-1,y)) c++;
+                //if(*GOLSeek(x-1,y-1)) c++;
+            }
+        }
+        else if(x==size_x-1)
+        {
+            if(y==0)
+            {//corner
+                //if(*GOLSeek(x+1,y+1)) c++;
+                //if(*GOLSeek(x+1,y)) c++;
+                //if(*GOLSeek(x+1,y-1)) c++;
+                if(*GOLSeek(x,y+1)) c++;
+                //if(*GOLSeek(x,y)) c++;
+                //if(*GOLSeek(x,y-1)) c++;
+                if(*GOLSeek(x-1,y+1)) c++;
+                if(*GOLSeek(x-1,y)) c++;
+                //if(*GOLSeek(x-1,y-1)) c++;
+            }
+            else if(y==size_y-1)
+            {//corner
+                //if(*GOLSeek(x+1,y+1)) c++;
+                //if(*GOLSeek(x+1,y)) c++;
+                //if(*GOLSeek(x+1,y-1)) c++;
+                //if(*GOLSeek(x,y+1)) c++;
+                //if(*GOLSeek(x,y)) c++;
+                if(*GOLSeek(x,y-1)) c++;
+                //if(*GOLSeek(x-1,y+1)) c++;
+                if(*GOLSeek(x-1,y)) c++;
+                if(*GOLSeek(x-1,y-1)) c++;
+            }
+            else
+            {//edge
+                //if(*GOLSeek(x+1,y+1)) c++;
+                //if(*GOLSeek(x+1,y)) c++;
+                //if(*GOLSeek(x+1,y-1)) c++;
+                if(*GOLSeek(x,y+1)) c++;
+                //if(*GOLSeek(x,y)) c++;
+                if(*GOLSeek(x,y-1)) c++;
+                if(*GOLSeek(x-1,y+1)) c++;
+                if(*GOLSeek(x-1,y)) c++;
+                if(*GOLSeek(x-1,y-1)) c++;
+            }
+        }
+        else
+        {
+            if(y==0)
+            {//edge
+                if(*GOLSeek(x+1,y+1)) c++;
+                if(*GOLSeek(x+1,y)) c++;
+                //if(*GOLSeek(x+1,y-1)) c++;
+                if(*GOLSeek(x,y+1)) c++;
+                //if(*GOLSeek(x,y)) c++;
+                //if(*GOLSeek(x,y-1)) c++;
+                if(*GOLSeek(x-1,y+1)) c++;
+                if(*GOLSeek(x-1,y)) c++;
+                //if(*GOLSeek(x-1,y-1)) c++;
+            }
+            else if(y==size_y-1)
+            {//edge
+                //if(*GOLSeek(x+1,y+1)) c++;
+                if(*GOLSeek(x+1,y)) c++;
+                if(*GOLSeek(x+1,y-1)) c++;
+                //if(*GOLSeek(x,y+1)) c++;
+                //if(*GOLSeek(x,y)) c++;
+                if(*GOLSeek(x,y-1)) c++;
+                //if(*GOLSeek(x-1,y+1)) c++;
+                if(*GOLSeek(x-1,y)) c++;
+                if(*GOLSeek(x-1,y-1)) c++;
+            }
+            else
+            {//inside
+                if(*GOLSeek(x+1,y+1)) c++;
+                if(*GOLSeek(x+1,y)) c++;
+                if(*GOLSeek(x+1,y-1)) c++;
+                if(*GOLSeek(x,y+1)) c++;
+                //if(*GOLSeek(x,y)) c++;
+                if(*GOLSeek(x,y-1)) c++;
+                if(*GOLSeek(x-1,y+1)) c++;
+                if(*GOLSeek(x-1,y)) c++;
+                if(*GOLSeek(x-1,y-1)) c++;
+            }
+        }
     }
     else
-    {**/
+    {
         if(*GOLSeek((x+size_x+1)%size_x,(y+size_y+1)%size_y)) c++;
         if(*GOLSeek((x+size_x+1)%size_x,y)) c++;
         if(*GOLSeek((x+size_x+1)%size_x,(y+size_y-1)%size_y)) c++;
@@ -77,7 +223,7 @@ int GOLCore::GOLEnvCounter(int x, int y)
 
         if(*GOLSeek(x,(y+size_y+1)%size_y)) c++;
         if(*GOLSeek(x,(y+size_y-1)%size_y)) c++;
-    //}
+    }
     //qDebug()<<x<<"@"<<y<<"@"<<c;
     return c;
 }
@@ -85,21 +231,60 @@ void GOLCore::GOLNextFrame()
 {
     static int x,y;
     this->alive[(CacheMark+1)%CACHES]=0;
+    //if(this->mark_stall) return;
     for(x=size_x;x--;)for(y=size_y;y--;)
     {
-        if(GOLEnvCounter(x,y) < 2 || GOLEnvCounter(x,y) > 3) *GOLSeekNext(x,y)=0;//died of underpopularity or crowdy.
+        //qDebug()<<GOLEnvCounter(x,y);
+        if(GOLEnvCounter(x,y) < 2 || GOLEnvCounter(x,y) > 3)
+        {
+            *GOLSeekNext(x,y)=0;//died of underpopularity or crowdy.
+            //qDebug()<<"Dead";
+        }
         else if(GOLEnvCounter(x,y) == 3)
+        {
             switch(*GOLSeek(x,y))
             {
             case 0 :*GOLSeekNext(x,y) = 255; break;//repoduction
             case 1 :*GOLSeekNext(x,y) = 1;   break;
             default:*GOLSeekNext(x,y) = *GOLSeek(x,y)-1;
             }
+            //qDebug()<<"Born";
+        }
+        else//GOLEnvCounter(x,y) == 2
+        {
+            switch(*GOLSeek(x,y))
+            {
+            case 0 :*GOLSeekNext(x,y) = 0; break;//repoduction
+            case 1 :*GOLSeekNext(x,y) = 1; break;
+            default:*GOLSeekNext(x,y) = *GOLSeek(x,y)-1;
+            }
+            //*GOLSeekNext(x,y)=*GOLSeek(x,y)-1;
+            //qDebug()<<"Keep";
+        }
+        if(*GOLSeekNext(x,y))
+        {
+            alive[(CacheMark+1)%CACHES]++;
+        }
 
-        else if(*GOLSeek(x,y)>1) *GOLSeekNext(x,y)=*GOLSeek(x,y)-1;
-        if(*GOLSeekNext(x,y)) this->alive[(CacheMark+1)%CACHES]++;
     }
     CacheMark = (CacheMark+1)%CACHES;
+    if(conf_log) logRecord();
+    if(conf_stall)//this block must be set to the end of the function.
+    {
+        for(x=this->size_x*this->size_y;x--;)
+        {
+            if(*(map[CacheMark]+x) ^ 255)//if this dot is the elder.
+            {
+                continue;
+            }
+            else
+            {
+                return;//so to speak.
+            }
+        }
+        mark_stall=1;
+
+    }
     //qDebug()<<(int)CacheMark;
 }
 void GOLCore::SaveGame(char *fp)
@@ -121,7 +306,6 @@ void GOLCore::LoadGame(char *s)
     fread(map[0],sizeof(char),this->size_x * this->size_y,save);
     fclose(save);
 }
-
 void GOLCore::NewGame(int x,int y)
 {
     GOLDeleteMap();
@@ -130,7 +314,6 @@ void GOLCore::NewGame(int x,int y)
     GOLAssignMap();
     GOLClear();
 }
-
 void GOLCore::RanGame(int x,int y)
 {
     GOLDeleteMap();
@@ -143,5 +326,3 @@ void GOLCore::RanGame(int x,int y)
         *(map[0]+i)=rand()&1;
     }
 }
-
-

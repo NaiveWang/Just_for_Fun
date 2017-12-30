@@ -4,6 +4,11 @@
 
 void GOLControlPanel::GOLStep()
 {
+    if(core->mark_stall)
+    {
+        log->showMessage("World Stalled.");
+        return;
+    }
     core->GOLNextFrame();
     disp->updateGL();
     chart->ChartRefresh();
@@ -18,7 +23,11 @@ void GOLControlPanel::GOLRun()
     delay=speed.value();
     while(delay--)
     {
-
+        if(core->mark_stall)
+        {
+            log->showMessage("World Stalled.");
+            break;
+        }
         core->GOLNextFrame();
         disp->updateGL();
         chart->ChartRefresh();
@@ -35,6 +44,7 @@ void GOLControlPanel::GOLOpen()
 {
     char *s = file_name.text().toLatin1().data();
     core->LoadGame(s);
+    core->mark_stall=0;
     log->showMessage("File Opened.");
     disp->resizeGL(0,0);
     disp->updateGL();
@@ -57,6 +67,7 @@ void GOLControlPanel::GOLNew()
         core->NewGame(temp_x,temp_y);
         disp->resizeGL(0,0);
         disp->updateGL();
+        core->mark_stall=0;
         log->showMessage("New World Created.");
     }
     else
@@ -74,6 +85,7 @@ void GOLControlPanel::GOLRan()
         core->RanGame(temp_x,temp_y);
         disp->resizeGL(0,0);
         disp->updateGL();
+        core->mark_stall=0;
         log->showMessage("New Random World Created, bias = 1/1");
     }
     else
@@ -89,19 +101,45 @@ void GOLControlPanel::confColor(int s)
     //core->conf_color=~core->conf_color;
     disp->updateGL();
 }
-void GOLControlPanel::confLog()
+void GOLControlPanel::confLog(int s)
 {
-    ;
+    core->conf_log=s;
+    if(s)
+    {
+        core->logInit();
+        log->showMessage("Log Srart Recording");
+    }
+    else
+    {
+        core->logSave();
+        log->showMessage("Log Saved");
+    }
 }
 
-void GOLControlPanel::confBound()
+void GOLControlPanel::confBound(int s)
 {
-    ;
+    core->conf_boundary = s;
 }
 
-void GOLControlPanel::confCheck()
+void GOLControlPanel::confStall(int s)
 {
-    ;
+    core->conf_stall=s;
+    if(s) log->showMessage("Stall Checking Opened");
+    else
+    {
+        log->showMessage("Stall Checking Closed");
+        core->mark_stall=0;
+    }
+}
+void GOLControlPanel::confGrid(int s)
+{
+    core->conf_grid = s;
+    disp->updateGL();
+}
+void GOLControlPanel::release_stall_mark()
+{
+    core->mark_stall=0;
+    log->showMessage("Stall Unlocked");
 }
 
 GOLControlPanel::GOLControlPanel(GOLCore *core,
@@ -134,8 +172,11 @@ GOLControlPanel::GOLControlPanel(GOLCore *core,
     //speed.setDisplayIntegerBase(500);
     color.setText("Life Span");
     boundary.setText("Boundry");
-    ifLog.setText("Printing Log");
-    checking.setText("Smart Checking");
+    ifLog.setText("Print Log");
+    stall.setText("Stall Check");
+    grid.setText("Grid");
+    b_release_stall_mark.setText("Unlock");
+
 
     QObject::connect(&b_step,SIGNAL(clicked(bool)),this,SLOT(GOLStep()));
     QObject::connect(&b_save,SIGNAL(clicked(bool)),this,SLOT(GOLSave()));
@@ -145,20 +186,27 @@ GOLControlPanel::GOLControlPanel(GOLCore *core,
     QObject::connect(&b_new,SIGNAL(clicked(bool)),this,SLOT(GOLNew()));
     QObject::connect(&b_ran,SIGNAL(clicked(bool)),this,SLOT(GOLRan()));
     QObject::connect(&color,SIGNAL(stateChanged(int)),this,SLOT(confColor(int)));
-
+    QObject::connect(&boundary,SIGNAL(stateChanged(int)),this,SLOT(confBound(int)));
+    QObject::connect(&ifLog,SIGNAL(stateChanged(int)),this,SLOT(confLog(int)));
+    QObject::connect(&grid,SIGNAL(stateChanged(int)),this,SLOT(confGrid(int)));
+    QObject::connect(&stall,SIGNAL(stateChanged(int)),this,SLOT(confStall(int)));
+    QObject::connect(&b_release_stall_mark,SIGNAL(clicked(bool)),this,SLOT(release_stall_mark()));
     layout.addWidget(&b_step,0,0,1,1);
     layout.addWidget(&b_clear,0,1,1,1);
-    layout.addWidget(&b_start,1,0,1,1);
-    layout.addWidget(&speed,1,1,1,1);
-    layout.addWidget(&file_name,2,0,1,2);
-    layout.addWidget(&b_save,3,0);
-    layout.addWidget(&b_open,3,1);
-    layout.addWidget(&b_new,4,0);
-    layout.addWidget(&b_ran,4,1);
-    layout.addWidget(&color,5,0);
-    layout.addWidget(&boundary,6,0);
-    layout.addWidget(&ifLog,7,0);
-    layout.addWidget(&checking,8,0);
+    layout.addWidget(&b_start,0,2,1,1);
+    layout.addWidget(&speed,0,3,1,1);
+    layout.addWidget(&file_name,1,0,1,4);
+    layout.addWidget(&b_save,2,0);
+    layout.addWidget(&b_open,2,1);
+    layout.addWidget(&b_new,2,2);
+    layout.addWidget(&b_ran,2,3);
+    layout.addWidget(&color,3,0);
+    layout.addWidget(&grid,3,1);
+    layout.addWidget(&boundary,3,2);
+    layout.addWidget(&ifLog,3,3);
+    layout.addWidget(&stall,4,0,1,2);
+    layout.addWidget(&b_release_stall_mark,4,2);
+
     //layout.addWidget(&conf,5,0);
     this->setLayout(&layout);
 }

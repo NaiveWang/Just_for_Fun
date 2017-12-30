@@ -8,10 +8,10 @@ MainWindow::MainWindow(QWidget *parent) :
     //ui->setupUi(this);
     this->setFixedSize(1200,870);
 
-    core = new GOLCore(30,30);//for test use.
-    *core->map[0] = 1;
+    core = new GOLCore(25,25);//for test use.
+    //*core->map[0] = 1;
     //*(core->map[0] + 8) = 1;
-    *(core->map[0] + 80) = 1;
+    //*(core->map[0] + 80) = 1;
     //*(core->map[0]+2)=1;
 
     log = new GOLLog();

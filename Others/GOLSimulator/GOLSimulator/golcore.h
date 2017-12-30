@@ -12,7 +12,8 @@ public:
     char conf_color;
     int conf_boundary;
     int conf_log;
-    int conf_check;
+    int conf_stall;
+    int conf_grid;
 
     GOLCore(int, int);
     GOLCore(char*);//read save from files.
@@ -27,8 +28,12 @@ public:
     void LoadGame(char*);
     void NewGame(int,int);
     void RanGame(int,int);
-    char CacheMark;
+    void logInit();
+    void logRecord();
+    void logSave();
 
+    char CacheMark;
+    char mark_stall;
 
     unsigned char *map[CACHES];
     int size_x,size_y;
@@ -36,6 +41,8 @@ public:
 private:
     void GOLDeleteMap();
     void GOLAssignMap();
+    int steps;
+
     FILE *logfp;
     FILE *save;
 };

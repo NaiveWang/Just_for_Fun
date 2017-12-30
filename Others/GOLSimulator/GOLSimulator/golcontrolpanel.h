@@ -129,9 +129,11 @@ public slots:
     void GOLNew();
     void GOLRan();
     void confColor(int);
-    void confLog();
-    void confBound();
-    void confCheck();
+    void confLog(int);
+    void confBound(int);
+    void confStall(int);
+    void confGrid(int);
+    void release_stall_mark();
 private:
     GOLCore *core;
     GOLLog *log;
@@ -147,7 +149,9 @@ private:
     QPushButton b_new,b_open,b_save,b_ran;
     QLineEdit file_name;
     //QGroupBox conf;
-    QCheckBox color,boundary,ifLog,checking;
+    QCheckBox color,boundary,ifLog,stall,grid;
+    QPushButton b_release_stall_mark;
+
 
     //char lock_run;
     int delay;
