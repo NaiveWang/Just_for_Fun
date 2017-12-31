@@ -23,16 +23,20 @@ void GOLControlPanel::GOLRun()
     delay=speed.value();
     while(delay--)
     {
+        static char s[16];
+        sprintf(s,"%d",delay);
+        log->showMessage(s);
         if(core->mark_stall)
         {
             log->showMessage("World Stalled.");
             break;
         }
         core->GOLNextFrame();
-        disp->updateGL();
-        chart->ChartRefresh();
+        disp->updateGL();chart->ChartRefresh();
+        //
         //QThread::usleep(delay);
     }
+
 }
 void GOLControlPanel::GOLClear()
 {
@@ -167,7 +171,7 @@ GOLControlPanel::GOLControlPanel(GOLCore *core,
     b_new.setText("New");
     b_ran.setText("Random");
     file_name.setText("save.gol");
-    speed.setRange(2,10000);
+    speed.setRange(2,25000000);
     speed.setAccelerated(true);
     //speed.setDisplayIntegerBase(500);
     color.setText("Life Span");

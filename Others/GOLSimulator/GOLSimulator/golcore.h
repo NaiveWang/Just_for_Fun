@@ -8,7 +8,7 @@
 class GOLCore
 {
 public:
-#define CACHES 64
+#define CACHES 256
     char conf_color;
     int conf_boundary;
     int conf_log;
@@ -32,7 +32,7 @@ public:
     void logRecord();
     void logSave();
 
-    char CacheMark;
+    unsigned char CacheMark;
     char mark_stall;
 
     unsigned char *map[CACHES];

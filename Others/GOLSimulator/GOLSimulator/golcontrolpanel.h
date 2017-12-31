@@ -12,6 +12,8 @@
 #include <QDialog>
 #include <QLabel>
 
+#include <stdio.h>
+
 #include "golcore.h"
 #include "gollog.h"
 #include "goldisplayer.h"
