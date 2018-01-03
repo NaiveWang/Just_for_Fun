@@ -26,6 +26,12 @@ GOLCore::GOLCore(int x,int y)
 {
 
     //map1=(unsigned char*)malloc(x*y*sizeof(char));
+    mod_current=0;
+    for(int c =MOD_LIST_SIZE;c--;)
+    {
+        //if(Module[c].data) free(Module[c].data);
+        Module[c].data=NULL;
+    }
     size_x = x;
     size_y = y;
     GOLAssignMap();
@@ -324,5 +330,13 @@ void GOLCore::RanGame(int x,int y)
     for(int i=size_x*size_y;i--;)
     {
         *(map[0]+i)=rand()&1;
+    }
+}
+void GOLCore::moduleClear()
+{
+    for(int c =MOD_LIST_SIZE;c--;)
+    {
+        if(Module[c].data) free(Module[c].data);
+        Module[c].data=NULL;
     }
 }

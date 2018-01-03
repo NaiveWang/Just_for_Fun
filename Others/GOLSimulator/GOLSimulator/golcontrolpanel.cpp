@@ -47,6 +47,8 @@ void GOLControlPanel::GOLClear()
 void GOLControlPanel::GOLOpen()
 {
     char *s = file_name.text().toLatin1().data();
+    //QString  qs = QFileDialog::getOpenFileName(NULL,tr("Open File"),"~",tr("GOL Save(*.gol)"));
+    ///log->showMessage(qs);//QTBUG-33119
     core->LoadGame(s);
     core->mark_stall=0;
     log->showMessage("File Opened.");
@@ -58,6 +60,7 @@ void GOLControlPanel::GOLSave()
 {
     char *s = file_name.text().toLatin1().data();
     //qDebug()<<s;
+    //save.exec();
     core->SaveGame(s);
     log->showMessage("File Saved.");
 }
@@ -145,6 +148,33 @@ void GOLControlPanel::release_stall_mark()
     core->mark_stall=0;
     log->showMessage("Stall Unlocked");
 }
+void GOLControlPanel::modClearList()
+{
+    this->mList.clear();
+    log->showMessage("Module List Cleared");
+}
+void GOLControlPanel::modChooseItem(int s)
+{
+    core->mod_current=s;
+    log->showMessage("Choosing an Item");
+}
+
+void GOLControlPanel::modOpen()
+{
+    ;
+}
+
+void GOLControlPanel::modSave()
+{
+    ;
+}
+
+void GOLControlPanel::modeChange(bool s)
+{
+    disp->flip=s;
+    if(s) log->showMessage("Draw Dots");
+    else log->showMessage("Draw Modules");
+}
 
 GOLControlPanel::GOLControlPanel(GOLCore *core,
                                  GOLLog *log,
@@ -170,8 +200,8 @@ GOLControlPanel::GOLControlPanel(GOLCore *core,
     b_open.setText("Open");
     b_new.setText("New");
     b_ran.setText("Random");
-    file_name.setText("save.gol");
-    speed.setRange(2,25000000);
+    file_name.setText("GGG.gol");
+    speed.setRange(2,25000);
     speed.setAccelerated(true);
     //speed.setDisplayIntegerBase(500);
     color.setText("Life Span");
@@ -180,6 +210,12 @@ GOLControlPanel::GOLControlPanel(GOLCore *core,
     stall.setText("Stall Check");
     grid.setText("Grid");
     b_release_stall_mark.setText("Unlock");
+    dot.setText("Draw Dot");
+    dot.toggle();
+    mod.setText("Draw Module");
+    b_save_m.setText("Save as a module");
+    b_open_m.setText("Open Module");
+    b_clear_m.setText("ClearList");
 
 
     QObject::connect(&b_step,SIGNAL(clicked(bool)),this,SLOT(GOLStep()));
@@ -195,6 +231,14 @@ GOLControlPanel::GOLControlPanel(GOLCore *core,
     QObject::connect(&grid,SIGNAL(stateChanged(int)),this,SLOT(confGrid(int)));
     QObject::connect(&stall,SIGNAL(stateChanged(int)),this,SLOT(confStall(int)));
     QObject::connect(&b_release_stall_mark,SIGNAL(clicked(bool)),this,SLOT(release_stall_mark()));
+
+    QObject::connect(&b_clear_m,SIGNAL(clicked(bool)),this,SLOT(modClearList()));
+    QObject::connect(&b_save,SIGNAL(clicked(bool)),this,SLOT(modSave()));
+    QObject::connect(&b_open,SIGNAL(clicked(bool)),this,SLOT(modOpen()));
+    QObject::connect(&mod,SIGNAL(toggled(bool)),this,SLOT(modeChange(bool)));
+    QObject::connect(&mList,SIGNAL(currentIndexChanged(int)),this,SLOT(modChooseItem(int)));
+
+
     layout.addWidget(&b_step,0,0,1,1);
     layout.addWidget(&b_clear,0,1,1,1);
     layout.addWidget(&b_start,0,2,1,1);
@@ -204,12 +248,22 @@ GOLControlPanel::GOLControlPanel(GOLCore *core,
     layout.addWidget(&b_open,2,1);
     layout.addWidget(&b_new,2,2);
     layout.addWidget(&b_ran,2,3);
-    layout.addWidget(&color,3,0);
-    layout.addWidget(&grid,3,1);
-    layout.addWidget(&boundary,3,2);
-    layout.addWidget(&ifLog,3,3);
-    layout.addWidget(&stall,4,0,1,2);
-    layout.addWidget(&b_release_stall_mark,4,2);
+
+    layout.addWidget(&b_open_m,3,0,1,1);
+    layout.addWidget(&b_save_m,3,1,1,2);
+    layout.addWidget(&b_clear_m,3,3,1,1);
+
+    layout.addWidget(&color,4,0);
+    layout.addWidget(&grid,4,1);
+    layout.addWidget(&boundary,4,2);
+    layout.addWidget(&ifLog,4,3);
+
+    layout.addWidget(&stall,5,0,1,1);
+    layout.addWidget(&b_release_stall_mark,6,0,1,1);
+    layout.addWidget(&dot,5,1,1,2);
+    layout.addWidget(&mod,6,1,1,2);
+
+    layout.addWidget(&mList,5,2,1,2);
 
     //layout.addWidget(&conf,5,0);
     this->setLayout(&layout);

@@ -15,6 +15,8 @@ class GOLDisplayer : public QGLWidget
 {
     Q_OBJECT
 public:
+    int flip;
+
     GOLDisplayer(GOLCore*,GOLLog*,QGLWidget *parent = 0);
     ~GOLDisplayer();
     void initializeGL();

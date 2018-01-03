@@ -7,6 +7,7 @@ GOLDisplayer::GOLDisplayer(GOLCore *core, GOLLog *log, QGLWidget *parent) : QGLW
     this->core = core;
     this->log = log;
     this->setFixedSize(WINDOW_SIZE,WINDOW_SIZE);
+    flip=0;
     //this->setFormat(QSurfaceFormat::defaultFormat());
     //this->show();
 }

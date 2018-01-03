@@ -6,11 +6,13 @@
 #include <QWidget>
 #include <QGridLayout>
 #include <QPushButton>
+#include <QRadioButton>
 #include <QGroupBox>
 #include <QSpinBox>
 #include <QLineEdit>
 #include <QDialog>
 #include <QLabel>
+#include <QComboBox>
 
 #include <stdio.h>
 
@@ -107,6 +109,7 @@ private:
     QLabel note;
     int *x,*y;
 };
+
 //////////////////////////////////////////////////////////////////////////
 class GOLControlPanel : public QWidget
 {
@@ -136,6 +139,12 @@ public slots:
     void confStall(int);
     void confGrid(int);
     void release_stall_mark();
+
+    void modClearList();
+    void modOpen();
+    void modSave();
+    void modChooseItem(int);
+    void modeChange(bool);
 private:
     GOLCore *core;
     GOLLog *log;
@@ -148,12 +157,15 @@ private:
     QGridLayout layout;
     QPushButton b_start,b_clear,b_step;
     QSpinBox speed;
-    QPushButton b_new,b_open,b_save,b_ran;
+    QPushButton b_new,b_open,b_save,b_ran,b_open_m,b_save_m,b_clear_m;
     QLineEdit file_name;
     //QGroupBox conf;
     QCheckBox color,boundary,ifLog,stall,grid;
     QPushButton b_release_stall_mark;
+    QRadioButton dot,mod;
+    QComboBox mList;
 
+    //QFileDialog openf;
 
     //char lock_run;
     int delay;

@@ -5,15 +5,25 @@
 #include <string.h>
 
 /** Using Double Cache To Accelerate Iteration **/
+typedef struct GOLmodule
+{
+    int x,y;
+    char *data;
+}module;
+
 class GOLCore
 {
 public:
 #define CACHES 256
+//#define FILE_SAVE 0x00
+//#define FILE_MODULE 0x01
+#define MOD_LIST_SIZE 16
     char conf_color;
     int conf_boundary;
     int conf_log;
     int conf_stall;
     int conf_grid;
+    module Module[MOD_LIST_SIZE];
 
     GOLCore(int, int);
     GOLCore(char*);//read save from files.
@@ -32,12 +42,15 @@ public:
     void logRecord();
     void logSave();
 
+    void moduleClear();
+
     unsigned char CacheMark;
     char mark_stall;
 
     unsigned char *map[CACHES];
     int size_x,size_y;
     int alive[CACHES];
+    int mod_current;
 private:
     void GOLDeleteMap();
     void GOLAssignMap();
