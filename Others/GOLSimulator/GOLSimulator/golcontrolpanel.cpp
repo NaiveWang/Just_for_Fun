@@ -151,29 +151,46 @@ void GOLControlPanel::release_stall_mark()
 void GOLControlPanel::modClearList()
 {
     this->mList.clear();
+    core->moduleClear();
+    dot.toggle();
     log->showMessage("Module List Cleared");
 }
 void GOLControlPanel::modChooseItem(int s)
 {
     core->mod_current=s;
+    qDebug()<<core->mod_current;
     log->showMessage("Choosing an Item");
 }
 
 void GOLControlPanel::modOpen()
 {
-    ;
+    char *s = file_name.text().toLatin1().data();
+    core->LoadMod(s);
+    mList.addItem(s);
+    log->showMessage("Add a Module to Inventory");
 }
 
 void GOLControlPanel::modSave()
 {
-    ;
+    char *s = file_name.text().toLatin1().data();
+    core->SaveMod(s);
+    log->showMessage("Module Saved");
 }
 
 void GOLControlPanel::modeChange(bool s)
 {
-    disp->flip=s;
-    if(s) log->showMessage("Draw Dots");
-    else log->showMessage("Draw Modules");
+    if(mList.count())
+    {
+        disp->flip=s;
+        if(s) log->showMessage("Draw Dots");
+        else log->showMessage("Draw Modules");
+    }
+    else
+    {
+        log->showMessage("Warning : No Item in Module Inventory");
+        dot.toggle();
+    }
+
 }
 
 GOLControlPanel::GOLControlPanel(GOLCore *core,
@@ -233,8 +250,8 @@ GOLControlPanel::GOLControlPanel(GOLCore *core,
     QObject::connect(&b_release_stall_mark,SIGNAL(clicked(bool)),this,SLOT(release_stall_mark()));
 
     QObject::connect(&b_clear_m,SIGNAL(clicked(bool)),this,SLOT(modClearList()));
-    QObject::connect(&b_save,SIGNAL(clicked(bool)),this,SLOT(modSave()));
-    QObject::connect(&b_open,SIGNAL(clicked(bool)),this,SLOT(modOpen()));
+    QObject::connect(&b_save_m,SIGNAL(clicked(bool)),this,SLOT(modSave()));
+    QObject::connect(&b_open_m,SIGNAL(clicked(bool)),this,SLOT(modOpen()));
     QObject::connect(&mod,SIGNAL(toggled(bool)),this,SLOT(modeChange(bool)));
     QObject::connect(&mList,SIGNAL(currentIndexChanged(int)),this,SLOT(modChooseItem(int)));
 

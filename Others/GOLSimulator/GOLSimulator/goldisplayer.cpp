@@ -87,7 +87,46 @@ void GOLDisplayer::mousePressEvent(QMouseEvent *event)
         x =x/(int)(WINDOW_SIZE/(double)core->size_x);
         y =(y-7)/(int)(WINDOW_SIZE/(double)core->size_y);//7 is fixed compensation.
         if(x<core->size_x && y<core->size_y)
-            *core->GOLSeek(x,y)=*core->GOLSeek(x,y)?0:255;
+        {
+            if(flip && x+core->Module[core->mod_current].x <= core->size_x && y+core->Module[core->mod_current].y <= core->size_y)//+boundry checking
+            {//start drawing
+                int c=0;
+                for(int ty=0;ty<core->Module[core->mod_current].y;ty++)for(int tx=0;tx<core->Module[core->mod_current].x;tx++)
+                {
+                    *core->GOLSeek(x+tx,y+ty)|=*(core->Module[core->mod_current].data + c);
+                    c++;
+                }
+            }
+            else *core->GOLSeek(x,y)=*core->GOLSeek(x,y)?0:255;
+        }
+
+        sprintf(s,"%d %d %d",*core->GOLSeek(x,y),x,y);
+        updateGL();
+        log->showMessage(s);
+    }
+    else if(event->button()==Qt::RightButton)
+    {
+        int x = event->x();
+        int y = event->y();
+        char s[20];
+
+        //log->PrintLog(s);
+        x =x/(int)(WINDOW_SIZE/(double)core->size_x);
+        y =(y-7)/(int)(WINDOW_SIZE/(double)core->size_y);//7 is fixed compensation.
+        if(x<core->size_x && y<core->size_y)
+        {
+            if(flip && x+core->Module[core->mod_current].x <= core->size_x && y+core->Module[core->mod_current].y <= core->size_y)//+boundry checking
+            {//start drawing
+                int c=0;
+                for(int ty=0;ty<core->Module[core->mod_current].y;ty++)for(int tx=0;tx<core->Module[core->mod_current].x;tx++)
+                {
+                    *core->GOLSeek(x+tx,y+ty)^=*(core->Module[core->mod_current].data + c);
+                    c++;
+                }
+            }
+            else *core->GOLSeek(x,y)=*core->GOLSeek(x,y)^255;
+        }
+
         sprintf(s,"%d %d %d",*core->GOLSeek(x,y),x,y);
         updateGL();
         log->showMessage(s);

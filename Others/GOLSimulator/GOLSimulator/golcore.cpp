@@ -27,6 +27,7 @@ GOLCore::GOLCore(int x,int y)
 
     //map1=(unsigned char*)malloc(x*y*sizeof(char));
     mod_current=0;
+    mod_counter=0;
     for(int c =MOD_LIST_SIZE;c--;)
     {
         //if(Module[c].data) free(Module[c].data);
@@ -87,11 +88,11 @@ void GOLCore::logSave()
 
 unsigned char* GOLCore::GOLSeek(int x, int y)
 {
-    return map[(int)CacheMark] + x*size_x + y;
+    return map[(int)CacheMark] + x*size_y + y;
 }
 unsigned char* GOLCore::GOLSeekNext(int x, int y)
 {
-    return map[(CacheMark+1)%CACHES] + x*size_x + y;
+    return map[(CacheMark+1)%CACHES] + x*size_y + y;
 }
 int GOLCore::GOLEnvCounter(int x, int y)
 {
@@ -312,6 +313,49 @@ void GOLCore::LoadGame(char *s)
     fread(map[0],sizeof(char),this->size_x * this->size_y,save);
     fclose(save);
 }
+void GOLCore::LoadMod(char *f)
+{
+    if(mod_current<MOD_LIST_SIZE)
+    {
+        save = fopen(f,"rb");
+        fread(&Module[mod_counter].x,sizeof(int),1,save);
+        fread(&Module[mod_counter].y,sizeof(int),1,save);
+        Module[mod_counter].data = (char*)malloc(Module[mod_counter].x*Module[mod_counter].y);
+        fread(Module[mod_counter].data,sizeof(char),Module[mod_counter].x*Module[mod_counter].y,save);
+        mod_counter++;
+        fclose(save);
+    }
+}
+
+void GOLCore::SaveMod(char *f)
+{
+    save = fopen(f,"wb");
+    //compress the map
+    int x,y;
+    int bxr=0,bxl=size_x-1,byr=0,byl=size_y-1;
+    for(x=0;x<size_x;x++)for(y=0;y<size_y;y++)
+    {
+        if(*GOLSeek(x,y))
+        {
+            bxl=x<bxl?x:bxl;
+            bxr=x>bxr?x:bxr;
+            byl=y<byl?y:byl;
+            byr=y>byr?y:byr;
+        }
+    }
+    //qDebug()<<bxl<<bxr<<byl<<byr;
+    x=bxr-bxl+1;
+    y=byr-byl+1;
+    fwrite(&x,sizeof(int),1,save);
+    fwrite(&y,sizeof(int),1,save);
+    for(x=bxl;x<=bxr;x++)for(y=byl;y<=byr;y++)
+    {
+        fwrite(GOLSeek(x,y),sizeof(char),1,save);
+    }
+
+    fclose(save);
+}
+
 void GOLCore::NewGame(int x,int y)
 {
     GOLDeleteMap();
@@ -334,9 +378,11 @@ void GOLCore::RanGame(int x,int y)
 }
 void GOLCore::moduleClear()
 {
-    for(int c =MOD_LIST_SIZE;c--;)
+    for(int c = mod_counter;c--;)
     {
-        if(Module[c].data) free(Module[c].data);
-        Module[c].data=NULL;
+        //qDebug()<<c<<mod_counter;
+        free(Module[c].data);
+        //Module[c].data=NULL;
     }
+    mod_counter=0;
 }

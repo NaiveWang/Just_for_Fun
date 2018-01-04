@@ -36,6 +36,8 @@ public:
     void GOLNextFrame();
     void SaveGame(char*);
     void LoadGame(char*);
+    void LoadMod(char*);
+    void SaveMod(char*);
     void NewGame(int,int);
     void RanGame(int,int);
     void logInit();
@@ -51,6 +53,7 @@ public:
     int size_x,size_y;
     int alive[CACHES];
     int mod_current;
+    int mod_counter;
 private:
     void GOLDeleteMap();
     void GOLAssignMap();
