@@ -153,6 +153,7 @@ void GOLControlPanel::modClearList()
     this->mList.clear();
     core->moduleClear();
     dot.toggle();
+    disp->flip=0;
     log->showMessage("Module List Cleared");
 }
 void GOLControlPanel::modChooseItem(int s)

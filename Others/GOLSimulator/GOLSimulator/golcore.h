@@ -30,6 +30,7 @@ public:
     ~GOLCore();
     unsigned char* GOLSeek(int, int);
     unsigned char* GOLSeekNext(int, int);
+    unsigned char* GOLSeekPrev(int, int);
     void GOLClear();
 
     int GOLEnvCounter(int, int);

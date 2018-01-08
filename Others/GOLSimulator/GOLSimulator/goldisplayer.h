@@ -7,7 +7,7 @@
 #include "golcore.h"
 #include "gollog.h"
 
-#define WINDOW_SIZE 800
+#define WINDOW_SIZE 1000
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 

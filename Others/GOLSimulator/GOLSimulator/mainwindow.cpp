@@ -6,7 +6,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)*/
 {
     //ui->setupUi(this);
-    this->setFixedSize(1200,870);
+    this->setFixedSize(1600,1020);
 
     core = new GOLCore(25,25);//for test use.
     //*core->map[0] = 1;
@@ -22,11 +22,11 @@ MainWindow::MainWindow(QWidget *parent) :
     chart = new GOLChart(core);
     cPanel = new GOLControlPanel(core,log,disp,chart);
 
-    layout.addWidget(this->log,23,0,1,32);
+    layout.addWidget(this->log,23,23,1,9);
     layout.addWidget(this->disp,0,0,23,23);
     layout.addWidget(this->cPanel,0,23,13,9);
 
-    layout.addWidget(this->chart,13,23,11,9);
+    layout.addWidget(this->chart,13,23,10,9);
 
     this->chart->ChartRefresh();
     this->setLayout(&layout);

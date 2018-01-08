@@ -94,6 +94,11 @@ unsigned char* GOLCore::GOLSeekNext(int x, int y)
 {
     return map[(CacheMark+1)%CACHES] + x*size_y + y;
 }
+unsigned char* GOLCore::GOLSeekPrev(int x, int y)
+{
+    return map[(CacheMark+CACHES-1)%CACHES] + x*size_y + y;
+}
+
 int GOLCore::GOLEnvCounter(int x, int y)
 {
     static int c;
@@ -348,7 +353,7 @@ void GOLCore::SaveMod(char *f)
     y=byr-byl+1;
     fwrite(&x,sizeof(int),1,save);
     fwrite(&y,sizeof(int),1,save);
-    for(x=bxl;x<=bxr;x++)for(y=byl;y<=byr;y++)
+    for(y=byl;y<=byr;y++)for(x=bxl;x<=bxr;x++)
     {
         fwrite(GOLSeek(x,y),sizeof(char),1,save);
     }

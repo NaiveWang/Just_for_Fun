@@ -72,9 +72,9 @@ public:
         QObject::connect(&cancel,SIGNAL(clicked(bool)),this,SLOT(dialogCancel()));
         QObject::connect(&confirm,SIGNAL(clicked(bool)),this,SLOT(dialogConfirm()));
 
-        edit_x.setRange(3,500);
+        edit_x.setRange(3,1000);
         edit_x.setAccelerated(true);
-        edit_y.setRange(3,500);
+        edit_y.setRange(3,1000);
         edit_y.setAccelerated(true);
 
         layout.addWidget(&note,0,0,1,2);
