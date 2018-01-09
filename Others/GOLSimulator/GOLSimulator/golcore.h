@@ -40,7 +40,7 @@ public:
     void LoadMod(char*);
     void SaveMod(char*);
     void NewGame(int,int);
-    void RanGame(int,int);
+    void RanGame(int,int,int);
     void logInit();
     void logRecord();
     void logSave();

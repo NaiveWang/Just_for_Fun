@@ -38,9 +38,9 @@ void GOLDisplayer::paintGL()
     glClear(GL_COLOR_BUFFER_BIT);
     for(x=core->size_x;x--;)for(y=core->size_y;y--;)
     {
-        if(*core->GOLSeekPrev(x,y) == *core->GOLSeek(x,y)) continue;
+        //if(*core->GOLSeek(x,y) == 0) continue;
         if(*core->GOLSeek(x,y)) color=255;
-        else color=0;
+        else continue;
         glColor3ub(color,color & (*core->GOLSeek(x,y)|core->conf_color),color & (*core->GOLSeek(x,y)|core->conf_color));
         glBegin(GL_QUADS);
         glVertex2i(x,-y);

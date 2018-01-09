@@ -32,11 +32,11 @@ void GOLControlPanel::GOLRun()
             break;
         }
         core->GOLNextFrame();
-        disp->updateGL();chart->ChartRefresh();
+        disp->updateGL();//
         //
         //QThread::usleep(delay);
     }
-
+    chart->ChartRefresh();
 }
 void GOLControlPanel::GOLClear()
 {
@@ -85,11 +85,11 @@ void GOLControlPanel::GOLNew()
 }
 void GOLControlPanel::GOLRan()
 {
-    dialog->dialogOpen();
-    dialog->exec();
+    dialogR->dialogOpen();
+    dialogR->exec();
     if(temp_x)
     {
-        core->RanGame(temp_x,temp_y);
+        core->RanGame(temp_x,temp_y,temp_bias);
         disp->resizeGL(0,0);
         disp->updateGL();
         core->mark_stall=0;
@@ -206,6 +206,7 @@ GOLControlPanel::GOLControlPanel(GOLCore *core,
     this->chart = chart;
 
     dialog = new SizeInputDialog(&temp_x,&temp_y);
+    dialogR = new SizeInputDialogRandom(&temp_x,&temp_y,&temp_bias);
     //runner = new GOLAutoRunner(core,disp,chart,&delay,&lock_run);
 
     //lock_run=0;
@@ -289,4 +290,5 @@ GOLControlPanel::GOLControlPanel(GOLCore *core,
 GOLControlPanel::~GOLControlPanel()
 {
     delete(dialog);
+    delete(dialogR);
 }

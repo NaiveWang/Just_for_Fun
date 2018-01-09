@@ -369,7 +369,7 @@ void GOLCore::NewGame(int x,int y)
     GOLAssignMap();
     GOLClear();
 }
-void GOLCore::RanGame(int x,int y)
+void GOLCore::RanGame(int x,int y,int bias)
 {
     GOLDeleteMap();
     this->size_x=x;
@@ -378,7 +378,8 @@ void GOLCore::RanGame(int x,int y)
     CacheMark=0;
     for(int i=size_x*size_y;i--;)
     {
-        *(map[0]+i)=rand()&1;
+        *(map[0]+i)=0x00;
+        if((rand()%65536)<bias) *(map[0]+i)=0xff;
     }
 }
 void GOLCore::moduleClear()

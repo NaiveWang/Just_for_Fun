@@ -109,7 +109,65 @@ private:
     QLabel note;
     int *x,*y;
 };
+////////////////////////////////////////////////////////
+class SizeInputDialogRandom : public QDialog
+{
+    Q_OBJECT
+public:
+    SizeInputDialogRandom(int *x,int *y,int *bias)
+    {
+        this->x=x;
+        this->y=y;
+        this->bias=bias;
+        note.setText("Input X, Y and Bias(from 0 to 65536)");
+        cancel.setText("Cancel");
+        confirm.setText("Confirm");
+        QObject::connect(&cancel,SIGNAL(clicked(bool)),this,SLOT(dialogCancel()));
+        QObject::connect(&confirm,SIGNAL(clicked(bool)),this,SLOT(dialogConfirm()));
 
+        edit_x.setRange(3,1000);
+        edit_x.setAccelerated(true);
+        edit_y.setRange(3,1000);
+        edit_y.setAccelerated(true);
+        edit_bias.setRange(1,65536);
+        edit_bias.setAccelerated(true);
+        edit_bias.setValue(32768);
+
+        layout.addWidget(&note,0,0,1,2);
+        layout.addWidget(&edit_x,1,0,1,1);
+        layout.addWidget(&edit_y,1,1,1,1);
+        layout.addWidget(&edit_bias,2,0,1,1);
+        layout.addWidget(&cancel,3,0,1,1);
+        layout.addWidget(&confirm,3,1,1,1);
+        this->setLayout(&layout);
+        //this->
+    }
+public slots:
+    void dialogOpen()
+    {
+        this->show();
+    }
+    void dialogCancel()
+    {
+        *x=0;
+        this->close();
+    }
+    void dialogConfirm()
+    {
+        *x=edit_x.value();
+        *y=edit_y.value();
+        *bias=edit_bias.value();
+        this->hide();
+    }
+    //void dialogVanish();
+private:
+    QGridLayout layout;
+    QPushButton cancel,confirm;
+    QSpinBox edit_x,edit_y;
+    QSpinBox edit_bias;
+    QLabel note;
+    int *x,*y,*bias;
+};
 //////////////////////////////////////////////////////////////////////////
 class GOLControlPanel : public QWidget
 {
@@ -152,6 +210,7 @@ private:
     GOLChart *chart;
 
     SizeInputDialog *dialog;
+    SizeInputDialogRandom *dialogR;
     //GOLAutoRunner *runner;
 
     QGridLayout layout;
@@ -170,6 +229,7 @@ private:
     //char lock_run;
     int delay;
     int temp_x,temp_y;
+    int temp_bias;
     //char lock_
 };
 
