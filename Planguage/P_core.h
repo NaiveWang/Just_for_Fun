@@ -11,10 +11,11 @@ typedef struct pCore_RegisterList
   void *sp0;
   void *sp;
 
-  void *stack0;//fast stack.
+  /**void *stack0;//fast stack.
   void *stack;//stack.
   void *data_global;
-  void *data_const;
+  void *data_const;**/
+  void *data[64];
   void *code;
   //These data is for the Safe Mode.
   void *rangeL_stack0,*rangeH_stack0;
@@ -24,15 +25,25 @@ typedef struct pCore_RegisterList
   void *rangeL_code,*rangeH_code;
 }pCore;
  /** Instruction Set Section **/
-*void HALT(void *pc);
-*void CALL(void *pc);
-*void RETN(void *pc);
-*void JUMP(void *pc);
-*void JMPN(void *pc);
+*void HALT(pCore *p)
+//6:1byte for decoding,5 bit for the data's addr
+{
+  //return a value.
+}
+*void CALL(pCore *p)
+//5:1bit for decoding, 4bit for pc's addr
+{
+  
+  //push the superior's pc into stack.
+  //put the target handle into pc.
+}
+*void RETN(void *p);
+*void JUMP(void *p);
+*void JMPN(void *p);
 
-*void RAND(void *pc);
-*void ALLO(void *pc);
-*void RELZ(void *pc);
+*void RAND(void *p);
+*void ALLO(void *p);
+*void RELZ(void *p);
 
 *void MOV1(void *pc);
 *void MOV4(void *pc);
