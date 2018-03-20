@@ -3,6 +3,7 @@
  * Note: This file does not contains any configuration and user perferences, and these data must be obtained
  * by the initializer, which means some information should be hold before the running steps.
  **/
+ #include <stdlib.h>
  /** Data structure defination section **/
 typedef struct pCore_RegisterList
 {
@@ -15,8 +16,13 @@ typedef struct pCore_RegisterList
   void *stack;//stack.
   void *data_global;
   void *data_const;**/
-  void *data[64];
+  void *data;
   void *code;
+
+  char *Cp,C;
+  int *Ip,I;
+  long *Lp,L;
+  double *Rp,R;
   //These data is for the Safe Mode.
   void *rangeL_stack0,*rangeH_stack0;
   void *rangeL_stack,*rangeH_stack;
@@ -24,38 +30,155 @@ typedef struct pCore_RegisterList
   void *rangeL_data_const,*rangeH_data_const;
   void *rangeL_code,*rangeH_code;
 }pCore;
- /** Instruction Set Section **/
-*void HALT(pCore *p)
+/** Auxiliary Function **/
+inline void* getAddr(void* base, int offset)
+{
+  return base+offset;
+}
+/** Instruction Set Section **/
+*void *HALT(pCore *p)
 //6:1byte for decoding,5 bit for the data's addr
 {
   //return a value.
 }
-*void CALL(pCore *p)
+void *CALL(pCore *p)
 //5:1bit for decoding, 4bit for pc's addr
 {
-  
   //push the superior's pc into stack.
+  p->Ip = p->sp;
+  p->sp+=4;
+  *(p->Ip) = p->pc;
   //put the target handle into pc.
+  p->pc = (int)*(p->pc+1) + code;
+
 }
-*void RETN(void *p);
-*void JUMP(void *p);
-*void JMPN(void *p);
-
-*void RAND(void *p);
-*void ALLO(void *p);
-*void RELZ(void *p);
-
-*void MOV1(void *pc);
+void *RETN(pCore *p)
+//1:1bit for decoding
+{
+  //set the program counter back
+  /// guarantee the stack pointer is the right one.
+  p->Ip = p->sp;
+  p->sp- = 4;
+  p->pc = *(p->Ip) + 1;
+}
+void *JUMP(pCore *p)
+//6:1bit for decoding, 1bit for mask, 4bit for position.
+{
+  p->Cp = p->pc+1;
+  if(p->flag & *(p->Cp))
+  {
+    p->Ip = *(p->pc+2);
+  }
+  else
+  {
+    pc+=6;
+  }
+}
+void *JMPN(pCore *p)
+//6:1bit for decoding, 1bit for mask, 4bit for position.
+{
+  p->Cp = p->pc+1;
+  if(!(p->flag & *(p->Cp)))
+  {
+    p->Ip = *(p->pc+2);
+  }
+  else
+  {
+    p->pc+=6;
+  }
+}
+void *RAND(pCore *p);
+void *ALLO(pCore *p)
+//9:1bit for decoding, 4bit for size, 4bit for addr
+{
+  p->Ip = p->pc+1;
+  (int)*(pc+5)+data = malloc(*(p->Ip));
+  p->pc+=9;
+}
+void *RELZ(pCore *p)
+//5:1bit decode, 4bit addr
+{
+  free((int)*(p->pc+1));
+  p->pc+=5;
+}
+void MOV1(pCore *p)
+//9:1bit decode, 4bit addr->4bit addr
+{
+  p->C = *(char*)(p->pc+1);
+  p->Cp = p->pc+5;
+  *(p->Cp) = p->C;
+  p->pc+=9;
+}
 *void MOV4(void *pc);
+//9:1bit decode, 4bit addr->4bit addr
+{
+  p->I = *(int*)(p->pc+1);
+  p->Ip = p->pc+5;
+  *(p->Ip) = p->I;
+  p->pc+=9;
+}
 *void MOV8(void *pc);
+//9:1bit decode, 4bit addr->4bit addr
+{
+  p->L = *(long*)(p->pc+1);
+  p->Lp = p->pc+5;
+  *(p->Lp) = p->L;
+  p->pc+=9;
+}
 *void MOVb(void *pc);
 
 *void SWAP1(void *pc);
 *void SWAP4(void *pc);
 *void SWAP8(void *pc);
 
-*void LEA(void *pc);
-
+void *LOAD1(pCore *p)
+//9:1bit for decoding, 4bit is the address, 4bit is the segment address.
+{
+  p->Cp = *(p->pc + 1);
+  p->C = *(p->Cp);
+  p->Cp = getAddr(p->data, (int)*(p->pc + 5));
+  *(p->Cp) = p->C;
+}
+void *LOAD4(pCore *p)
+//9:1bit for decoding, 4bit is the address, 4bit is the segment address.
+{
+  p->Ip = *(p->pc + 1);
+  p->I = *(p->Ip);
+  p->Ip = getAddr(p->data, (int)*(p->pc + 5));
+  *(p->Ip) = p->I;
+}
+void *LOAD8(pCore *p)
+//9:1bit for decoding, 4bit is the address, 4bit is the segment address.
+{
+  p->Lp = *(p->pc + 1);
+  p->L = *(p->Lp);
+  p->Lp = getAddr(p->data, (int)*(p->pc + 5));
+  *(p->Lp) = p->L;
+}
+void *STOR1(pCore *p)
+//9:1bit for decoding, 4bit is the address, 4bit is the segment address.
+{
+  p->Cp = getAddr(p->data, (int)*(p->pc + 5));
+  p->C = *p->Cp;
+  p->Cp = *(P->pc + 1);
+  *(p->Cp) = p->Cp;
+}
+void *STOR4(pCore *p)
+//9:1bit for decoding, 4bit is the address, 4bit is the segment address.
+{
+  p->Ip = getAddr(p->data, (int)*(p->pc + 5));
+  p->I = *p->Ip;
+  p->Ip = *(P->pc + 1);
+  *(p->Ip) = p->Ip;
+}
+void *STOR8(pCore *p)
+//9:1bit for decoding, 4bit is the address, 4bit is the segment address.
+{
+  p->Lp = getAddr(p->data, (int)*(p->pc + 5));
+  p->L = *p->Lp;
+  p->Lp = *(P->pc + 1);
+  *(p->Lp) = p->Lp;
+}
 *void PUSH1(void *pc);
 *void PUSH4(void *pc);
 *void PUSH8(void *pc);
