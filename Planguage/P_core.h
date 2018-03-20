@@ -205,51 +205,270 @@ void *STOR8(pCore *p)
 *void IMM4(void *pc);
 *void IMM8(void *pc);
 
-*void ADD1(void *pc);
-*void ADD4(void *pc);
-*void ADD8(void *pc);
-*void ADDf(void *pc);
-
-*void SUB1(void *pc);
-*void SUB4(void *pc);
-*void SUB8(void *pc);
-*void SUBf(void *pc);
-
-*void NEG1(void *pc);
-*void NEG4(void *pc);
-*void NEG8(void *pc);
-*void NEGf(void *pc);
-
+void *ADD1(pCore *p)
+//1 bit decode,12 bit addr
+{
+  p->Cp = *(int*)(p->pc+1) + data;
+  p->C = *(p->Cp);
+  p->Cp = *(int*)(p->pc+5) + data;
+  p->C += *(p->Cp);
+  p->Cp = *(int*)(p->pc+9) + data;
+  *(p->Cp) = p->C;
+}
+void *ADD4(pCore *p)
+//1 bit decode,12 bit addr
+{
+  p->Ip = *(int*)(p->pc+1) + data;
+  p->I = *(p->Ip);
+  p->Ip = *(int*)(p->pc+5) + data;
+  p->I += *(p->Ip);
+  p->Ip = *(int*)(p->pc+9) + data;
+  *(p->Ip) = p->I;
+}
+void *ADD8(pCore *p)
+//1 bit decode,12 bit addr
+{
+  p->Lp = *(int*)(p->pc+1) + data;
+  p->L = *(p->Lp);
+  p->Lp = *(int*)(p->pc+5) + data;
+  p->L += *(p->Lp);
+  p->Lp = *(int*)(p->pc+9) + data;
+  *(p->Lp) = p->L;
+}
+void *ADDr(pCore *p)
+//1 bit decode,12 bit addr
+{
+  p->Rp = *(int*)(p->pc+1) + data;
+  p->R = *(p->Rp);
+  p->Rp = *(int*)(p->pc+5) + data;
+  p->R += *(p->Rp);
+  p->Rp = *(int*)(p->pc+9) + data;
+  *(p->Rp) = p->R;
+}
+void *SUB1(pCore *p)
+//1 bit decode,12 bit addr
+{
+  p->Cp = *(int*)(p->pc+1) + data;
+  p->C = *(p->Cp);
+  p->Cp = *(int*)(p->pc+5) + data;
+  p->C -= *(p->Cp);
+  p->Cp = *(int*)(p->pc+9) + data;
+  *(p->Cp) = p->C;
+}
+void *SUB4(pCore *p)
+//1 bit decode,12 bit addr
+{
+  p->Ip = *(int*)(p->pc+1) + data;
+  p->I = *(p->Ip);
+  p->Ip = *(int*)(p->pc+5) + data;
+  p->I -= *(p->Ip);
+  p->Ip = *(int*)(p->pc+9) + data;
+  *(p->Ip) = p->I;
+}
+void *SUB8(pCore *p)
+//1 bit decode,12 bit addr
+{
+  p->Lp = *(int*)(p->pc+1) + data;
+  p->L = *(p->Lp);
+  p->Lp = *(int*)(p->pc+5) + data;
+  p->L -= *(p->Lp);
+  p->Lp = *(int*)(p->pc+9) + data;
+  *(p->Lp) = p->L;
+}
+void *SUBr(pCore *p);
+//1 bit decode,12 bit addr
+{
+  p->Rp = *(int*)(p->pc+1) + data;
+  p->R = *(p->Rp);
+  p->Rp = *(int*)(p->pc+5) + data;
+  p->R -= *(p->Rp);
+  p->Rp = *(int*)(p->pc+9) + data;
+  *(p->Rp) = p->R;
+}
+void *NEG1(pCore *p)
+//1 bit decode,4 bit addr
+{
+  p->Cp = *(int*)(p->pc+1) * data;
+  p->Cp = -p->Cp;
+}
+void *NEG4(pCore *p)
+//1 bit decode,4 bit addr
+{
+  p->Ip = *(int*)(p->pc+1) * data;
+  p->Ip = -p->Ip;
+}
+void *NEG8(pCore *p)
+//1 bit decode,4 bit addr
+{
+  p->Lp = *(int*)(p->pc+1) * data;
+  p->Lp = -p->Lp;
+}
+*void NEGr(pCore *p);
+//1 bit decode,4 bit addr
+{
+  p->Rp = *(int*)(p->pc+1) * data;
+  p->Rp = -p->Rp;
+}
 *void CMP1(void *pc);
 *void CMP4(void *pc);
 *void CMP8(void *pc);
 *void CMPf(void *pc);
 
-*void MUL1(void *pc);
-*void MUL4(void *pc);
-*void MUL8(void *pc);
-*void NULf(void *pc);
+void *MUL1(pCore *p)
+//1 bit decode,12 bit addr
+{
+  p->Cp = *(int*)(p->pc+1) + data;
+  p->C = *(p->Cp);
+  p->Cp = *(int*)(p->pc+5) + data;
+  p->C *= *(p->Cp);
+  p->Cp = *(int*)(p->pc+9) + data;
+  *(p->Cp) = p->C;
+}
+void *MUL4(pCore *p)
+//1 bit decode,12 bit addr
+{
+  p->Ip = *(int*)(p->pc+1) + data;
+  p->I = *(p->Ip);
+  p->Ip = *(int*)(p->pc+5) + data;
+  p->I *= *(p->Ip);
+  p->Ip = *(int*)(p->pc+9) + data;
+  *(p->Ip) = p->I;
+}
+void *MUL8(pCore *p)
+//1 bit decode,12 bit addr
+{
+  p->Lp = *(int*)(p->pc+1) + data;
+  p->L = *(p->Lp);
+  p->Lp = *(int*)(p->pc+5) + data;
+  p->L *= *(p->Lp);
+  p->Lp = *(int*)(p->pc+9) + data;
+  *(p->Lp) = p->L;
+}
+void *MULr(pCore *p)
+//1 bit decode,12 bit addr
+{
+  p->Rp = *(int*)(p->pc+1) + data;
+  p->R = *(p->Rp);
+  p->Rp = *(int*)(p->pc+5) + data;
+  p->R -= *(p->Rp);
+  p->Rp = *(int*)(p->pc+9) + data;
+  *(p->Rp) = p->R;
+}
 
-*void DIV1(void *pc);
-*void DIV4(void *pc);
-*void DIV8(void *pc);
-*void DIVf(void *pc);
+void *DIV1(pCore *p)
 
-*void AND1(void *pc);
-*void AND4(void *pc);
-*void AND8(void *pc);
+void *DIV4(pCore *p)
 
-*void OR1(void *pc);
-*void OR4(void *pc);
-*void OR8(void *pc);
+void *DIV8(pCore *p)
 
-*void XOR1(void *pc);
-*void XOR4(void *pc);
-*void XOR8(void *pc);
+void *DIVr(pCore *p)
+//1 bit decode,12 bit addr
+{
+  p->Rp = *(int*)(p->pc+1) + data;
+  p->R = *(p->Rp);
+  p->Rp = *(int*)(p->pc+5) + data;
+  p->R -= *(p->Rp);
+  p->Rp = *(int*)(p->pc+9) + data;
+  *(p->Rp) = p->R;
+}
 
-*void INV1(void *pc);
-*void INV4(void *pc);
-*void INV8(void *pc);
+void *AND1(pCore *p)
+//1 bit decode,12 bit addr
+{
+  p->Cp = *(int*)(p->pc+1) + data;
+  p->C = *(p->Cp);
+  p->Cp = *(int*)(p->pc+5) + data;
+  p->C &= *(p->Cp);
+  p->Cp = *(int*)(p->pc+9) + data;
+  *(p->Cp) = p->C;
+}
+void *AND4(pCore *p)
+//1 bit decode,12 bit addr
+{
+  p->Ip = *(int*)(p->pc+1) + data;
+  p->I = *(p->Ip);
+  p->Ip = *(int*)(p->pc+5) + data;
+  p->I &= *(p->Ip);
+  p->Ip = *(int*)(p->pc+9) + data;
+  *(p->Ip) = p->I;
+}
+void *AND8(pCore *p)
+//1 bit decode,12 bit addr
+{
+  p->Lp = *(int*)(p->pc+1) + data;
+  p->L = *(p->Lp);
+  p->Lp = *(int*)(p->pc+5) + data;
+  p->L &= *(p->Lp);
+  p->Lp = *(int*)(p->pc+9) + data;
+  *(p->Lp) = p->L;
+}
+
+void *OR1(pCore *p)
+//1 bit decode,12 bit addr
+{
+  p->Cp = *(int*)(p->pc+1) + data;
+  p->C = *(p->Cp);
+  p->Cp = *(int*)(p->pc+5) + data;
+  p->C |= *(p->Cp);
+  p->Cp = *(int*)(p->pc+9) + data;
+  *(p->Cp) = p->C;
+}
+void *OR4(pCore *p)
+//1 bit decode,12 bit addr
+{
+  p->Ip = *(int*)(p->pc+1) + data;
+  p->I = *(p->Ip);
+  p->Ip = *(int*)(p->pc+5) + data;
+  p->I |= *(p->Ip);
+  p->Ip = *(int*)(p->pc+9) + data;
+  *(p->Ip) = p->I;
+}
+void *OR8(pCore *p)
+//1 bit decode,12 bit addr
+{
+  p->Lp = *(int*)(p->pc+1) + data;
+  p->L = *(p->Lp);
+  p->Lp = *(int*)(p->pc+5) + data;
+  p->L |= *(p->Lp);
+  p->Lp = *(int*)(p->pc+9) + data;
+  *(p->Lp) = p->L;
+}
+
+void *EOR1(pCore *p)
+//1 bit decode,12 bit addr
+{
+  p->Cp = *(int*)(p->pc+1) + data;
+  p->C = *(p->Cp);
+  p->Cp = *(int*)(p->pc+5) + data;
+  p->C ^= *(p->Cp);
+  p->Cp = *(int*)(p->pc+9) + data;
+  *(p->Cp) = p->C;
+}
+void *EOR4(pCore *p)
+//1 bit decode,12 bit addr
+{
+  p->Ip = *(int*)(p->pc+1) + data;
+  p->I = *(p->Ip);
+  p->Ip = *(int*)(p->pc+5) + data;
+  p->I ^= *(p->Ip);
+  p->Ip = *(int*)(p->pc+9) + data;
+  *(p->Ip) = p->I;
+}
+void *EOR8(pCore *p)
+//1 bit decode,12 bit addr
+{
+  p->Lp = *(int*)(p->pc+1) + data;
+  p->L = *(p->Lp);
+  p->Lp = *(int*)(p->pc+5) + data;
+  p->L ^= *(p->Lp);
+  p->Lp = *(int*)(p->pc+9) + data;
+  *(p->Lp) = p->L;
+}
+
+void *INV1(pCore *p)
+//1bit for decoding, 4bit addr
+void *INV4(pCore *p);
+void *INV8(pCore *p);
 
 *void TST1(void *pc);
 *void TST4(void *pc);
