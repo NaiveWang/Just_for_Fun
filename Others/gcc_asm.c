@@ -1334,9 +1334,9 @@ int main(void) {
 #define M 1900078
    asm("leal (%0),%%edx"::"r"(a));
    asm("movl %%edx,%0":"=r"(c));
-   printf("%d\n",c);
+   printf("Test01 Started\n%d\n",c);
    t=clock();
-   for(c=0;c<M;c++)
+   /**for(c=0;c<M;c++)
    {
      ListAdder(a,a,N);
    }
@@ -1349,8 +1349,20 @@ int main(void) {
    }
    t=clock()-t;
    //showList(a,N);
-   printf("Pass! %ld\n",t);
-
+   printf("Pass! %ld\n",t);*/
+   printf("%ld %ld\n",sizeof(void*),sizeof(int*));
+   printf("Test02 Started\n");
+   {
+     int a[2]={1234,12345};
+     ///void *b=a;
+     asm("movq %0,%%rbx"::"r"(a));
+     asm("movl 1(%rbx,4),%eax");
+     asm("addw $321,%ax");
+     asm("addq %r14,%r14");
+     asm("movl %eax,(%rcx)");
+     printf("%d\n",a[0]);
+   }
+   printf("Test02 Ended\n");
    //showList(a,N);
    return 0;
 }
