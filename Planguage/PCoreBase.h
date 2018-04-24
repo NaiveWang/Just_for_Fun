@@ -5,7 +5,7 @@
 #define PCOREBASE_H
 //offset macros
 #define L_ADDR sizeof(*void)
-#define BASE_DATA 1
+#define BASE_DATA 0
 #define BASE_STACK0 BASE_DATA+L_ADDR
 #define BASE_STACK BASE_STACK0+L_ADDR
 #define BASE_GLOBAL BASE_STACK+L_ADDR

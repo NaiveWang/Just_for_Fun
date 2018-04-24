@@ -1355,11 +1355,14 @@ int main(void) {
    {
      int a[2]={1234,12345};
      ///void *b=a;
-     asm("movq %0,%%rbx"::"r"(a));
-     asm("movl 1(%rbx,4),%eax");
-     asm("addw $321,%ax");
-     asm("addq %r14,%r14");
-     asm("movl %eax,(%rcx)");
+     //asm("movq %0,%%rbx"::"r"(a));
+     //asm("movl 1(%rbx),%eax");
+     //asm("addw $321,%ax");
+     //asm("addq %r14,%r14");
+     //asm("movl %eax,(%rcx)");
+     asm("jmp ASS");
+     puts("fuck\n");
+     asm("ASS:");
      printf("%d\n",a[0]);
    }
    printf("Test02 Ended\n");
