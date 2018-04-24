@@ -6,6 +6,10 @@
 #define PCOREIR_H
 //instructions
 //template: void *<NAME>(PBase)
+/**Processor Control**/
+void *HALT(PBase *p);
+void *SUSPEND(PBase *p);
+void *REBOOT(PBase *p);
 /** Data transfer **/
 void *MOV1A(PBase *p);
 void *MOV1(PBase *p);
@@ -24,6 +28,16 @@ void *PUSH1(PBase *p);
 void *POP1(PBase *p);
 void *PUSH8(PBase *p);//2decode+(1+4)addr=7
 void *POP8(PBase *p);//2decode+(1+4)addr=7
+/** Type Conventions**/
+void *CBI(PBase *p);
+void *CIB(PBase *p);
+void *CRI(PBase *p);
+void *CIR(PBase *p);
+void *CBR(PBase *p);
+void *CRB(PBase *p);
+/** Memory Allocation **/
+void *ALLO(PBase *p);
+void *FREE(PBase *p);
 /** Control **/
 void *CALL(PBase *p);//2decode+8offset=10,push pc
 void *RETN(PBase *p);//2decode=2:recover pc
