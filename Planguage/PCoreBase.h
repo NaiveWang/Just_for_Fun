@@ -14,6 +14,8 @@
 #define POINTER_STACK POINTER_STACK0+L_ADDR
 typedef struct OneThreadOfAProcessor
 {
+  void *PID;
+  unsigned int memoryUsage;
   int status;
   void *pc;
   void *code;
