@@ -14,15 +14,15 @@
 #define TN_EXE 3//my computer has 8 logical core, extended by the technology known as intel's hyper threading.
 typedef struct MutexStructure
 {
-  *void lock;//can be used to the id of threads
+  void* lock;//can be used to the id of threads
   unsigned long size;
-  *void content;
+  void* content;
 }mutex;
 /** Global Section **/
 //Lists
-*void *processorReferences;
-*mutex *mutexList;
-*PBase *processorInstanceList;
+void* *processorReferences;
+mutex* *mutexList;
+PBase* *processorInstanceList;
 //Statistic Data
 /** Functions **/
 void VMReadFile(char *file);

@@ -1329,12 +1329,13 @@ void ListAdderOpt(int *a, int *b, int c)
 int main(void) {
 
 
-   int c;
+   long c;
    long t;
 #define M 1900078
-   asm("leal (%0),%%edx"::"r"(a));
-   asm("movl %%edx,%0":"=r"(c));
-   printf("Test01 Started\n%d\n",c);
+   asm("leaq (%0),%%rdx"::"r"(a));
+   asm("movq %%rdx,%0":"=r"(c));
+   printf("Test01 Started\n%ld\n",c);
+   printf("addr:%ld",a);
    t=clock();
    /**for(c=0;c<M;c++)
    {
