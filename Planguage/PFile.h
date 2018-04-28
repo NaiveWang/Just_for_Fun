@@ -5,6 +5,10 @@
  **/
 #ifndef PFILE_H
 #define PFILE_H
+#include <stdio.h>
+#include <stdlib.h>
+#define MIN_STACK0 2<<8
+#define MIN_STACK 2<<10
  typedef struct initializingDataStructuresListElement
  {
    int offset;
