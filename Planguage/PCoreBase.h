@@ -12,7 +12,7 @@
 #define BASE_S BASE_GLOBAL+L_ADDR
 #define POINTER_STACK0 BASE_S+L_ADDR
 #define POINTER_STACK POINTER_STACK0+L_ADDR
-typedef struct OneThreadOfAProcessor
+typedef struct AInstanceOfProcessor
 {
   void *PID;
   unsigned int memoryUsage;

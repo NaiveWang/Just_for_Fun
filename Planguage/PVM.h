@@ -20,12 +20,16 @@ typedef struct MutexStructure
   void* content;
 }mutex;
 /** Global Section **/
-//Lists
-void* *processorReferences;
-mutex* *mutexList;
-PBase* *processorInstanceList;
+//necassary sole data
+PExe *VMpe;
+//Lists & boundary
+int listCodeSize;
+void* *ListCode;
+int listMutexSize;
+mutex *listMutex;
+int listInstanceSize;
+PBase *listInstance;
 //Statistic Data
 /** Functions **/
-void VMReadFile(char *file);
 void VMInitializer();
 #endif
