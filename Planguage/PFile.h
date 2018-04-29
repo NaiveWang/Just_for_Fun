@@ -46,7 +46,7 @@
    processorT* processorTemplates;
 
    int mutexNum;
-   int* mutexSizeList;
+   int *mutexSizeList;
 
    int processorInstanceNUM;
    processorI* processorInstances;

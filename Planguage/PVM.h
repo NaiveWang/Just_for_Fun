@@ -24,7 +24,7 @@ typedef struct MutexStructure
 PExe *VMpe;
 //Lists & boundary
 int listCodeSize;
-void* *ListCode;
+void* *listCode;
 int listMutexSize;
 mutex *listMutex;
 int listInstanceSize;
