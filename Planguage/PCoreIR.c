@@ -1,5 +1,5 @@
 #include "PCoreIR.h"
-void *MOV8A(PBase *p)
+void MOV8A(PBase *p)
 {
   asm("leaq (%0),%%rdx"::"r"(p->data+POINTER_STACK0));
   asm("movq (%rdx),%rbx");
@@ -12,7 +12,7 @@ void *MOV8A(PBase *p)
   asm("movq %rbx,(%rdx)");
   p->pc+=2;
 }
-void *MOV8(PBase *p)
+void MOV8(PBase *p)
 {
   asm("movq %0,%%rbx"::"r"(p->pc));
 
@@ -35,7 +35,7 @@ void *MOV8(PBase *p)
   asm("movq %rax,(%rbp,%rdx,8)");
   p->pc+=12;
 }
-void *MOVBA(PBase *p)
+void MOVBA(PBase *p)
 {
   asm("leaq (%0),%%rdx"::"r"(p->data + POINTER_STACK0));
   asm("movq (%rdx),%rbx");
@@ -69,7 +69,7 @@ void *MOVBA(PBase *p)
   asm("loopend:");
   p->pc+=2;
 }
-void *PUSH0A(PBase *p)
+void PUSH0A(PBase *p)
 {
   asm("movq %0,%%rdx"::"r"(p->data));
   asm("xorq %rbx,%rbx");
@@ -86,7 +86,7 @@ void *PUSH0A(PBase *p)
 
   p->pc+=7;
 }
-void *PUSH0II(PBase *p)
+void PUSH0I8(PBase *p)
 {
   asm("leaq (%0),%%rdx"::"r"(p->data + POINTER_STACK0));
   asm("movq (%rdx),%rbx");
@@ -97,7 +97,7 @@ void *PUSH0II(PBase *p)
   asm("movq %rbx,(%rdx)");
   p->pc+=10;
 }
-void *PUSH08(PBase *p)
+void PUSH08(PBase *p)
 {
   asm("movq %0,%%rbx"::"r"(p->pc));
   //asm("leaq %0,%%rcx"::"r"(p->data));
@@ -115,7 +115,7 @@ void *PUSH08(PBase *p)
   asm("movq %rbx,(%rdx)");
   p->pc+=7;
 }
-void *POP08(PBase *p)
+void POP08(PBase *p)
 {
   asm("movq %0,%%rbx"::"r"(p->data + POINTER_STACK0));
   asm("subq 8,%rbx");
@@ -130,7 +130,7 @@ void *POP08(PBase *p)
   asm("movq %rax,(%rdx,%rcx,8)");
   p->pc+=7;
 }
-void *PUSH8(PBase *p)//2decode+(1+4)addr=7
+void PUSH8(PBase *p)//2decode+(1+4)addr=7
 {
   asm("movq %0,%%rbx"::"r"(p->pc));
   //asm("leaq %0,%%rcx"::"r"(p->data));
@@ -148,7 +148,7 @@ void *PUSH8(PBase *p)//2decode+(1+4)addr=7
   asm("movq %rbx,(%rdx)");
   p->pc+=7;
 }
-void *POP8(PBase *p)//2decode+(1+4)addr=7
+void POP8(PBase *p)//2decode+(1+4)addr=7
 {
   asm("movq %0,%%rbx"::"r"(p->data + POINTER_STACK));
   asm("subq 8,%rbx");
@@ -163,7 +163,7 @@ void *POP8(PBase *p)//2decode+(1+4)addr=7
   asm("movq %rax,(%rdx,%rcx,8)");
   p->pc+=7;
 }
-void *CALL(PBase *p)
+void CALL(PBase *p)
 {
   //get stack pointer
   asm("movq %0,%%rbx"::"r"(p->data + POINTER_STACK));
@@ -181,7 +181,7 @@ void *CALL(PBase *p)
   asm("movq %%rcx,%0":"=r"(p->pc));
   //end
 }
-void *RETN(PBase *p)
+void RETN(PBase *p)
 {
   //get recovery pc from stack
   //get stack pointer
@@ -194,7 +194,7 @@ void *RETN(PBase *p)
   asm("movq %%rax,%0":"=r"(p->pc));
   //end, notice:no need to influence pc with its length.
 }
-void *JUMP(PBase *p)
+void JUMP(PBase *p)
 {
   //get the offset
   //get pc
@@ -206,7 +206,7 @@ void *JUMP(PBase *p)
   //put it back to pc's house
   asm("movq %%rbx,%0":"=r"(p->pc));
 }
-void *JMPC(PBase *p)
+void JMPC(PBase *p)
 {
   //get flag
   asm("movl %0,%%eax"::"r"(p->eflag));
@@ -228,7 +228,7 @@ void *JMPC(PBase *p)
   asm("jump:");
   //get pc
 }
-void *OPADDI(PBase *p)
+void OPADDI(PBase *p)
 {
   asm("movq %0,%%rbx"::"r"(p->data+POINTER_STACK0));
   asm("subq $8,%rbx");
@@ -238,7 +238,7 @@ void *OPADDI(PBase *p)
   asm("movb %ah,%al");
   asm("movl %%eax,%0":"=r"(p->eflag));
 }
-void *OPDIVI(PBase *p)
+void OPDIVI(PBase *p)
 {
   asm("movq %0,%%rbx"::"r"(p->data+POINTER_STACK0));
   //asm("subq $8,%rbx");
@@ -252,7 +252,7 @@ void *OPDIVI(PBase *p)
   asm("movq %rdx,-8(%rbx)");//quotient
   asm("movq %rax,-16(%rbx)");//reminder
 }
-void *OPCMPI(PBase *p)
+void OPCMPI(PBase *p)
 {
   asm("leaq (%0),%%rdx"::"r"(p->data+POINTER_STACK0));
   asm("movq (%rdx),%rbx");
@@ -265,7 +265,7 @@ void *OPCMPI(PBase *p)
   asm("movl %%eax,%0":"=r"(p->eflag));
   asm("movq %rbx,(%rdx)");
 }
-void *OPNOTI(PBase *p)
+void OPNOTI(PBase *p)
 {
   asm("movq %0,%%rbx"::"r"(p->data+POINTER_STACK0));
   asm("notq -8(%rbx)");
@@ -273,7 +273,7 @@ void *OPNOTI(PBase *p)
   asm("movb %ah,%al");
   asm("movl %%eax,%0":"=r"(p->eflag));
 }
-void *OPTSTI(PBase *p)
+void OPTSTI(PBase *p)
 {
   asm("leaq (%0),%%rdx"::"r"(p->data+POINTER_STACK0));
   asm("movq (%rdx),%rbx");
@@ -284,4 +284,21 @@ void *OPTSTI(PBase *p)
   asm("lahf");
   asm("movb %ah,%al");
   asm("movl %%eax,%0":"=r"(p->eflag));
+}
+void (*InstructionSet[])(PBase *p) = {
+  MOV8A,MOV8,MOVBA,
+  PUSH0A,PUSH0I8,PUSH08,POP08,
+  PUSH8,POP8,
+  CALL,RETN,JUMP,JMPC,
+  OPADDI,
+  OPDIVI,
+  OPCMPI,
+  OPNOTI,
+  OPTSTI};
+void executionOneStep(PBase *p)
+{
+  unsigned short codeNo;
+  asm("movq %0,%%rbx"::"r"(p->pc));
+  asm("movw (%%rbx),%0":"=r"(codeNo));
+  InstructionSet[codeNo](p);
 }
