@@ -19,16 +19,17 @@
  {
    int codeLength;
    void *code;
+   int stack0Size;
+   int stackSize;
    int dataSize;
    int initNumGlobal;
    initD* initDataGlobal;
-   int initNumSpecialized;
-   initD* initDataSpecialized;
  }processorT;
  typedef struct processorInstanceTableElement
  {
    int processorReferenceNo;
-   void* initData;
+   int initNum;
+   initD* initData;
  }processorI;
  typedef struct connectionMappingTable
  {
@@ -54,6 +55,7 @@
    connections* connectionMapping;
  }PExe;
 /** utility functions **/
-Pexe* parseFile(char *fileS);
+PExe* parseFile(char *fileS);
+void clearFile(PExe *pe);
 void makeExeFile(char *fileS, char *sFileS);
 #endif

@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "PCore.h"
+#include "PFile.h"
 /** MACRO Section **/
 //the number of execution threads, it mainly depends on the hardware
 #define TN_EXE 3//my computer has 8 logical core, extended by the technology known as intel's hyper threading.
