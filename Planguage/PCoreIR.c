@@ -298,7 +298,7 @@ void (*InstructionSet[])(PBase *p) = {
 void executionOneStep(PBase *p)
 {
   unsigned short codeNo;
-  asm("movq %0,%%rbx"::"r"(p->pc));
+  asm("movq %0,%%rbx"::"r"(p->pc)); 
   asm("movw (%%rbx),%0":"=r"(codeNo));
   InstructionSet[codeNo](p);
 }

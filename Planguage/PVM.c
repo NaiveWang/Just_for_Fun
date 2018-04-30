@@ -23,3 +23,19 @@ void VMReadFile(char *file)
 
   //initialize the instance list
 }
+void debugVM(PBase *p,int howManyStack0Elem)
+{
+  long* stack0p;
+  printf("VM Debug Start\n");
+  printf("ProcessorID:%lud",(unsigned long)p);
+  printf("Next Instruction No:%hu\n",*(unsigned short*)p->pc);
+  printf("Current Status:%x",p->status);
+  printf("Current Flag:%x",p->eflag);
+  stack0p=(long*)*(long*)(p->data + 16);
+  while(howManyStack0Elem--)
+  {
+    printf("stack0:%lx\n",*stack0p);
+    stack0p--;
+  }
+  printf("VM Debug End\n");
+}

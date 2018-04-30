@@ -32,4 +32,5 @@ PBase *listInstance;
 //Statistic Data
 /** Functions **/
 void VMInitializer();
+void debugVM(PBase *p,int howManyStack0Elem);
 #endif

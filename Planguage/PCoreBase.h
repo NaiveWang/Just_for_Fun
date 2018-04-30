@@ -23,7 +23,7 @@ typedef struct AInstanceOfProcessor
   void *data;
   /**
    * data segment arrangement:
-   * 1B for flag;$0
+   * 1B for flag;$-8
    * 256*8B for segment pointers
     * data base           $0
     * stack0 base         $8
