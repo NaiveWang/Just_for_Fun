@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include "PCore.h"
 #include "PFile.h"
+#define NUM_E_THREAD 1
 /** MACRO Section **/
 //the number of execution threads, it mainly depends on the hardware
 #define TN_EXE 3//my computer has 8 logical core, extended by the technology known as intel's hyper threading.
@@ -29,6 +30,11 @@ int listMutexSize;
 mutex *listMutex;
 int listInstanceSize;
 PBase *listInstance;
+//thread pool
+pthread_t APIHandler;
+pthread_t errorHandler;
+pthread_t triggerHandler;
+pthread_t executionThread[NUM_E_THREAD];
 //Statistic Data
 /** Functions **/
 void VMInitializer();
