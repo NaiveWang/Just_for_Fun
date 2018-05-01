@@ -13,7 +13,7 @@
 #define NUM_E_THREAD 1
 /** MACRO Section **/
 //the number of execution threads, it mainly depends on the hardware
-#define TN_EXE 3//my computer has 8 logical core, extended by the technology known as intel's hyper threading.
+//#define TN_EXE 3//my computer has 8 logical core, extended by the technology known as intel's hyper threading.
 typedef struct MutexStructure
 {
   void* lock;//can be used to the id of threads
@@ -37,6 +37,9 @@ pthread_t triggerHandler;
 pthread_t executionThread[NUM_E_THREAD];
 //Statistic Data
 /** Functions **/
-void VMInitializer();
+void VMReadFile(char *file);
 void debugVM(PBase *p,int howManyStack0Elem);
+void *execDebug(void* no);
+void *execNormal();
+void VMStartUp();
 #endif

@@ -12,10 +12,15 @@
 #define BASE_S BASE_GLOBAL+L_ADDR
 #define POINTER_STACK0 BASE_S+L_ADDR
 #define POINTER_STACK POINTER_STACK0+L_ADDR
+#define PROCESSOR_STATUS_RUNNING 0
+#define PROCESSOR_STATUS_SUSPENDED -1
+#define PROCESSOR_STATUS_REBOOT 1
+
 typedef struct AInstanceOfProcessor
 {
   void *PID;
   unsigned int memoryUsage;
+  unsigned long APICallID;
   int status;
   void *pc;
   void *code;

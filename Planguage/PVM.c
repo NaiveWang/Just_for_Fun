@@ -101,3 +101,27 @@ void debugVM(PBase *p,int howManyStack0Elem)
   }
   printf("VM Debug End\n");
 }
+void *execDebug(void* no)
+{
+  int error=0;
+  int ino = *(int*)no;
+  while(!error)
+  {//loop for each loadded processor
+    //execute one thread
+    while(listInstance[ino].status)//trap not invoked^^^^^^^^^^^
+    {
+      printf("Trying one step...\n");
+      executionOneStep(&listInstance[ino]);
+      printf("Ended.\n");
+      scanf("\n");
+    }
+    ino+=NUM_E_THREAD;
+    if(ino==listInstanceSize) ino = *(int*)no;
+  }
+}
+void VMStartUp()
+{
+  int r=0;
+  pthread_create(&executionThread[0],NULL,execDebug,&r);
+  pthread_join(executionThread[0],NULL);
+}
