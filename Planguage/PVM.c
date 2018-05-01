@@ -22,6 +22,68 @@ void VMReadFile(char *file)
   }
 
   //initialize the instance list
+  //allocate the space
+  listInstanceSize = VMpe->processorInstanceNUM;
+  listInstance = malloc(sizeof(PBase) * listInstanceSize);
+  for(c0=0;c0<listInstanceSize;c0++)
+  {
+    //allocate data section.
+    listInstance[c0].data = malloc(VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].dataSize);
+    //assign value
+    listInstance[c0].code = VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].code;
+    listInstance[c0].pc = VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].code;
+    listInstance[c0].PID = &listInstance[c0];
+    listInstance[c0].status = 0;
+    listInstance[c0].eflag = 0;
+    {
+      void* *ap = listInstance[c0].data;
+      //data r
+      *ap = listInstance[c0].data;
+      ap++;
+      //stack0 base pointer
+      *ap = listInstance[c0].data + 256 * 8;
+      ap++;
+      //stack0 pointer
+      *ap = listInstance[c0].data + 256 * 8;
+      ap++;
+      //stack base pointer
+      *ap = listInstance[c0].data + 256 * 8 + VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].stack0Size;
+      ap++;
+      //stack pointer
+      *ap = listInstance[c0].data + 256 * 8 + VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].stack0Size;
+      ap++;
+      //global base pointer
+      *ap = listInstance[c0].data + 256 * 8 +
+        VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].stack0Size +
+        VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].stackSize;
+      ap++;
+      //constant/string base pointer.
+      *ap = listInstance[c0].data + 256 * 8 +
+        VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].stack0Size +
+        VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].stackSize +
+        VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].globalSize;
+      ap++;
+    }
+    {
+      int c1,c2;
+      for(c1=0;c1<VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].initNumGlobal;c1++)
+      {
+        initD* d = &VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].initDataGlobal[c1];
+        for(c2=0;c2<d->length;c2++)
+        {
+          *(char*)(listInstance[c0].data + c2) = *(char*)(d->data + c2);
+        }
+      }
+      for(c1=0;c1<VMpe->processorInstances[c0].initNum;c1++)
+      {
+        initD* d = &VMpe->processorInstances[c0].initData[c1];
+        for(c2=0;c2<d->length;c2++)
+        {
+          *(char*)(listInstance[c0].data + c2) = *(char*)(d->data + c2);
+        }
+      }
+    }
+  }
 }
 void debugVM(PBase *p,int howManyStack0Elem)
 {

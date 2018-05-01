@@ -14,6 +14,7 @@ PExe* parseFile(char *fileS)
     fread(ppt->code,1,ppt->codeLength,fp);//get code section
     fread(&ppt->stack0Size,sizeof(int),1,fp);//get size of stack0
     fread(&ppt->stackSize,sizeof(int),1,fp);//get size of stack
+    fread(&ppt->globalSize,sizeof(int),1,fp);
     fread(&ppt->initNumGlobal,sizeof(int),1,fp);//get the list size
     ppt->initDataGlobal = malloc(sizeof(initD) * ppt->initNumGlobal);//allocate space
     {

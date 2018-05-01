@@ -27,11 +27,11 @@ typedef struct AInstanceOfProcessor
    * 256*8B for segment pointers
     * data base           $0
     * stack0 base         $8
-    * stack0 pointer      $9
-    * stack base          $13
-    * stack pointer       $17
-    * global base         $21
-    * const/string base   $
+    * stack0 pointer      $16
+    * stack base          $24
+    * stack pointer       $32
+    * global base         $40
+    * const/string base   $44
     * reserved for users
    */
 }PBase;
