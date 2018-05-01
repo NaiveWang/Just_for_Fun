@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include "PCore.h"
 #include "PFile.h"
+#include "PVMAPILib.h"
 #define NUM_E_THREAD 1
 /** MACRO Section **/
 //the number of execution threads, it mainly depends on the hardware
@@ -31,9 +32,9 @@ mutex *listMutex;
 int listInstanceSize;
 PBase *listInstance;
 //thread pool
-pthread_t APIHandler;
-pthread_t errorHandler;
-pthread_t triggerHandler;
+pthread_t APIHandlerT;
+pthread_t errorHandlerT;
+pthread_t triggerHandlerT;
 pthread_t executionThread[NUM_E_THREAD];
 //Statistic Data
 /** Functions **/
