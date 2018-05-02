@@ -1,1 +1,36 @@
 #include "PAssembler.h"
+void ReadLine()
+{
+    fscanf(input,"%s\n",inputBuffer);
+}
+void countIdentifier()
+{
+    char bufferC=0;
+    while(bufferC!=EOF)
+    {
+        fscanf(input,"%c",&bufferC);
+        if(bufferC==IDENTIFIER)
+        {
+            fscanf(input,"%c",inputBuffer);
+            switch(*inputBuffer)
+            {
+                case'p':
+                    fscanf(input,"%8c",inputBuffer+1);
+                    if(strncmp(inputBuffer,I_PROCESSOR,9)) pe.processorTemplateNum++;
+                    break;
+                case'm':
+                    fscanf(input,"%4c",inputBuffer+1);
+                    if(strncmp(inputBuffer,I_PROCESSOR,5)) pe.mutexNum++;
+                    break;
+                case'i':
+                    fscanf(input,"%7c",inputBuffer+1);
+                    if(strncmp(inputBuffer,I_PROCESSOR,8)) pe.processorInstanceNUM++;
+                    break;
+                case'c':
+                    fscanf(input,"%9c",inputBuffer+1);
+                    if(strncmp(inputBuffer,I_PROCESSOR,10)) pe.connectionMappingNum++;
+                    break;
+            }
+        }
+    }
+}
