@@ -20,6 +20,7 @@ typedef struct AInstanceOfProcessor
 {
   void *PID;
   unsigned int memoryUsage;
+  void* APICallAddr;
   unsigned long APICallID;
   int status;
   void *pc;
