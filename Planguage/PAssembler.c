@@ -1,34 +1,36 @@
 #include "PAssembler.h"
-void ReadLine()
-{
-    fscanf(input,"%s\n",inputBuffer);
-}
 void countIdentifier()
 {
     char bufferC=0;
-    while(bufferC!=EOF)
+    while((bufferC=(char)fgetc(input))!=EOF)
     {
-        fscanf(input,"%c",&bufferC);
+        //fscanf(input,"%c",&bufferC);
+        //if(bufferC=='\n') fscanf(input,"\n");
+        //if(bufferC==EOF) break;
+        //bufferC=(char)fgetc(input);
+        //printf("%c",bufferC);
         if(bufferC==IDENTIFIER)
         {
-            fscanf(input,"%c",inputBuffer);
+            inputBuffer[0]=(char)fgetc(input);
+            //printf("#%c\n",bufferC);
             switch(*inputBuffer)
             {
                 case'p':
-                    fscanf(input,"%8c",inputBuffer+1);
-                    if(strncmp(inputBuffer,I_PROCESSOR,9)) pe.processorTemplateNum++;
+                    fscanf(input,"%8s",inputBuffer+1);
+                    printf("##%s\n",inputBuffer);
+                    if(!strncmp(inputBuffer,I_PROCESSOR,9)) pe.processorTemplateNum++;
                     break;
                 case'm':
-                    fscanf(input,"%4c",inputBuffer+1);
-                    if(strncmp(inputBuffer,I_PROCESSOR,5)) pe.mutexNum++;
+                    fscanf(input,"%4s",inputBuffer+1);
+                    if(!strncmp(inputBuffer,I_MUTEX,5)) pe.mutexNum++;
                     break;
                 case'i':
-                    fscanf(input,"%7c",inputBuffer+1);
-                    if(strncmp(inputBuffer,I_PROCESSOR,8)) pe.processorInstanceNUM++;
+                    fscanf(input,"%7s",inputBuffer+1);
+                    if(!strncmp(inputBuffer,I_INSTANCE,8)) pe.processorInstanceNUM++;
                     break;
                 case'c':
-                    fscanf(input,"%9c",inputBuffer+1);
-                    if(strncmp(inputBuffer,I_PROCESSOR,10)) pe.connectionMappingNum++;
+                    fscanf(input,"%9s",inputBuffer+1);
+                    if(!strncmp(inputBuffer,I_CONNECTION,10)) pe.connectionMappingNum++;
                     break;
             }
         }
