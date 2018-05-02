@@ -14,27 +14,44 @@
 #define I_INSTANCE "instance "
 #define I_CONNECTION "connection "
 //define parsing status
-#define PS_IN_PROCESSOR 0
-#define PS_DATA_SECTION_GLOBAL 1
-#define PS_DATA_SECTION_TEMPLATE 2
-#define PS_CODESECTION 3
-#define PS_MUTEX_SECTION 4
-#define PS_INSTANCE_SECTION 5
-#define PS_CONNECTIONS 6
+#define PS_START 0
+#define PS_IN_PROCESSOR 1
+#define PS_DATA_SECTION_GLOBAL 2
+#define PS_DATA_SECTION_TEMPLATE 3
+#define PS_CODESECTION 4
+#define PS_MUTEX_SECTION 5
+#define PS_INSTANCE_SECTION 6
+#define PS_CONNECTIONS 7
 /** Global Variables **/
 char inputBuffer[BUFFER_SIZE];
+char identifierBuffer[NAME_BUFFER_SIZE];
 FILE *input,*output;
 PExe pe;
 int parsingStatus;
+int errno;
+int parseLine;
 //element list
 char *pNameList;
 char *iNameList;
-char *mNameList;
 char *cNameList;
+int pListNum,iListNum,cListNum;
 /**Utility Function Section**/
 void countIdentifier();
-int ifIdentifierOverdefined(char *List,char *target,int boundary);
-int matchIdentifier(char *List,char *target,int boundary);
+char* nameSeek(char* s, int n);
+int ifIdentifierOverdefined(char *List,char *target,int n);
+int matchIdentifier(char *List,char *target,int n);
+void strCopy(char *s,char *d);
+int addIdentifier(char* t,char *List,int *n);
+char* skipWhitespace(char*);
+void parseStart();
+void parseProcessor();
+void parseProcessorCode();
+void parseProcessorData();
+void parseMutex();
+void parseConnection();
+void parseInstance();
+void parseInstanceData();
+void errorHandler();
 /** Assembler main body **/
 int main(int argv,char** argc)
 {
@@ -67,17 +84,51 @@ int main(int argv,char** argc)
   printf("Connection(s):%d\n",pe.connectionMappingNum);
   fseek(input,0,SEEK_SET);
   //allocate the space,
-  if(pNameList) pNameList=malloc(NAME_BUFFER_SIZE * pe.processorTemplateNum);
-  if(iNameList) iNameList=malloc(NAME_BUFFER_SIZE * pe.mutexNum);
-  if(mNameList) mNameList=malloc(NAME_BUFFER_SIZE * pe.processorInstanceNUM);
-  if(cNameList) cNameList=malloc(NAME_BUFFER_SIZE * pe.connectionMappingNum);
+  if(pe.processorTemplateNum)
+  {
+    pNameList=malloc(NAME_BUFFER_SIZE * pe.processorTemplateNum);
+    pe.processorTemplates = malloc(sizeof(processorT) * pe.processorTemplateNum);
+  }
+  if(pe.mutexNum|pe.processorInstanceNUM) iNameList=malloc(NAME_BUFFER_SIZE * (pe.mutexNum+pe.processorInstanceNUM));
+  if(pe.connectionMappingNum)
+  {
+    cNameList=malloc(NAME_BUFFER_SIZE * pe.connectionMappingNum);
+    pe.connectionMapping = malloc(sizeof(connections) * pe.connectionMappingNum);
+  }
   //allocate the space for element
-  if(pNameList) pe.processorTemplates = malloc(sizeof(processorT) * pe.processorTemplateNum);
-  if(iNameList) pe.mutexSizeList = malloc(sizeof(int) * pe.mutexNum);
-  if(mNameList) pe.processorInstances = malloc(sizeof(processorI) * pe.processorInstanceNUM);
-  if(cNameList) pe.connectionMapping = malloc(sizeof(connections) * pe.connectionMappingNum);
+  if(pe.processorTemplateNum)
+  if(pe.mutexNum) pe.mutexSizeList = malloc(sizeof(int) * pe.mutexNum);
+  if(pe.processorInstanceNUM) pe.processorInstances = malloc(sizeof(processorI) * pe.processorInstanceNUM);
   //parse processor, record name and others
   //while(fgets(inputBuffer,NAME_BUFFER_SIZE,input)!=NULL) printf("%s",inputBuffer);
+  parsingStatus = PS_START;
+  errno = 0;
+  parseLine=1;
+  pListNum=0;
+  iListNum=0;
+  cListNum=0;
+  fgets(inputBuffer,NAME_BUFFER_SIZE,input);
+  for(;;)
+  {
+    //parse with status
+    switch(parsingStatus)
+    {
+      case PS_START:parseStart();break;
+      case PS_IN_PROCESSOR:parseProcessor();break;
+      case PS_DATA_SECTION_GLOBAL:parseProcessorData();break;
+      case PS_DATA_SECTION_TEMPLATE:parseInstanceData();break;
+      case PS_CODESECTION:parseProcessorCode();break;
+      case PS_MUTEX_SECTION:parseMutex();break;
+      case PS_INSTANCE_SECTION:parseInstance();break;
+      case PS_CONNECTIONS:parseConnection();break;
+    }
+    if(errno)
+    {
+      errorHandler();
+      break;
+    }
+    parseLine++;
+  }
   return 0;
 }
 #endif

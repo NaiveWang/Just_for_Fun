@@ -36,30 +36,110 @@ void countIdentifier()
         }
     }
 }
-int ifIdentifierOverdefined(char *List,char *target,int boundary)
-{//assume they have the \0 end sign
-    while(boundary--)
-    {
-        if(strcmp(List,target))
-        {
-            List+=NAME_BUFFER_SIZE;
-            continue;
-        }
-        return -1;
-    }
-    return 0;
-}
-int matchIdentifier(char *List,char *target,int boundary)
+char* nameSeek(char* s, int n)
 {
-    int bkboundary;
-    for(bkboundary=0;bkboundary<boundary;bkboundary++)
-    {
-        if(strcmp(List,target))
-        {
-            List+=NAME_BUFFER_SIZE;
-            continue;
-        }
-        return bkboundary;
+  return s + n*NAME_BUFFER_SIZE + 1;
+}
+void strCopy(char *s,char *d)
+{
+  while(*s != '\n'||' '||'\t')
+  {
+    *d = *s;
+    d++;
+    s++;
+  }
+  *d=0;
+}
+int ifIdentifierOverdefined(char *List,char *target,int n)
+{//search if exist one match, return -1;
+  strCopy(target,identifierBuffer);
+  while(n--)
+  {
+    if(strcmp(identifierBuffer,nameSeek(List,n))) return -1;
+  }
+  return 0;
+}
+int matchIdentifier(char *List,char *target,int n)
+{
+  strCopy(target,identifierBuffer);
+  while(n--)
+  {
+    if(strcmp(identifierBuffer,nameSeek(List,n))) return n;
+  }
+  errno=3;
+  return -1;
+}
+int addIdentifier(char* t,char *List,int *n)
+{
+  *n++;
+  strCopy(t,nameSeek(List,*n));
+}
+char* skipWhitespace(char* s)
+{
+  while(*s==' '||'\t') s++;
+  return s;
+}
+void parseStart()
+{
+  if(inputBuffer[0]==IDENTIFIER)
+  {//identifier get successful
+    if(!strncmp(inputBuffer,I_PROCESSOR,9))
+    {//into processor
+      parsingStatus=PS_MUTEX_SECTION;
     }
-    return -1;
+    else if(!strncmp(inputBuffer,I_MUTEX,5))
+    {
+      parsingStatus=PS_MUTEX_SECTION;
+    }
+    else if(!strncmp(inputBuffer,I_INSTANCE,8))
+    {
+      parsingStatus=PS_INSTANCE_SECTION;
+    }
+    else if(!strncmp(inputBuffer,I_CONNECTION,10))
+    {
+      parsingStatus=PS_CONNECTIONS;
+    }
+    else errno=2;
+  }
+  else errno=1;
+}
+void parseProcessor()
+{
+  ;
+}
+void parseProcessorCode()
+{
+  ;
+}
+void parseProcessorData()
+{
+  ;
+}
+void parseMutex()
+{//find the nearest
+  ;
+}
+void parseConnection()
+{
+  ;
+}
+void parseInstance()
+{
+  ;
+}
+void parseInstanceData()
+{
+  ;
+}
+void errorHandler()
+{
+  printf("Error at line %d : ",parseLine);
+  switch(errno)
+  {
+    case 0:printf("No error found");break;
+    case 1:printf("expecting a dot(.) identifier");break;
+    case 2:printf("Typo or bad announcement");break;
+    case 3:printf("identifier undefined");break;
+  }
+  printf(".\n");
 }
