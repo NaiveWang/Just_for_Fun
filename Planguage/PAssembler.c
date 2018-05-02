@@ -34,3 +34,30 @@ void countIdentifier()
         }
     }
 }
+int ifIdentifierOverdefined(char *List,char *target,int boundary)
+{//assume they have the \0 end sign
+    while(boundary--)
+    {
+        if(strcmp(List,target))
+        {
+            List+=NAME_BUFFER_SIZE;
+            continue;
+        }
+        return -1;
+    }
+    return 0;
+}
+int matchIdentifier(char *List,char *target,int boundary)
+{
+    int bkboundary;
+    for(bkboundary=0;bkboundary<boundary;bkboundary++)
+    {
+        if(strcmp(List,target))
+        {
+            List+=NAME_BUFFER_SIZE;
+            continue;
+        }
+        return bkboundary;
+    }
+    return -1;
+}

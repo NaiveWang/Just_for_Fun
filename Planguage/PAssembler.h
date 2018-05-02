@@ -24,8 +24,8 @@ char *cNameList;
 /**Utility Function Section**/
 void ReadLine();
 void countIdentifier();
-int ifIdentifierOverdefined(char *List,char *target);
-int matchIdentifier(char *List,char *target);
+int ifIdentifierOverdefined(char *List,char *target,int boundary);
+int matchIdentifier(char *List,char *target,int boundary);
 /** Assembler main body **/
 int main(int argv,char** argc)
 {
@@ -51,6 +51,11 @@ int main(int argv,char** argc)
   iNameList=malloc(NAME_BUFFER_SIZE * pe.mutexNum);
   mNameList=malloc(NAME_BUFFER_SIZE * pe.processorInstanceNUM);
   cNameList=malloc(NAME_BUFFER_SIZE * pe.connectionMappingNum);
+  //allocate the space for element
+  pe.processorTemplates = malloc(sizeof(processorT) * pe.processorTemplateNum);
+  pe.mutexSizeList = malloc(sizeof(int) * pe.mutexNum);
+  pe.processorInstances = malloc(sizeof(processorI) * pe.processorInstanceNUM);
+  pe.connectionMapping = malloc(sizeof(connections) * pe.connectionMappingNum);
   //parse processor.
   return 0;
 }
