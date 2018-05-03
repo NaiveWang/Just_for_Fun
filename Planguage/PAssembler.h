@@ -25,6 +25,7 @@
 /** Global Variables **/
 char inputBuffer[BUFFER_SIZE];
 char identifierBuffer[NAME_BUFFER_SIZE];
+int inputBufferPointer;
 FILE *input,*output;
 PExe pe;
 int parsingStatus;
@@ -33,10 +34,12 @@ int parseLine;
 //element list
 char *pNameList;
 char *iNameList;
+char *mNameList;
 char *cNameList;
-int pListNum,iListNum,cListNum;
+int pListNum,iListNum,cListNum,mListNum;
 /**Utility Function Section**/
 void countIdentifier();
+int readLine();
 char* nameSeek(char* s, int n);
 int ifIdentifierOverdefined(char *List,char *target,int n);
 int matchIdentifier(char *List,char *target,int n);
@@ -89,16 +92,35 @@ int main(int argv,char** argc)
     pNameList=malloc(NAME_BUFFER_SIZE * pe.processorTemplateNum);
     pe.processorTemplates = malloc(sizeof(processorT) * pe.processorTemplateNum);
   }
-  if(pe.mutexNum|pe.processorInstanceNUM) iNameList=malloc(NAME_BUFFER_SIZE * (pe.mutexNum+pe.processorInstanceNUM));
+  else
+  {
+    printf("Warning : No template found, cannot generate execution file.\n");
+    return -1;
+  }
+  if(pe.mutexNum)
+  {
+    pe.mutexSizeList = malloc(sizeof(int) * pe.mutexNum);
+    mNameList=malloc(NAME_BUFFER_SIZE * pe.mutexNum);
+  }
+  if(pe.processorInstanceNUM)
+  {
+    pe.processorInstances = malloc(sizeof(processorI) * pe.processorInstanceNUM);
+    iNameList=malloc(NAME_BUFFER_SIZE * pe.processorInstanceNUM);
+  }
+  else
+  {
+    printf("Warning : No instance found, cannot generate execution file.\n");
+    return -1;
+  }
   if(pe.connectionMappingNum)
   {
     cNameList=malloc(NAME_BUFFER_SIZE * pe.connectionMappingNum);
     pe.connectionMapping = malloc(sizeof(connections) * pe.connectionMappingNum);
   }
   //allocate the space for element
-  if(pe.processorTemplateNum)
-  if(pe.mutexNum) pe.mutexSizeList = malloc(sizeof(int) * pe.mutexNum);
-  if(pe.processorInstanceNUM) pe.processorInstances = malloc(sizeof(processorI) * pe.processorInstanceNUM);
+  //if(pe.processorTemplateNum)
+  //if(pe.mutexNum)
+  //if(pe.processorInstanceNUM)
   //parse processor, record name and others
   //while(fgets(inputBuffer,NAME_BUFFER_SIZE,input)!=NULL) printf("%s",inputBuffer);
   parsingStatus = PS_START;
@@ -107,7 +129,19 @@ int main(int argv,char** argc)
   pListNum=0;
   iListNum=0;
   cListNum=0;
-  fgets(inputBuffer,NAME_BUFFER_SIZE,input);
+  mListNum=0;
+  if(readLine())
+  {//read first line failed
+    printf("Error:Cannot read file content.\n");
+    return -1;
+  }
+  printf("%s\n",inputBuffer);
+  while(!readLine())
+  {
+    printf("%s\n",inputBuffer+inputBufferPointer);
+  }
+  //breakpoint 0
+  return 0;
   for(;;)
   {
     //parse with status

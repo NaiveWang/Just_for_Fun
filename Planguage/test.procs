@@ -1,5 +1,8 @@
+
 .processor FIRST_PROCESSOR
 >size_stack0 8
+
+
 >size_stack 1024
 >size_data 65536
 .data

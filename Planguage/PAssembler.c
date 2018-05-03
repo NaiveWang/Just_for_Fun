@@ -36,6 +36,22 @@ void countIdentifier()
         }
     }
 }
+int readLine()
+{
+  static int a0;
+  while(fgets(inputBuffer,NAME_BUFFER_SIZE,input))
+  {
+    inputBufferPointer=0;
+    while(inputBuffer[inputBufferPointer]==' '||inputBuffer[inputBufferPointer]=='\t') inputBufferPointer++;//skip whitespaces in one line
+    if(inputBuffer[inputBufferPointer]=='\n') continue;//skip empty lines
+    //convert \n to NULL
+    a0=inputBufferPointer;
+    while(inputBuffer[a0]^'\n') a0++;
+    inputBuffer[a0]=0;
+    return 0;
+  }
+  return -1;
+}
 char* nameSeek(char* s, int n)
 {
   return s + n*NAME_BUFFER_SIZE + 1;
