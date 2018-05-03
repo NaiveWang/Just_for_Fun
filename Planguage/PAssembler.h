@@ -4,6 +4,7 @@
 #include <string.h>
 #include "PCore.h"
 #include "PFile.h"
+#include "PVMAPILib.h"
 
 #define IDENTIFIER '.'
 #define BUFFER_SIZE 1024
@@ -55,6 +56,7 @@ void parseConnection();
 void parseInstance();
 void parseInstanceData();
 void errorHandler();
+void _debugShowNameList(char *list,int n);
 /** Assembler main body **/
 int main(int argv,char** argc)
 {
@@ -149,7 +151,7 @@ int main(int argv,char** argc)
     //parse with status
     switch(parsingStatus)
     {
-      case PS_START:printf("#%d#start\n",parseLine);parseStart();break;
+      case PS_START:parseStart();break;
       case PS_IN_PROCESSOR:parseProcessor();break;
       case PS_DATA_SECTION_GLOBAL:parseProcessorData();break;
       case PS_DATA_SECTION_TEMPLATE:parseInstanceData();break;
@@ -163,6 +165,7 @@ int main(int argv,char** argc)
       errorHandler();
       break;
     }
+    _debugShowNameList(mNameList,mListNum);
     //parseLine++;
   }
   return 0;

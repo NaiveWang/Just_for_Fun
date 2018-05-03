@@ -59,7 +59,7 @@ int readLine()
 }
 char* nameSeek(char* s, int n)
 {
-  return s + n*NAME_BUFFER_SIZE + 1;
+  return s + n*NAME_BUFFER_SIZE;
 }
 int strCopy(char *s,char *d)
 {
@@ -81,7 +81,7 @@ int ifIdentifierOverdefined(char *List,int n)
   //strCopy(target,identifierBuffer);
   while(n--)
   {
-    if(strcmp(identifierBuffer,nameSeek(List,n))) return -1;
+    if(!strcmp(identifierBuffer,nameSeek(List,n))) return -1;
   }
   return 0;
 }
@@ -90,15 +90,16 @@ int matchIdentifier(char *List,char *target,int n)
   strCopy(target,identifierBuffer);
   while(n--)
   {
-    if(strcmp(identifierBuffer,nameSeek(List,n))) return n;
+    if(!strcmp(identifierBuffer,nameSeek(List,n))) return n;
   }
   errno=3;
   return -1;
 }
 int addIdentifier(char* t,char *List,int *n)
 {
-  *n++;
-  strcpy(t,nameSeek(List,*n));
+
+  strcpy(nameSeek(List,*n),t);
+  (*n)++;
 }
 void skipWhitespace()
 {
@@ -108,24 +109,25 @@ void parseStart()
 {
   if(inputBuffer[inputBufferPointer]==IDENTIFIER)
   {//identifier get successful
-    if(!strncmp(inputBuffer+inputBufferPointer+1,I_PROCESSOR,9))
+    inputBufferPointer++;
+    if(!strncmp(inputBuffer+inputBufferPointer,I_PROCESSOR,9))
     {//into processor
-      inputBufferPointer+=10;
+      inputBufferPointer+=9;
       parsingStatus=PS_IN_PROCESSOR;
     }
-    else if(!strncmp(inputBuffer+inputBufferPointer+1,I_MUTEX,5))
+    else if(!strncmp(inputBuffer+inputBufferPointer,I_MUTEX,5))
     {
-      inputBufferPointer+=6;
+      inputBufferPointer+=5;
       parsingStatus=PS_MUTEX_SECTION;
     }
-    else if(!strncmp(inputBuffer+inputBufferPointer+1,I_INSTANCE,8))
+    else if(!strncmp(inputBuffer+inputBufferPointer,I_INSTANCE,8))
     {
-      inputBufferPointer+=9;
+      inputBufferPointer+=8;
       parsingStatus=PS_INSTANCE_SECTION;
     }
-    else if(!strncmp(inputBuffer+inputBufferPointer+1,I_CONNECTION,10))
+    else if(!strncmp(inputBuffer+inputBufferPointer,I_CONNECTION,10))
     {
-      inputBufferPointer+=11;
+      inputBufferPointer+=10;
       parsingStatus=PS_CONNECTIONS;
     }
     else errno=2;
@@ -160,7 +162,9 @@ void parseMutex()
     return;
   }
   //addname & skip name
+  //printf("$%s$\n",identifierBuffer);
   addIdentifier(identifierBuffer,mNameList,&mListNum);
+  //printf("&%d\n",mListNum);
   //skip whitespace
   inputBufferPointer+=a0;
   skipWhitespace();
@@ -197,4 +201,12 @@ void errorHandler()
     case 4:printf("identifier conflict, name override");break;
   }
   printf(".\n");
+}
+void _debugShowNameList(char *list,int n)
+{
+  printf("$DEBUG$%d\n",n);
+  while(n--)
+  {
+    printf("$DEBUG$%s\n",list + n * NAME_BUFFER_SIZE);
+  }
 }

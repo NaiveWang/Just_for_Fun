@@ -5,6 +5,12 @@
  **/
 #include "PCoreBase.h"
 #include <stdio.h>
+typedef struct referencesOfAssembler
+{
+  unsigned short apiNumber;
+  unsigned short apiNumberL;
+  char key[28];
+}APIIR;
 void basicIO_Buffer(PBase* p);
 void basicIO_File(PBase* p);
 //decoder

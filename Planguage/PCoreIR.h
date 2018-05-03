@@ -6,6 +6,12 @@
 #include "PCoreBase.h"
 //instructions
 //template: void <NAME>(PBase)
+/** key word define **/
+typedef struct compileData
+{
+  int length;
+  char key[28];
+}IR;
 /**Processor Control**/
 
 void HALT(PBase *p);

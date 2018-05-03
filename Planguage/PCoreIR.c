@@ -295,10 +295,20 @@ void (*InstructionSet[])(PBase *p) = {
   OPCMPI,
   OPNOTI,
   OPTSTI};
+IR pir[]={
+  {2,"MOV8A"},{12,"MOV8"},{2,"MOVBA"},
+  {7,"PUSH0A"},{10,"PUSH0I8"},{7,"PUSH08"},{7,"POP08"},
+  {7,"PUSH8"},{7,"POP8"},
+  {10,"CALL"},{2,"RETN"},{10,"JUMP"},{14,"JMPC"},
+  {2,"OPADDI"},
+  {2,"OPDIVI"},
+  {2,"OPCMPI"},
+  {2,"OPNOTI"},
+  {2,"OPTSTI"}};
 void executionOneStep(PBase *p)
 {
   unsigned short codeNo;
-  asm("movq %0,%%rbx"::"r"(p->pc)); 
+  asm("movq %0,%%rbx"::"r"(p->pc));
   asm("movw (%%rbx),%0":"=r"(codeNo));
   InstructionSet[codeNo](p);
 }

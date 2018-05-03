@@ -30,3 +30,7 @@ void *APIHandler(void* vp)
     default:printf("Error:unknown calling ID\n");
   }
 }
+APIIR apiir[]={
+  {0,0,"BUFF_PRINT_I10"},{0,3,"BUFF_SCAN_I10"}
+  //{1,0}
+};
