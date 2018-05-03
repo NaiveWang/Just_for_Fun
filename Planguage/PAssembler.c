@@ -17,7 +17,7 @@ void countIdentifier()
             {
                 case'p':
                     fscanf(input,"%8s",inputBuffer+1);
-                    printf("##%s\n",inputBuffer);
+                    //printf("##%s\n",inputBuffer);
                     if(!strncmp(inputBuffer,I_PROCESSOR,9)) pe.processorTemplateNum++;
                     break;
                 case'm':
@@ -43,11 +43,16 @@ int readLine()
   {
     inputBufferPointer=0;
     while(inputBuffer[inputBufferPointer]==' '||inputBuffer[inputBufferPointer]=='\t') inputBufferPointer++;//skip whitespaces in one line
-    if(inputBuffer[inputBufferPointer]=='\n') continue;//skip empty lines
+    if(inputBuffer[inputBufferPointer]=='\n')
+    {
+      parseLine++;
+      continue;//skip empty lines
+    }
     //convert \n to NULL
     a0=inputBufferPointer;
     while(inputBuffer[a0]^'\n') a0++;
     inputBuffer[a0]=0;
+    parseLine++;
     return 0;
   }
   return -1;
@@ -56,19 +61,24 @@ char* nameSeek(char* s, int n)
 {
   return s + n*NAME_BUFFER_SIZE + 1;
 }
-void strCopy(char *s,char *d)
+int strCopy(char *s,char *d)
 {
-  while(*s != '\n'||' '||'\t')
+  static int a0;
+  a0=0;
+  while((*s != '\n')&&(*s != ' ')&&(*s != '\t'))
   {
+    //printf("%d/",a0);
     *d = *s;
     d++;
     s++;
+    a0++;
   }
   *d=0;
+  return a0;
 }
-int ifIdentifierOverdefined(char *List,char *target,int n)
+int ifIdentifierOverdefined(char *List,int n)
 {//search if exist one match, return -1;
-  strCopy(target,identifierBuffer);
+  //strCopy(target,identifierBuffer);
   while(n--)
   {
     if(strcmp(identifierBuffer,nameSeek(List,n))) return -1;
@@ -88,31 +98,34 @@ int matchIdentifier(char *List,char *target,int n)
 int addIdentifier(char* t,char *List,int *n)
 {
   *n++;
-  strCopy(t,nameSeek(List,*n));
+  strcpy(t,nameSeek(List,*n));
 }
-char* skipWhitespace(char* s)
+void skipWhitespace()
 {
-  while(*s==' '||'\t') s++;
-  return s;
+  while(inputBuffer[inputBufferPointer]==' '||inputBuffer[inputBufferPointer]=='\t') inputBufferPointer++;
 }
 void parseStart()
 {
-  if(inputBuffer[0]==IDENTIFIER)
+  if(inputBuffer[inputBufferPointer]==IDENTIFIER)
   {//identifier get successful
-    if(!strncmp(inputBuffer,I_PROCESSOR,9))
+    if(!strncmp(inputBuffer+inputBufferPointer+1,I_PROCESSOR,9))
     {//into processor
+      inputBufferPointer+=10;
+      parsingStatus=PS_IN_PROCESSOR;
+    }
+    else if(!strncmp(inputBuffer+inputBufferPointer+1,I_MUTEX,5))
+    {
+      inputBufferPointer+=6;
       parsingStatus=PS_MUTEX_SECTION;
     }
-    else if(!strncmp(inputBuffer,I_MUTEX,5))
+    else if(!strncmp(inputBuffer+inputBufferPointer+1,I_INSTANCE,8))
     {
-      parsingStatus=PS_MUTEX_SECTION;
-    }
-    else if(!strncmp(inputBuffer,I_INSTANCE,8))
-    {
+      inputBufferPointer+=9;
       parsingStatus=PS_INSTANCE_SECTION;
     }
-    else if(!strncmp(inputBuffer,I_CONNECTION,10))
+    else if(!strncmp(inputBuffer+inputBufferPointer+1,I_CONNECTION,10))
     {
+      inputBufferPointer+=11;
       parsingStatus=PS_CONNECTIONS;
     }
     else errno=2;
@@ -133,7 +146,32 @@ void parseProcessorData()
 }
 void parseMutex()
 {//find the nearest
-  ;
+  //skip whitespace
+  static int a0;
+  skipWhitespace();
+  //printf("##%s\n",inputBuffer+inputBufferPointer);
+  //check name
+  a0=strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
+  //printf("#%dFetching Mutex :%s:",a0,identifierBuffer);
+  if(ifIdentifierOverdefined(mNameList,mListNum)
+  ||ifIdentifierOverdefined(iNameList,iListNum))
+  {
+    errno=4;
+    return;
+  }
+  //addname & skip name
+  addIdentifier(identifierBuffer,mNameList,&mListNum);
+  //skip whitespace
+  inputBufferPointer+=a0;
+  skipWhitespace();
+  //get size
+  //printf("%s",inputBuffer+inputBufferPointer);
+  sscanf(inputBuffer+inputBufferPointer,"%d",&a0);
+  //printf("$%d$\n",a0);
+  //assign the file structure(record)
+  pe.mutexSizeList[mListNum-1]=a0;
+  parsingStatus=PS_START;
+  readLine();
 }
 void parseConnection()
 {
@@ -156,6 +194,7 @@ void errorHandler()
     case 1:printf("expecting a dot(.) identifier");break;
     case 2:printf("Typo or bad announcement");break;
     case 3:printf("identifier undefined");break;
+    case 4:printf("identifier conflict, name override");break;
   }
   printf(".\n");
 }

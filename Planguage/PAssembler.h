@@ -41,11 +41,11 @@ int pListNum,iListNum,cListNum,mListNum;
 void countIdentifier();
 int readLine();
 char* nameSeek(char* s, int n);
-int ifIdentifierOverdefined(char *List,char *target,int n);
+int ifIdentifierOverdefined(char *List,int n);
 int matchIdentifier(char *List,char *target,int n);
-void strCopy(char *s,char *d);
+int strCopy(char *s,char *d);
 int addIdentifier(char* t,char *List,int *n);
-char* skipWhitespace(char*);
+void skipWhitespace();
 void parseStart();
 void parseProcessor();
 void parseProcessorCode();
@@ -125,29 +125,31 @@ int main(int argv,char** argc)
   //while(fgets(inputBuffer,NAME_BUFFER_SIZE,input)!=NULL) printf("%s",inputBuffer);
   parsingStatus = PS_START;
   errno = 0;
-  parseLine=1;
+  parseLine=0;
   pListNum=0;
   iListNum=0;
   cListNum=0;
   mListNum=0;
-  if(readLine())
+  /**if(readLine())
   {//read first line failed
     printf("Error:Cannot read file content.\n");
     return -1;
   }
-  printf("%s\n",inputBuffer);
+  printf("%s\n",inputBuffer+inputBufferPointer);
   while(!readLine())
   {
     printf("%s\n",inputBuffer+inputBufferPointer);
   }
   //breakpoint 0
-  return 0;
+  return 0;*/
+  printf("Parsing...\n");
+  readLine();
   for(;;)
   {
     //parse with status
     switch(parsingStatus)
     {
-      case PS_START:parseStart();break;
+      case PS_START:printf("#%d#start\n",parseLine);parseStart();break;
       case PS_IN_PROCESSOR:parseProcessor();break;
       case PS_DATA_SECTION_GLOBAL:parseProcessorData();break;
       case PS_DATA_SECTION_TEMPLATE:parseInstanceData();break;
@@ -161,7 +163,7 @@ int main(int argv,char** argc)
       errorHandler();
       break;
     }
-    parseLine++;
+    //parseLine++;
   }
   return 0;
 }
