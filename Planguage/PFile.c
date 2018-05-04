@@ -103,12 +103,12 @@ void makeExeFile(char *fileS, PExe *pe)
   //write instance number int
   fwrite(&pe->processorInstanceNUM,sizeof(int),1,fp);
   //loop, write each instance
-  for(c0=0;c0<pe->processorInstanceNUM;c0++)
+  for(a0=0;a0<pe->processorInstanceNUM;a0++)
   {
     //write reference number int
-    fwrite(&pe->processorInstances[c0].processorReferenceNo,sizeof(int),1,fp);
+    fwrite(&pe->processorInstances[a0].processorReferenceNo,sizeof(int),1,fp);
     //write init nember int
-    fwrite(&pe->processorInstances[c0].initNum,sizeof(int),1,fp);
+    fwrite(&pe->processorInstances[a0].initNum,sizeof(int),1,fp);
     //loop, write all if the initializing data.
     for(a1=0;a1<pe->processorInstances[a0].initNum;a1++)
     {
@@ -128,7 +128,36 @@ void makeExeFile(char *fileS, PExe *pe)
   //finished
   fclose(fp);
 }
-void clearFile(PExe *pe)
-{
-  ;
+void clearFile(PExe *pe,char flag)
+{//this funtion free all of the memory of a PEXE struct
+  //except for the code section
+  static unsigned int a0,a1;
+  //loop, free processorTemplates
+  for(a0=0;a0<pe->processorTemplateNum;a0++)
+  {
+    //reserve the code section
+    if(flag==CLEAR_ALL) free(pe->processorTemplates[a0].code);
+    //free the list of init-data;
+    for(a1=0;a1<pe->processorTemplates[a0].initNumGlobal;a1++)
+    {
+      free(pe->processorTemplates[a0].initDataGlobal[a1].data);
+    }
+    free(pe->processorTemplates[a0].initDataGlobal);
+  }
+  free(pe->processorTemplates);
+  //free mutexList
+  free(pe->mutexSizeList);
+  //free inmstance list, loop
+  for(a0=0;a0<pe->processorInstanceNUM;a0++)
+  {
+    //free the list of init-data;
+    for(a1=0;a1<pe->processorInstances[a0].initNum;a1++)
+    {
+      free(pe->processorInstances[a0].initData[a1].data);
+    }
+    free(pe->processorInstances[a0].initData);
+  }
+  free(pe->processorInstances);
+  //free connection List
+  free(pe->connectionMapping);
 }

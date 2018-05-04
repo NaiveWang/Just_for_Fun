@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #define MIN_STACK0 2<<8
 #define MIN_STACK 2<<10
+#define CLEAR_ALL 0x00
+#define CODE_RESERVED 0xff
  typedef struct initializingDataStructuresListElement
  {
    int offset;
@@ -57,6 +59,6 @@
  }PExe;
 /** utility functions **/
 PExe* parseFile(char *fileS);
-void clearFile(PExe *pe);
+void clearFile(PExe *pe,char flag);
 void makeExeFile(char *fileS, PExe *pe);
 #endif
