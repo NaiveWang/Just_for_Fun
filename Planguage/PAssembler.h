@@ -28,7 +28,7 @@ char inputBuffer[BUFFER_SIZE];
 char identifierBuffer[NAME_BUFFER_SIZE];
 int inputBufferPointer;
 FILE *input,*output;
-PExe pe;
+PExe *pe;
 int parsingStatus;
 int errno;
 int parseLine;
@@ -68,12 +68,12 @@ int main(int argv,char** argc)
   }
   //argc+1: input file, text.
   //argc+2: output file, binary.
-
+  pe=malloc(sizeof(PExe));
   //read input file.
-  pe.processorTemplateNum=0;
-  pe.mutexNum=0;
-  pe.processorInstanceNUM=0;
-  pe.connectionMappingNum=0;
+  pe->processorTemplateNum=0;
+  pe->mutexNum=0;
+  pe->processorInstanceNUM=0;
+  pe->connectionMappingNum=0;
   input=fopen(*(argc+1),"r");
   if(input!=NULL) printf("reading file successful\n");
   else
@@ -83,46 +83,46 @@ int main(int argv,char** argc)
   }
   printf("counting emelemts\n");
   countIdentifier();
-  printf("Template(s):%d\n",pe.processorTemplateNum);
-  printf("Mutex(es):%d\n",pe.mutexNum);
-  printf("Instance(s):%d\n",pe.processorInstanceNUM);
-  printf("Connection(s):%d\n",pe.connectionMappingNum);
+  printf("Template(s):%d\n",pe->processorTemplateNum);
+  printf("Mutex(es):%d\n",pe->mutexNum);
+  printf("Instance(s):%d\n",pe->processorInstanceNUM);
+  printf("Connection(s):%d\n",pe->connectionMappingNum);
   fseek(input,0,SEEK_SET);
   //allocate the space,
-  if(pe.processorTemplateNum)
+  if(pe->processorTemplateNum)
   {
-    pNameList=malloc(NAME_BUFFER_SIZE * pe.processorTemplateNum);
-    pe.processorTemplates = malloc(sizeof(processorT) * pe.processorTemplateNum);
+    pNameList=malloc(NAME_BUFFER_SIZE * pe->processorTemplateNum);
+    pe->processorTemplates = malloc(sizeof(processorT) * pe->processorTemplateNum);
   }
   else
   {
     printf("Warning : No template found, cannot generate execution file.\n");
     return -1;
   }
-  if(pe.mutexNum)
+  if(pe->mutexNum)
   {
-    pe.mutexSizeList = malloc(sizeof(int) * pe.mutexNum);
-    mNameList=malloc(NAME_BUFFER_SIZE * pe.mutexNum);
+    pe->mutexSizeList = malloc(sizeof(int) * pe->mutexNum);
+    mNameList=malloc(NAME_BUFFER_SIZE * pe->mutexNum);
   }
-  if(pe.processorInstanceNUM)
+  if(pe->processorInstanceNUM)
   {
-    pe.processorInstances = malloc(sizeof(processorI) * pe.processorInstanceNUM);
-    iNameList=malloc(NAME_BUFFER_SIZE * pe.processorInstanceNUM);
+    pe->processorInstances = malloc(sizeof(processorI) * pe->processorInstanceNUM);
+    iNameList=malloc(NAME_BUFFER_SIZE * pe->processorInstanceNUM);
   }
   else
   {
     printf("Warning : No instance found, cannot generate execution file.\n");
     return -1;
   }
-  if(pe.connectionMappingNum)
+  if(pe->connectionMappingNum)
   {
-    cNameList=malloc(NAME_BUFFER_SIZE * pe.connectionMappingNum);
-    pe.connectionMapping = malloc(sizeof(connections) * pe.connectionMappingNum);
+    cNameList=malloc(NAME_BUFFER_SIZE * pe->connectionMappingNum);
+    pe->connectionMapping = malloc(sizeof(connections) * pe->connectionMappingNum);
   }
   //allocate the space for element
-  //if(pe.processorTemplateNum)
-  //if(pe.mutexNum)
-  //if(pe.processorInstanceNUM)
+  //if(pe->processorTemplateNum)
+  //if(pe->mutexNum)
+  //if(pe->processorInstanceNUM)
   //parse processor, record name and others
   //while(fgets(inputBuffer,NAME_BUFFER_SIZE,input)!=NULL) printf("%s",inputBuffer);
   parsingStatus = PS_START;

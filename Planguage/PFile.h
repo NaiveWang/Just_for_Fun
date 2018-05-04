@@ -11,6 +11,8 @@
 #define MIN_STACK 2<<10
 #define CLEAR_ALL 0x00
 #define CODE_RESERVED 0xff
+#define TYP_MUTEX 0x00
+#define TYP_INST 0xff
  typedef struct initializingDataStructuresListElement
  {
    int offset;
@@ -36,12 +38,13 @@
  }processorI;
  typedef struct connectionMappingTable
  {
-   char nodeSType;
+   //char nodeSType;
+   //bug fixed:mutex cannot reference other entity
    int nodeSNo;
    int nodeSPort;
+   //assign destination to source
    char nodeDType;
-   int nodeTNo;
-   int nodeDPort;
+   int nodeDNo;
  }connections;
  typedef struct ExeReorganizedStructure
  {

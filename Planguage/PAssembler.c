@@ -18,19 +18,19 @@ void countIdentifier()
                 case'p':
                     fscanf(input,"%8s",inputBuffer+1);
                     //printf("##%s\n",inputBuffer);
-                    if(!strncmp(inputBuffer,I_PROCESSOR,9)) pe.processorTemplateNum++;
+                    if(!strncmp(inputBuffer,I_PROCESSOR,9)) pe->processorTemplateNum++;
                     break;
                 case'm':
                     fscanf(input,"%4s",inputBuffer+1);
-                    if(!strncmp(inputBuffer,I_MUTEX,5)) pe.mutexNum++;
+                    if(!strncmp(inputBuffer,I_MUTEX,5)) pe->mutexNum++;
                     break;
                 case'i':
                     fscanf(input,"%7s",inputBuffer+1);
-                    if(!strncmp(inputBuffer,I_INSTANCE,8)) pe.processorInstanceNUM++;
+                    if(!strncmp(inputBuffer,I_INSTANCE,8)) pe->processorInstanceNUM++;
                     break;
                 case'c':
                     fscanf(input,"%9s",inputBuffer+1);
-                    if(!strncmp(inputBuffer,I_CONNECTION,10)) pe.connectionMappingNum++;
+                    if(!strncmp(inputBuffer,I_CONNECTION,10)) pe->connectionMappingNum++;
                     break;
             }
         }
@@ -173,13 +173,51 @@ void parseMutex()
   sscanf(inputBuffer+inputBufferPointer,"%d",&a0);
   //printf("$%d$\n",a0);
   //assign the file structure(record)
-  pe.mutexSizeList[mListNum-1]=a0;
+  pe->mutexSizeList[mListNum-1]=a0;
   parsingStatus=PS_START;
   readLine();
 }
 void parseConnection()
 {
-  ;
+  static int a0;
+  //find the source name
+  skipWhitespace();
+  //check if it exist, error return
+  inputBufferPointer+=strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
+  a0=matchIdentifier(iNameList,identifierBuffer,iListNum);
+  if(a0==-1)
+  {//error return
+    errno=5;
+    return;
+  }
+  pe->connectionMapping[cListNum].nodeSNo=a0;
+  //get the port number
+  skipWhitespace();
+  inputBufferPointer+=strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
+  sscanf(identifierBuffer,"%d",&a0);
+  pe->connectionMapping[cListNum].nodeSPort=a0;
+  //get the destination
+  skipWhitespace();
+  strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
+  a0=matchIdentifier(iNameList,identifierBuffer,iListNum);
+  if(a0==-1)
+  {
+    a0=matchIdentifier(mNameList,identifierBuffer,mListNum);
+    if(a0==-1)
+    {
+      errno=6;
+      return;
+    }
+    pe->connectionMapping[cListNum].nodeDType=TYP_MUTEX;
+  }
+  else pe->connectionMapping[cListNum].nodeDType=TYP_INST;
+  pe->connectionMapping[cListNum].nodeDNo=a0;
+  //list pointer+1;
+  cListNum++;
+  //read next line
+  readLine();
+  //modify the status to start
+  parsingStatus=PS_START;
 }
 void parseInstance()
 {
@@ -199,6 +237,9 @@ void errorHandler()
     case 2:printf("Typo or bad announcement");break;
     case 3:printf("identifier undefined");break;
     case 4:printf("identifier conflict, name override");break;
+    case 5:printf("undefined instance name");break;
+    case 6:printf("undefined destination entity name");break;
+    case -1:return;//file end
   }
   printf(".\n");
 }
