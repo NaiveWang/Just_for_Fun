@@ -1,39 +1,19 @@
 #include "PAssembler.h"
 void countIdentifier()
 {
-    char bufferC=0;
-    while((bufferC=(char)fgetc(input))!=EOF)
+    while(!readLine())
     {
-        //fscanf(input,"%c",&bufferC);
-        //if(bufferC=='\n') fscanf(input,"\n");
-        //if(bufferC==EOF) break;
-        //bufferC=(char)fgetc(input);
-        //printf("%c",bufferC);
-        if(bufferC==IDENTIFIER)
-        {
-            inputBuffer[0]=(char)fgetc(input);
-            //printf("#%c\n",bufferC);
-            switch(*inputBuffer)
-            {
-                case'p':
-                    fscanf(input,"%8s",inputBuffer+1);
-                    //printf("##%s\n",inputBuffer);
-                    if(!strncmp(inputBuffer,I_PROCESSOR,9)) pe->processorTemplateNum++;
-                    break;
-                case'm':
-                    fscanf(input,"%4s",inputBuffer+1);
-                    if(!strncmp(inputBuffer,I_MUTEX,5)) pe->mutexNum++;
-                    break;
-                case'i':
-                    fscanf(input,"%7s",inputBuffer+1);
-                    if(!strncmp(inputBuffer,I_INSTANCE,8)) pe->processorInstanceNUM++;
-                    break;
-                case'c':
-                    fscanf(input,"%9s",inputBuffer+1);
-                    if(!strncmp(inputBuffer,I_CONNECTION,10)) pe->connectionMappingNum++;
-                    break;
-            }
-        }
+
+      if(*(inputBuffer+inputBufferPointer) == IDENTIFIER)
+      {
+        inputBufferPointer++;
+        //printf("%s\n",inputBuffer+inputBufferPointer);
+        //printf("%ld\n",strlen(I_PROCESSOR));
+        if(!strncmp(inputBuffer+inputBufferPointer,I_PROCESSOR,strlen(I_PROCESSOR))) pe->processorTemplateNum++;
+        else if(!strncmp(inputBuffer+inputBufferPointer,I_MUTEX,strlen(I_MUTEX))) pe->mutexNum++;
+        else if(!strncmp(inputBuffer+inputBufferPointer,I_INSTANCE,strlen(I_INSTANCE))) pe->processorInstanceNUM++;
+        else if(!strncmp(inputBuffer+inputBufferPointer,I_CONNECTION,strlen(I_CONNECTION))) pe->connectionMappingNum++;
+      }
     }
 }
 int readLine()
@@ -110,24 +90,24 @@ void parseStart()
   if(inputBuffer[inputBufferPointer]==IDENTIFIER)
   {//identifier get successful
     inputBufferPointer++;
-    if(!strncmp(inputBuffer+inputBufferPointer,I_PROCESSOR,9))
+    if(!strncmp(inputBuffer+inputBufferPointer,I_PROCESSOR,strlen(I_PROCESSOR)))
     {//into processor
-      inputBufferPointer+=9;
+      inputBufferPointer+=strlen(I_PROCESSOR);
       parsingStatus=PS_IN_PROCESSOR;
     }
-    else if(!strncmp(inputBuffer+inputBufferPointer,I_MUTEX,5))
+    else if(!strncmp(inputBuffer+inputBufferPointer,I_MUTEX,strlen(I_MUTEX)))
     {
-      inputBufferPointer+=5;
+      inputBufferPointer+=strlen(I_MUTEX);
       parsingStatus=PS_MUTEX_SECTION;
     }
-    else if(!strncmp(inputBuffer+inputBufferPointer,I_INSTANCE,8))
+    else if(!strncmp(inputBuffer+inputBufferPointer,I_INSTANCE,strlen(I_INSTANCE)))
     {
-      inputBufferPointer+=8;
+      inputBufferPointer+=strlen(I_INSTANCE);
       parsingStatus=PS_INSTANCE_SECTION;
     }
-    else if(!strncmp(inputBuffer+inputBufferPointer,I_CONNECTION,10))
+    else if(!strncmp(inputBuffer+inputBufferPointer,I_CONNECTION,strlen(I_CONNECTION)))
     {
-      inputBufferPointer+=10;
+      inputBufferPointer+=strlen(I_CONNECTION);
       parsingStatus=PS_CONNECTIONS;
     }
     else errno=2;
@@ -136,15 +116,67 @@ void parseStart()
 }
 void parseProcessor()
 {
-  ;
+  static int a0;
+  //get processor name
+  skipWhitespace();
+  inputBufferPointer+=strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
+  //check if overrided:error return
+  if(ifIdentifierOverdefined(pNameList,pListNum))
+  {
+    errno = 4;
+    return;
+  }
+  //not override, push table to 新时代
+  addIdentifier(identifierBuffer,pNameList,&pListNum);
+  //get stack0 int
+  skipWhitespace();
+  sscanf(inputBuffer+inputBufferPointer,"%d",&a0);
+  pe->processorTemplates[pListNum-1].stack0Size=a0;
+  //get stack int
+  skipWhitespace();
+  sscanf(inputBuffer+inputBufferPointer,"%d",&a0);
+  pe->processorTemplates[pListNum-1].stackSize=a0;
+  //get data size
+  skipWhitespace();
+  sscanf(inputBuffer+inputBufferPointer,"%d",&a0);
+  pe->processorTemplates[pListNum-1].globalSize=a0;
+  //next line
+  if(readLine())
+  {
+    errno=8;
+    return;
+  }
+  //skipWhitespace();
+  //look up for segment
+  //printf("#%s#\n",inputBuffer+inputBufferPointer);
+  if(!strncmp(inputBuffer+inputBufferPointer,I_DATA_SECTION,strlen(I_DATA_SECTION)))
+  {//data segment
+    parsingStatus=PS_DATA_SECTION_GLOBAL;
+  }
+  else if(!strncmp(inputBuffer+inputBufferPointer,I_CODE_SECTION,strlen(I_CODE_SECTION)))
+  {//code segment
+    parsingStatus=PS_CODESECTION;
+  }
+  else
+  {//cannot find proper segment
+        printf("$$");
+    errno=8;
+    return;
+  }
+  if(readLine())
+  {
+    errno=8;
+    return;
+  }
 }
 void parseProcessorCode()
 {
-  ;
+  readLine();
+  parsingStatus=PS_START;
 }
 void parseProcessorData()
 {
-  ;
+  parsingStatus=PS_START;
 }
 void parseMutex()
 {//find the nearest
@@ -175,7 +207,11 @@ void parseMutex()
   //assign the file structure(record)
   pe->mutexSizeList[mListNum-1]=a0;
   parsingStatus=PS_START;
-  readLine();
+  if(readLine())
+  {
+    errno=-1;
+    return;
+  }
 }
 void parseConnection()
 {
@@ -215,21 +251,67 @@ void parseConnection()
   //list pointer+1;
   cListNum++;
   //read next line
-  readLine();
+  if(readLine())
+  {
+    errno=-1;
+    return;
+  }
   //modify the status to start
   parsingStatus=PS_START;
 }
 void parseInstance()
 {
-  ;
+  static int a0;
+  //get instance name,
+  skipWhitespace();
+  inputBufferPointer+=strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
+  //check the name
+  if(ifIdentifierOverdefined(mNameList,mListNum)
+  ||ifIdentifierOverdefined(iNameList,iListNum))
+  {
+    errno=4;
+    return;
+  }
+  //sign up at pe struct
+  addIdentifier(identifierBuffer,iNameList,&iListNum);
+  //get reference name
+  skipWhitespace();
+  inputBufferPointer+=strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
+  //check if it is true
+  a0=matchIdentifier(pNameList,identifierBuffer,pListNum);
+  //if its true, assign to proper place, not error return.
+  if(a0 == -1)
+  {
+    errno = 7;
+    return;
+  }
+  pe->processorInstances[iListNum-1].processorReferenceNo = a0;
+  //next line
+  if(readLine())
+  {
+    errno=-1;
+    return;
+  }
+  //branch: .data / return to start
+  if(!strncmp(inputBuffer+inputBufferPointer,I_DATA_SECTION,strlen(I_DATA_SECTION)))
+  {
+    parsingStatus=PS_DATA_SECTION;
+    if(readLine())
+    {
+      errno=-1;
+      return;
+    }
+  }
+
+  else parsingStatus=PS_START;
 }
 void parseInstanceData()
 {
-  ;
+  parsingStatus=PS_START;
 }
 void errorHandler()
 {
-  printf("Error at line %d : ",parseLine);
+  if(~errno) printf("Error at line %d,code:%d : ",parseLine,errno);
   switch(errno)
   {
     case 0:printf("No error found");break;
@@ -239,15 +321,18 @@ void errorHandler()
     case 4:printf("identifier conflict, name override");break;
     case 5:printf("undefined instance name");break;
     case 6:printf("undefined destination entity name");break;
+    case 7:printf("undefined template name");break;
+    case 8:printf("processor template lacking necessary segment(.code)");break;
     case -1:return;//file end
   }
   printf(".\n");
 }
 void _debugShowNameList(char *list,int n)
 {
-  printf("$DEBUG$%d\n",n);
+  printf("#DEBUG STRAT#%d\n",n);
   while(n--)
   {
-    printf("$DEBUG$%s\n",list + n * NAME_BUFFER_SIZE);
+    printf("%s\n",list + n * NAME_BUFFER_SIZE);
   }
+  printf("#DEBUG ENDED#%d\n",n);
 }

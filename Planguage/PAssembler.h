@@ -14,11 +14,13 @@
 #define I_MUTEX "mutex "
 #define I_INSTANCE "instance "
 #define I_CONNECTION "connection "
+#define I_DATA_SECTION ".data"
+#define I_CODE_SECTION ".code"
 //define parsing status
 #define PS_START 0
 #define PS_IN_PROCESSOR 1
 #define PS_DATA_SECTION_GLOBAL 2
-#define PS_DATA_SECTION_TEMPLATE 3
+#define PS_DATA_SECTION 3
 #define PS_CODESECTION 4
 #define PS_MUTEX_SECTION 5
 #define PS_INSTANCE_SECTION 6
@@ -39,7 +41,6 @@ char *mNameList;
 char *cNameList;
 int pListNum,iListNum,cListNum,mListNum;
 /**Utility Function Section**/
-void countIdentifier();
 int readLine();
 char* nameSeek(char* s, int n);
 int ifIdentifierOverdefined(char *List,int n);
@@ -47,6 +48,7 @@ int matchIdentifier(char *List,char *target,int n);
 int strCopy(char *s,char *d);
 int addIdentifier(char* t,char *List,int *n);
 void skipWhitespace();
+void countIdentifier();
 void parseStart();
 void parseProcessor();
 void parseProcessorCode();
@@ -145,7 +147,10 @@ int main(int argv,char** argc)
   //breakpoint 0
   return 0;*/
   printf("Parsing...\n");
-  readLine();
+  if(readLine())
+  {
+    printf("Error: cannot parse file.\n");
+  }
   for(;;)
   {
     //parse with status
@@ -154,7 +159,7 @@ int main(int argv,char** argc)
       case PS_START:parseStart();break;
       case PS_IN_PROCESSOR:parseProcessor();break;
       case PS_DATA_SECTION_GLOBAL:parseProcessorData();break;
-      case PS_DATA_SECTION_TEMPLATE:parseInstanceData();break;
+      case PS_DATA_SECTION:parseInstanceData();break;
       case PS_CODESECTION:parseProcessorCode();break;
       case PS_MUTEX_SECTION:parseMutex();break;
       case PS_INSTANCE_SECTION:parseInstance();break;
@@ -165,7 +170,9 @@ int main(int argv,char** argc)
       errorHandler();
       break;
     }
-    _debugShowNameList(mNameList,mListNum);
+    _debugShowNameList(pNameList,pListNum);
+    _debugShowNameList(iNameList,iListNum);
+    //_debugShowNameList(mNameList,mListNum);
     //parseLine++;
   }
   return 0;

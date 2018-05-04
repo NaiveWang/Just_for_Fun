@@ -1,4 +1,10 @@
-.mutex YUN 1234
-.mutex BUN 412
-.processor
-.instance
+
+.processor  ABC 8 256 1000
+.code
+ADD asas
+.processor AB 1 1 1
+.code
+BADASS
+.instance afg ABC
+.instance cbd AB
+.instance af 9
