@@ -16,23 +16,32 @@ PExe* parseFile(char *fileS)
     fread(&ppt->stackSize,sizeof(int),1,fp);//get size of stack
     fread(&ppt->globalSize,sizeof(int),1,fp);
     fread(&ppt->initNumGlobal,sizeof(int),1,fp);//get the list size
-    ppt->initDataGlobal = malloc(sizeof(initD) * ppt->initNumGlobal);//allocate space
+    if(ppt->initNumGlobal)
     {
-      int count1 = ppt->initNumGlobal;
-      while(count1--)
-      {//read the initializing data into the memory, need to allocate space.
-        fread(&(ppt->initDataGlobal + count1)->offset,sizeof(int),1,fp);
-        fread(&(ppt->initDataGlobal + count1)->length,sizeof(int),1,fp);
-        (ppt->initDataGlobal + count1)->data = malloc((ppt->initDataGlobal + count1)->length);
-        fread((ppt->initDataGlobal + count1)->data,1,(ppt->initDataGlobal + count1)->length,fp);
-        //bingo
+      ppt->initDataGlobal = malloc(sizeof(initD) * ppt->initNumGlobal);//allocate space
+      {
+        int count1 = ppt->initNumGlobal;
+        while(count1--)
+        {//read the initializing data into the memory, need to allocate space.
+          fread(&(ppt->initDataGlobal + count1)->offset,sizeof(int),1,fp);
+          fread(&(ppt->initDataGlobal + count1)->length,sizeof(int),1,fp);
+          (ppt->initDataGlobal + count1)->data = malloc((ppt->initDataGlobal + count1)->length);
+          fread((ppt->initDataGlobal + count1)->data,1,(ppt->initDataGlobal + count1)->length,fp);
+          //bingo
+        }
       }
     }
+    else ppt->initDataGlobal=NULL;
+
   }
   //template finished
   fread(&pe->mutexNum,sizeof(int),1,fp);//get number of mutex
-  pe->mutexSizeList=malloc(sizeof(int) * pe->mutexNum);//allocate
-  fread(pe->mutexSizeList,sizeof(int),pe->mutexNum,fp);//get data directly.
+  if(pe->mutexNum)
+  {
+    pe->mutexSizeList=malloc(sizeof(int) * pe->mutexNum);//allocate
+    fread(pe->mutexSizeList,sizeof(int),pe->mutexNum,fp);//get data directly.
+  }
+  else pe->mutexSizeList=NULL;
   //mutex finished
   fread(&pe->processorInstanceNUM,sizeof(int),1,fp);
   //allocate first!!
@@ -42,23 +51,31 @@ PExe* parseFile(char *fileS)
     processorI *ppi=pe->processorInstances+count;
     fread(&ppi->processorReferenceNo,sizeof(int),1,fp);//number
     fread(&ppi->initNum,sizeof(int),1,fp);//get the list size
-    ppi->initData = malloc(sizeof(initD) * ppi->initNum);//allocate space
+    if(ppi->initNum)
     {
-      int count1 = ppi->initNum;
-      while(count1--)
-      {//read the initializing data into the memory, need to allocate space.
-        fread(&(ppi->initData + count1)->offset,sizeof(int),1,fp);
-        fread(&(ppi->initData + count1)->length,sizeof(int),1,fp);
-        (ppi->initData + count1)->data = malloc((ppi->initData + count1)->length);
-        fread((ppi->initData + count1)->data,1,(ppi->initData + count1)->length,fp);
-        //bingo
+      ppi->initData = malloc(sizeof(initD) * ppi->initNum);//allocate space
+      {
+        int count1 = ppi->initNum;
+        while(count1--)
+        {//read the initializing data into the memory, need to allocate space.
+          fread(&(ppi->initData + count1)->offset,sizeof(int),1,fp);
+          fread(&(ppi->initData + count1)->length,sizeof(int),1,fp);
+          (ppi->initData + count1)->data = malloc((ppi->initData + count1)->length);
+          fread((ppi->initData + count1)->data,1,(ppi->initData + count1)->length,fp);
+          //bingo
+        }
       }
     }
+    else ppi->initData=NULL;
   }
   //instances finished
   fread(&pe->connectionMappingNum,sizeof(int),1,fp);
-  pe->connectionMapping = malloc(sizeof(connections) * pe->connectionMappingNum);
-  fread(pe->connectionMapping,sizeof(connections),pe->connectionMappingNum,fp);
+  if(pe->connectionMappingNum)
+  {
+    pe->connectionMapping = malloc(sizeof(connections) * pe->connectionMappingNum);
+    fread(pe->connectionMapping,sizeof(connections),pe->connectionMappingNum,fp);
+  }
+  else pe->connectionMapping=NULL;
   //finished
   fclose(fp);
   return pe;
@@ -146,7 +163,8 @@ void clearFile(PExe *pe,char flag)
   }
   free(pe->processorTemplates);
   //free mutexList
-  free(pe->mutexSizeList);
+  if(pe->mutexSizeList)
+    free(pe->mutexSizeList);
   //free inmstance list, loop
   for(a0=0;a0<pe->processorInstanceNUM;a0++)
   {
@@ -159,5 +177,7 @@ void clearFile(PExe *pe,char flag)
   }
   free(pe->processorInstances);
   //free connection List
-  free(pe->connectionMapping);
+  if(pe->connectionMapping)
+    free(pe->connectionMapping);
+  free(pe);
 }

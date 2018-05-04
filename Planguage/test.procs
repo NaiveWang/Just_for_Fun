@@ -1,10 +1,10 @@
 
 .processor  ABC 8 256 1000
 .code
-ADD asas
-.processor AB 1 1 1
-.code
-BADASS
+ADD asas;;;;
+.processor ;AB 1 1 1
 .instance afg ABC
-.instance cbd AB
-.instance af 9
+;;
+
+;
+.instance cbd

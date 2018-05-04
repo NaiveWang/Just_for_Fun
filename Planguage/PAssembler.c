@@ -23,16 +23,17 @@ int readLine()
   {
     inputBufferPointer=0;
     while(inputBuffer[inputBufferPointer]==' '||inputBuffer[inputBufferPointer]=='\t') inputBufferPointer++;//skip whitespaces in one line
-    if(inputBuffer[inputBufferPointer]=='\n')
+    if(inputBuffer[inputBufferPointer]=='\n'||inputBuffer[inputBufferPointer]==';')
     {
       parseLine++;
       continue;//skip empty lines
     }
     //convert \n to NULL
     a0=inputBufferPointer;
-    while(inputBuffer[a0]^'\n') a0++;
+    while(inputBuffer[a0]^'\n'&&inputBuffer[a0]^';') a0++;
     inputBuffer[a0]=0;
     parseLine++;
+    printf("#%s#\n",inputBuffer+inputBufferPointer);
     return 0;
   }
   return -1;
@@ -45,7 +46,7 @@ int strCopy(char *s,char *d)
 {
   static int a0;
   a0=0;
-  while((*s != '\n')&&(*s != ' ')&&(*s != '\t'))
+  while((*s != '\n')&&(*s != ' ')&&(*s != '\t')&&(*s != ';'))
   {
     //printf("%d/",a0);
     *d = *s;
