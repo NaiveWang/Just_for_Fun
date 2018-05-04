@@ -58,5 +58,5 @@
 /** utility functions **/
 PExe* parseFile(char *fileS);
 void clearFile(PExe *pe);
-void makeExeFile(char *fileS, char *sFileS);
+void makeExeFile(char *fileS, PExe *pe);
 #endif

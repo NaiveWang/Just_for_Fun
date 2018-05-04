@@ -1,7 +1,7 @@
 #include "PFile.h"
 PExe* parseFile(char *fileS)
 {
-  int count;
+  static int count;
   FILE *fp=fopen(fileS,"rb");
   PExe *pe=malloc(sizeof(PExe));
   fread(&pe->processorTemplateNum,sizeof(int),1,fp);//get number of P
@@ -62,6 +62,71 @@ PExe* parseFile(char *fileS)
   //finished
   fclose(fp);
   return pe;
+}
+void makeExeFile(char *fileS, PExe *pe)
+{
+  //open the file
+  static unsigned int a0,a1;
+  FILE *fp=fopen(fileS,"wb");
+  //write the template number
+  fwrite(&pe->processorTemplateNum,sizeof(int),1,fp);
+  //loop, write each processor
+  for(a0=0;a0<pe->processorTemplateNum;a0++)
+  {
+    //write code length int
+    fwrite(&pe->processorTemplates[a0].codeLength,sizeof(int),1,fp);
+    //write code block
+    fwrite(pe->processorTemplates[a0].code,1,pe->processorTemplates[a0].codeLength,fp);
+    //write stack0 size int
+    fwrite(&pe->processorTemplates[a0].stack0Size,sizeof(int),1,fp);
+    //write stack size int
+    fwrite(&pe->processorTemplates[a0].stackSize,sizeof(int),1,fp);
+    //write initializing group number
+    fwrite(&pe->processorTemplates[a0].initNumGlobal,sizeof(int),1,fp);
+    //loop, write init-data
+    for(a1=0;a1<pe->processorTemplates[a0].initNumGlobal;a1++)
+    {
+      //write offset into
+      fwrite(&pe->processorTemplates[a0].initDataGlobal[a1].offset,sizeof(int),1,fp);
+      //write length int
+      fwrite(&pe->processorTemplates[a0].initDataGlobal[a1].length,sizeof(int),1,fp);
+      //write data block
+      fwrite(pe->processorTemplates[a0].initDataGlobal[a1].data,1,pe->processorTemplates[a0].initDataGlobal[a1].length,fp);
+    }
+  }
+  //write mutex
+  //write mutex number int
+  fwrite(&pe->mutexNum,sizeof(int),1,fp);
+  //write mutex size array
+  fwrite(pe->mutexSizeList,sizeof(int),pe->mutexNum,fp);
+  //write instance
+  //write instance number int
+  fwrite(&pe->processorInstanceNUM,sizeof(int),1,fp);
+  //loop, write each instance
+  for(c0=0;c0<pe->processorInstanceNUM;c0++)
+  {
+    //write reference number int
+    fwrite(&pe->processorInstances[c0].processorReferenceNo,sizeof(int),1,fp);
+    //write init nember int
+    fwrite(&pe->processorInstances[c0].initNum,sizeof(int),1,fp);
+    //loop, write all if the initializing data.
+    for(a1=0;a1<pe->processorInstances[a0].initNum;a1++)
+    {
+      //write offset into
+      fwrite(&pe->processorInstances[a0].initData[a1].offset,sizeof(int),1,fp);
+      //write length int
+      fwrite(&pe->processorInstances[a0].initData[a1].length,sizeof(int),1,fp);
+      //write data block
+      fwrite(pe->processorInstances[a0].initData[a1].data,1,pe->processorInstances[a0].initData[a1].length,fp);
+    }
+  }
+  //write connections
+  //write connection number int
+  fwrite(&pe->connectionMappingNum,sizeof(int),1,fp);
+  //write connection array
+  fwrite(pe->connectionMapping,sizeof(connections),pe->connectionMappingNum,fp);
+  //finished
+  fclose(fp);
 }
 void clearFile(PExe *pe)
 {
