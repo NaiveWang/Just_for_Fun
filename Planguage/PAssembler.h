@@ -49,6 +49,7 @@ int strCopy(char *s,char *d);
 int addIdentifier(char* t,char *List,int *n);
 int countI();
 int countC();
+void parseString(void* base);
 void skipWhitespace();
 void countIdentifier();
 void parseStart();
