@@ -295,6 +295,7 @@ void (*InstructionSet[])(PBase *p) = {
   OPCMPI,
   OPNOTI,
   OPTSTI};
+const int pir_n=18;
 IR pir[]={
   {2,"MOV8A"},{12,"MOV8"},{2,"MOVBA"},
   {7,"PUSH0A"},{10,"PUSH0I8"},{7,"PUSH08"},{7,"POP08"},

@@ -194,6 +194,19 @@ void parseString(void* base)
     }
     inputBufferPointer++;
 }
+int instructionParser(int *r0)
+{
+    static int a0;
+    strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
+    for(a0=0;a0<pir_n;a0++)
+    {
+        if(strcmp(identifierBuffer,pir[pir_n].length)) continue;
+        *r0=pir[pir_n].length;
+        return a0;
+    }
+    *r0=0;
+    return -1;
+}
 void parseProcessor()
 {
   static int a0;
@@ -241,15 +254,83 @@ void parseProcessor()
   }
   else
   {//cannot find proper segment
-        printf("$$");
+        //printf("$$");
     errno=8;
     return;
   }
 }
 void parseProcessorCode()
 {
-  readLine();
+    static long fb;
+    static int a0,a1;
+  ///1.calculate length of code section.
+  //backup file pointer
+  fb=ftell(input);
+  //loop:count length of each instruction until meet the . identifier
+  //initialize the date first
+  a0=0;
+  while(!readLine())
+  {
+      if(inputBuffer[inputBufferPointer]==IDENTIFIER) break;
+      //find the instruction
+      instructionParser(&a1);
+      if(!a1)
+      {//error handler: unknown instructions
+          errno=14;
+          return;
+      }
+      //count the number
+      a0+=a1;
+  }
+  ///2.allocate the space of code section.
+  if(!a0)
+  {//zero instructions
+      errno=12;//error
+      return;
+  }
+  //allocate code space
+  pe->processorTemplates[pListNum].codeLength=a0;
+  pe->processorTemplates[pListNum].code = malloc(a0);
+  ///3.recover file pointer, start parsing step
+  //recover file pointer
+  fseek(input,fb,SEEK_SET);
+  //loop, parse instructions
+  a1=0;//code section offset;
+  while(!readLine())
+  {
+      static unsigned short id;
+      if(inputBuffer[inputBufferPointer]==IDENTIFIER) break;
+      //switch the instructions;
+      id=instructionParser(&a0);
+      inputBufferPointer+=strlen(pir[id].key);
+      *(unsigned short*)(pe->processorTemplates[pListNum].code+a1)=id;
+      switch(a0)
+      {//the content parsing step
+          case 2://no operand
+              break;
+          case 12://2 groups of base:offset
+              break;//todo
+          case 7://1 group of base:offset
+            break;//todo
+          case 10://8byte instant number
+            skipWhitespace();
+            sscanf(inputBuffer+inputBufferPointer,"%ld",(long*)(pe->processorTemplates[pListNum].code+a1+2));
+            break;
+          case 6://4byte, find with system call number
+            break;//todo
+          case 3://1 byte instant
+            skipWhitespace();
+            sscanf(inputBuffer+inputBufferPointer,"%c",(char*)(pe->processorTemplates[pListNum].code+a1+2));
+            break;
+          case 14://4 byte mask instant, 8 byte offset
+            break;//todo
+      }
+      //move pointer forward
+      a1+=a0;
+  }
+  //set next status
   parsingStatus=PS_START;
+  //end;
 }
 void parseProcessorData()
 {
@@ -845,6 +926,7 @@ void errorHandler()
     case 11:printf("unknown key word");break;
     case 12:printf("empty code section");break;
     case 13:printf("syntax error : expect a string closure");break;
+    case 14:printf("unknown instructions");break;
     case -1:return;//file end
   }
   printf(".\n");

@@ -50,6 +50,7 @@ int addIdentifier(char* t,char *List,int *n);
 int countI();
 int countC();
 void parseString(void* base);
+int instructionParser(int *r0);
 void skipWhitespace();
 void countIdentifier();
 void parseStart();
