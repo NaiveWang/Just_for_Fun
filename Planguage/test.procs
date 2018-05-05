@@ -1,7 +1,7 @@
 
 .processor  ABC 8 256 1000
 .code
-ADD asas;;;;
+MOV8 asas;;;;
 .processor ;AB 1 1 1
 .instance afg ABC
 ;;

@@ -86,6 +86,10 @@ void skipWhitespace()
 {
   while(inputBuffer[inputBufferPointer]==' '||inputBuffer[inputBufferPointer]=='\t') inputBufferPointer++;
 }
+void skipIdentifier()
+{
+  while(inputBuffer[inputBufferPointer]!=' '&&inputBuffer[inputBufferPointer]!='\t') inputBufferPointer++;
+}
 void parseStart()
 {
   if(inputBuffer[inputBufferPointer]==IDENTIFIER)
@@ -194,19 +198,6 @@ void parseString(void* base)
     }
     inputBufferPointer++;
 }
-int instructionParser(int *r0)
-{
-    static int a0;
-    strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
-    for(a0=0;a0<pir_n;a0++)
-    {
-        if(strcmp(identifierBuffer,pir[pir_n].length)) continue;
-        *r0=pir[pir_n].length;
-        return a0;
-    }
-    *r0=0;
-    return -1;
-}
 void parseProcessor()
 {
   static int a0;
@@ -273,7 +264,10 @@ void parseProcessorCode()
   {
       if(inputBuffer[inputBufferPointer]==IDENTIFIER) break;
       //find the instruction
-      instructionParser(&a1);
+      strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
+      printf("&%s&\n",identifierBuffer);
+      instructionParser(&a1,identifierBuffer);
+      printf("&%s&%d&\n",identifierBuffer,a1);
       if(!a1)
       {//error handler: unknown instructions
           errno=14;
@@ -301,8 +295,9 @@ void parseProcessorCode()
       static unsigned short id;
       if(inputBuffer[inputBufferPointer]==IDENTIFIER) break;
       //switch the instructions;
-      id=instructionParser(&a0);
-      inputBufferPointer+=strlen(pir[id].key);
+      strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
+      id=instructionParser(&a0,identifierBuffer);
+      skipIdentifier();
       *(unsigned short*)(pe->processorTemplates[pListNum].code+a1)=id;
       switch(a0)
       {//the content parsing step

@@ -285,6 +285,7 @@ void OPTSTI(PBase *p)
   asm("movb %ah,%al");
   asm("movl %%eax,%0":"=r"(p->eflag));
 }
+
 void (*InstructionSet[])(PBase *p) = {
   MOV8A,MOV8,MOVBA,
   PUSH0A,PUSH0I8,PUSH08,POP08,
@@ -306,6 +307,21 @@ IR pir[]={
   {2,"OPCMPI"},
   {2,"OPNOTI"},
   {2,"OPTSTI"}};
+
+int instructionParser(int *r0, char *code)
+{
+    static int a0;
+    for(a0=0;a0<pir_n;a0++)
+    {
+        //printf("^%s^\n",);
+        if(strcmp(code,pir[a0].key)) continue;
+        //printf("FOUND ONE!!!!!!!!!!!!!!\n");
+        *r0=pir[a0].length;
+        return a0;
+    }
+    *r0=0;
+    return -1;
+}
 void executionOneStep(PBase *p)
 {
   unsigned short codeNo;

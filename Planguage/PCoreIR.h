@@ -4,6 +4,8 @@
 #ifndef PCOREIR_H
 #define PCOREIR_H
 #include "PCoreBase.h"
+#include <string.h>
+#include <stdio.h>
 //instructions
 //template: void <NAME>(PBase)
 /** key word define **/
@@ -108,6 +110,7 @@ void OPSHRI(PBase *p);
 
 void OPSARB(PBase *p);
 void OPSARI(PBase *p);
+int instructionParser(int *r0, char* code);
 void executionOneStep(PBase *p);
 //mapping
 //void instructions()
