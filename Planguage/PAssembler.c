@@ -292,6 +292,8 @@ void parseProcessorCode()
   a1=0;//code section offset;
   while(!readLine())
   {
+      static char c0;
+      static int a2,a3;
       static unsigned short id;
       if(inputBuffer[inputBufferPointer]==IDENTIFIER) break;
       //switch the instructions;
@@ -304,12 +306,44 @@ void parseProcessorCode()
           case 2://no operand
               break;
           case 12://2 groups of base:offset
-              break;//todo
+            skipWhitespace();
+            sscanf(inputBuffer+inputBufferPointer,"%d:%d",&a2,&a3);
+            c0=(char)a2;
+            *(char*)(pe->processorTemplates[pListNum].code+a1+2)=c0;
+            *(int*)(pe->processorTemplates[pListNum].code+a1+3)=a3;
+            skipIdentifier();
+            skipWhitespace();
+            sscanf(inputBuffer+inputBufferPointer,"%d:%d",&a2,&a3);
+            c0=(char)a2;
+            *(char*)(pe->processorTemplates[pListNum].code+a1+7)=c0;
+            *(int*)(pe->processorTemplates[pListNum].code+a1+8)=a3;
+            break;//todo
           case 7://1 group of base:offset
+            skipWhitespace();
+            sscanf(inputBuffer+inputBufferPointer,"%d:%d",&a2,&a3);
+            c0=(char)a2;
+            *(char*)(pe->processorTemplates[pListNum].code+a1+2)=c0;
+            *(int*)(pe->processorTemplates[pListNum].code+a1+3)=a3;
             break;//todo
           case 10://8byte instant number
             skipWhitespace();
-            sscanf(inputBuffer+inputBufferPointer,"%ld",(long*)(pe->processorTemplates[pListNum].code+a1+2));
+            switch(inputBuffer[inputBufferPointer])
+            {
+              case 'I':
+                inputBufferPointer++;
+                skipWhitespace();
+                sscanf(inputBuffer+inputBufferPointer,"%ld",(long*)(pe->processorTemplates[pListNum].code+a1+2));
+                break;
+              case 'R':
+                inputBufferPointer++;
+                skipWhitespace();
+                sscanf(inputBuffer+inputBufferPointer,"%lf",(double*)(pe->processorTemplates[pListNum].code+a1+2));
+                break;
+              default:
+                errno=15;
+                return;
+            }
+            //sscanf(inputBuffer+inputBufferPointer,"%ld",(long*)(pe->processorTemplates[pListNum].code+a1+2));
             break;
           case 6://4byte, find with system call number
             break;//todo
@@ -318,6 +352,11 @@ void parseProcessorCode()
             sscanf(inputBuffer+inputBufferPointer,"%c",(char*)(pe->processorTemplates[pListNum].code+a1+2));
             break;
           case 14://4 byte mask instant, 8 byte offset
+            skipWhitespace();
+            sscanf(inputBuffer+inputBufferPointer,"%d",(int*)(pe->processorTemplates[pListNum].code+a1+2));
+            skipIdentifier();
+            skipWhitespace();
+            sscanf(inputBuffer+inputBufferPointer,"%ld",(long*)(pe->processorTemplates[pListNum].code+a1+6));
             break;//todo
       }
       //move pointer forward
@@ -463,6 +502,74 @@ void parseProcessorData()
         //a0++
         a0++;
         break;
+
+        case 'R':
+          //parse integer
+          //write offset first
+          pe->processorTemplates[pListNum-1].initDataGlobal[a0].offset=ofst;
+          //get the size
+          //check if exist fixed sign
+          inputBufferPointer++;
+          skipWhitespace();
+          if(inputBuffer[inputBufferPointer]=='F')
+          {//get size by fixed identifier
+            inputBufferPointer++;
+            skipWhitespace();
+            //get the value
+            inputBufferPointer+=strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
+            a1=sscanf(identifierBuffer,"%d",&a1);
+            //caculate the size
+            a1=a1<<3;
+            //write size
+            pe->processorTemplates[pListNum-1].initDataGlobal[a0].length = a1;
+            if(!a1)
+            {
+              errno=10;
+              return;
+            }
+            pe->processorTemplates[pListNum-1].initDataGlobal[a0].data = malloc(a1);
+            //collect elem
+            skipWhitespace();
+            //collect dot
+            a1=countI();
+            a2=0;
+            while(a1--)
+            {
+              //copy the num into buffer
+              inputBufferPointer+=strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
+              //write content, offset using a2
+              sscanf(identifierBuffer,"%lf",(double*)(pe->processorTemplates[pListNum-1].initDataGlobal[a0].data + a2));
+              a2+=8;
+              inputBufferPointer++;
+            }
+            //finished
+          }
+          else
+          {//without fixed identifier
+            //count the size by looking up
+            a1=countI();
+            if(!a1)
+            {
+              errno=10;
+              return;
+            }
+            pe->processorInstances[iListNum-1].initData[a0].length = a1;
+            //read content
+            a2=0;
+            while(a1--)
+            {
+              //copy the num into buffer
+              inputBufferPointer+=strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
+              //write content, offset using a2
+              sscanf(identifierBuffer,"%ld",(long*)(pe->processorInstances[iListNum-1].initData[a0].data + a2));
+              a2+=8;
+              inputBufferPointer++;
+            }
+          }
+          //a0++
+          a0++;
+          break;
+
       case 'C':
         //parse char/string
         //write offset first
@@ -811,6 +918,74 @@ void parseInstanceData()
         //a0++
         a0++;
         break;
+
+        case 'R':
+          //parse integer
+          //write offset first
+          pe->processorInstances[iListNum-1].initData[a0].offset=ofst;
+          //get the size
+          //check if exist fixed sign
+          inputBufferPointer++;
+          skipWhitespace();
+          if(inputBuffer[inputBufferPointer]=='F')
+          {//get size by fixed identifier
+            inputBufferPointer++;
+            skipWhitespace();
+            //get the value
+            inputBufferPointer+=strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
+            a1=sscanf(identifierBuffer,"%d",&a1);
+            //caculate the size
+            a1=a1<<3;
+            //write size
+            pe->processorInstances[iListNum-1].initData[a0].length = a1;
+            if(!a1)
+            {
+              errno=10;
+              return;
+            }
+            pe->processorInstances[iListNum-1].initData[a0].data = malloc(a1);
+            //collect elem
+            skipWhitespace();
+            //collect dot
+            a1=countI();
+            a2=0;
+            while(a1--)
+            {
+              //copy the num into buffer
+              inputBufferPointer+=strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
+              //write content, offset using a2
+              sscanf(identifierBuffer,"%lf",(double*)(pe->processorInstances[iListNum-1].initData[a0].data + a2));
+              a2+=8;
+              inputBufferPointer++;
+            }
+            //finished
+          }
+          else
+          {//without fixed identifier
+            //count the size by looking up
+            a1=countI();
+            if(!a1)
+            {
+              errno=10;
+              return;
+            }
+            pe->processorInstances[iListNum-1].initData[a0].length = a1;
+            //read content
+            a2=0;
+            while(a1--)
+            {
+              //copy the num into buffer
+              inputBufferPointer+=strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
+              //write content, offset using a2
+              sscanf(identifierBuffer,"%ld",(long*)(pe->processorInstances[iListNum-1].initData[a0].data + a2));
+              a2+=8;
+              inputBufferPointer++;
+            }
+          }
+          //a0++
+          a0++;
+          break;
+
       case 'C':
         //parse char/string
         //write offset first
@@ -922,6 +1097,7 @@ void errorHandler()
     case 12:printf("empty code section");break;
     case 13:printf("syntax error : expect a string closure");break;
     case 14:printf("unknown instructions");break;
+    case 15:printf("syntax error : expect a I or R, not others");break;
     case -1:return;//file end
   }
   printf(".\n");

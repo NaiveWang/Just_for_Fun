@@ -1,10 +1,7 @@
 
-.processor  ABC 8 256 1000
+.processor  test 8 256 1000
 .code
-MOV8 asas;;;;
-.processor ;AB 1 1 1
-.instance afg ABC
-;;
-
-;
-.instance cbd
+PUSH0I8 I 123
+PUSH0I8 I 234
+OPADDI
+.instance a test
