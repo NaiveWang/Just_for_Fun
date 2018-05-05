@@ -46,7 +46,7 @@ int strCopy(char *s,char *d)
 {
   static int a0;
   a0=0;
-  while((*s != '\n')&&(*s != ' ')&&(*s != '\t')&&(*s != ';'))
+  while((*s != '\n')&&(*s != ' ')&&(*s != '\t')&&(*s != ';')&&(*s != ','))
   {
     //printf("%d/",a0);
     *d = *s;
@@ -115,6 +115,20 @@ void parseStart()
   }
   else errno=1;
 }
+int countI()
+{
+  static unsigned int a0,a1;
+  a1=0;
+  for(a0=0;inputBuffer[inputBufferPointer+a0]!='\n'&&inputBuffer[inputBufferPointer+a0]!=';';a0++)
+  {
+    if(inputBuffer[inputBufferPointer+a0]==',') a1++;
+  }
+  return a1+1;
+}
+int countC()
+{
+  //
+}
 void parseProcessor()
 {
   static int a0;
@@ -141,6 +155,8 @@ void parseProcessor()
   skipWhitespace();
   sscanf(inputBuffer+inputBufferPointer,"%d",&a0);
   pe->processorTemplates[pListNum-1].globalSize=a0;
+  //set some pointer to NULL at first
+  pe->processorTemplates[pListNum-1].initDataGlobal=NULL;
   //next line
   if(readLine())
   {
@@ -164,11 +180,6 @@ void parseProcessor()
     errno=8;
     return;
   }
-  if(readLine())
-  {
-    errno=8;
-    return;
-  }
 }
 void parseProcessorCode()
 {
@@ -177,7 +188,155 @@ void parseProcessorCode()
 }
 void parseProcessorData()
 {
-  parsingStatus=PS_START;
+  static int a0,a1,a2;
+  static long fBackup,ofst;
+  //backup the file offset
+  fBackup = ftell(input);
+  //count data element size
+  pe->processorTemplates[pListNum-1].initNumGlobal=0;
+  for(;;)
+  {
+    //read line, count element, handle error.
+    if(readLine())
+    {
+      errno=8;
+      return;
+    }
+    //get the key word,  switch : I/C
+    if(inputBuffer[inputBufferPointer]=='I'||inputBuffer[inputBufferPointer]=='C')
+      pe->processorTemplates[pListNum-1].initNumGlobal++;
+    //look up next state, handle error.
+    else if(!strncmp(inputBuffer+inputBufferPointer,I_CODE_SECTION,strlen(I_CODE_SECTION)))
+    {
+      //ps
+      parsingStatus = PS_CODESECTION;
+      //end count;
+      break;
+    }
+  }
+  //return to start
+  fseek(input,fBackup,SEEK_SET);
+  //zero element error handle
+  if(! pe->processorTemplates[pListNum-1].initNumGlobal)
+  {
+    errno=9;
+    return;
+  }
+  //allocate spece
+  pe->processorTemplates[pListNum-1].initDataGlobal = malloc(sizeof(initD) * pe->processorTemplates[pListNum-1].initNumGlobal);
+  //set offset
+  ofst=0;
+  a0=0;
+  for(;;)
+  {//get line
+    readLine();
+
+    //check the stop sign
+    if(inputBuffer[inputBufferPointer]==IDENTIFIER)
+    {
+      //ps
+      parsingStatus = PS_CODESECTION;
+      //end count;
+      break;
+    }
+    //parser type
+    switch(inputBuffer[inputBufferPointer])
+    {
+      case 'O':
+        //set offset
+        //skip space
+        inputBufferPointer++;
+        skipWhitespace();
+        sscanf(inputBuffer+inputBufferPointer,"%ld",&ofst);
+        break;
+      case 'S':
+        //skip n space
+        inputBufferPointer++;
+        skipWhitespace();
+        sscanf(inputBuffer+inputBufferPointer,"%d",&a1);
+        ofst+=a1;
+        break;
+      case 'I':
+        //parse integer
+        //write offset first
+        pe->processorTemplates[pListNum-1].initDataGlobal[a0].offset=ofst;
+        //get the size
+        //check if exist fixed sign
+        inputBufferPointer++;
+        skipWhitespace();
+        if(inputBuffer[inputBufferPointer]=='F')
+        {//get size by fixed identifier
+          inputBufferPointer++;
+          skipWhitespace();
+          //get the value
+          inputBufferPointer+=strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
+          a1=sscanf(identifierBuffer,"%d",&a1);
+          //caculate the size
+          a1=a1<<3;
+          //write size
+          pe->processorTemplates[pListNum-1].initDataGlobal[a0].length = a1;
+          if(!a1)
+          {
+            errno=10;
+            return;
+          }
+          pe->processorTemplates[pListNum-1].initDataGlobal[a0].data = malloc(a1);
+          //collect elem
+          skipWhitespace();
+          //collect dot
+          a1=countI();
+          a2=0;
+          while(a1--)
+          {
+            //copy the num into buffer
+            inputBufferPointer+=strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
+            //write content, offset using a2
+            sscanf(identifierBuffer,"%ld",(long*)(pe->processorTemplates[pListNum-1].initDataGlobal[a0].data + a2));
+            a2+=8;
+            inputBufferPointer++;
+          }
+          //finished
+        }
+        else
+        {//without fixed identifier
+          //count the size by looking up
+          a1=countI();
+          if(!a1)
+          {
+            errno=10;
+            return;
+          }
+          pe->processorTemplates[pListNum-1].initDataGlobal[a0].length = a1;
+          //read content
+          a2=0;
+          while(a1--)
+          {
+            //copy the num into buffer
+            inputBufferPointer+=strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
+            //write content, offset using a2
+            sscanf(identifierBuffer,"%ld",(long*)(pe->processorTemplates[pListNum-1].initDataGlobal[a0].data + a2));
+            a2+=8;
+            inputBufferPointer++;
+          }
+        }
+        //a0++
+        a0++;
+        break;
+      case 'C':
+        //parse char/string
+        //write offset first
+        pe->processorTemplates[pListNum-1].initDataGlobal[a0].offset=ofst;
+        inputBufferPointer++;
+        skipWhitespace();
+        //check macro identifier F & L
+        break;
+      default:
+        errno=11;
+        return;
+    }
+    //parse F identifier, branch
+  }
+  //loop, get the data
 }
 void parseMutex()
 {//find the nearest
@@ -287,6 +446,7 @@ void parseInstance()
     return;
   }
   pe->processorInstances[iListNum-1].processorReferenceNo = a0;
+  pe->processorInstances[iListNum-1].initData=NULL;
   //next line
   if(readLine())
   {
@@ -324,6 +484,10 @@ void errorHandler()
     case 6:printf("undefined destination entity name");break;
     case 7:printf("undefined template name");break;
     case 8:printf("processor template lacking necessary segment(.code)");break;
+    case 9:printf("empty data section");break;
+    case 10:printf("empty data element");break;
+    case 11:printf("unknown key word");break;
+    case 12:printf("empty code section");break;
     case -1:return;//file end
   }
   printf(".\n");
