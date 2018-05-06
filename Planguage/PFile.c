@@ -44,9 +44,10 @@ PExe* parseFile(char *fileS)
   else pe->mutexSizeList=NULL;
   //mutex finished
   fread(&pe->processorInstanceNUM,sizeof(int),1,fp);
+
   //allocate first!!
   pe->processorInstances=malloc(sizeof(processorI) * pe->processorInstanceNUM);
-  for(count=0;count<pe->processorInstanceNUM;count--)
+  for(count=0;count<pe->processorInstanceNUM;count++)
   {//get instancelist
     processorI *ppi=pe->processorInstances+count;
     fread(&ppi->processorReferenceNo,sizeof(int),1,fp);//number
@@ -70,6 +71,7 @@ PExe* parseFile(char *fileS)
   }
   //instances finished
   fread(&pe->connectionMappingNum,sizeof(int),1,fp);
+
   if(pe->connectionMappingNum)
   {
     pe->connectionMapping = malloc(sizeof(connections) * pe->connectionMappingNum);
@@ -98,6 +100,7 @@ void makeExeFile(char *fileS, PExe *pe)
     fwrite(&pe->processorTemplates[a0].stack0Size,sizeof(int),1,fp);
     //write stack size int
     fwrite(&pe->processorTemplates[a0].stackSize,sizeof(int),1,fp);
+    fwrite(&pe->processorTemplates[a0].globalSize,sizeof(int),1,fp);
     //write initializing group number
     fwrite(&pe->processorTemplates[a0].initNumGlobal,sizeof(int),1,fp);
     //loop, write init-data

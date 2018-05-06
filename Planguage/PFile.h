@@ -26,7 +26,7 @@
    int stack0Size;
    int stackSize;
    int globalSize;
-   int dataSize;
+   //int dataSize;
    int initNumGlobal;
    initD* initDataGlobal;
  }processorT;

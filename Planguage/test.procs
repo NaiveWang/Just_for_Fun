@@ -12,6 +12,8 @@ PUSH0I8 R 123.345
 OPADDI
 JMPC 0 START
 .instance a test
+
+;I 12233,2,3
 .instance aa test1
 .mutex M0 1024
 .connection a 255 aa
