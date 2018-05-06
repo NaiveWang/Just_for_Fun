@@ -1,10 +1,22 @@
 
 .processor  test 8 256 1000
-
+.data
+R F 50 4.33
+S 90
+R 12,13.66,123.758
+I 1,2,3,4,5,6,7,8,9,11,20
+C "glgjssykjdnvkjnsklamlscnmlk"
 .code
+
 PUSH0I8 I 123
 PUSH0I8 I 234
 .processor test1 8 512 1024
+.data
+I 1,2,3,4,5
+O 30
+I F  10 3,2,1
+S 12
+I 3,2,1
 .code
 #START
 PUSH0I8 I 345

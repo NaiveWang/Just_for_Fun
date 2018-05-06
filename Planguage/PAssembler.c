@@ -89,7 +89,7 @@ void skipWhitespace()
 }
 void skipIdentifier()
 {
-  while(inputBuffer[inputBufferPointer]!=' '&&inputBuffer[inputBufferPointer]!='\t') inputBufferPointer++;
+  while(inputBuffer[inputBufferPointer]!=' '&&inputBuffer[inputBufferPointer]!='\t'&&inputBuffer[inputBufferPointer]!=','&&inputBuffer[inputBufferPointer]!='\0') inputBufferPointer++;
 }
 void skipString()
 {
@@ -140,6 +140,7 @@ int countI()
   a1=0;
   for(a0=0;inputBuffer[inputBufferPointer+a0]!='\n'&&inputBuffer[inputBufferPointer+a0]!=';'&&inputBuffer[inputBufferPointer+a0]!=0;a0++)
   {
+    //printf("!%d",a0);
     if(inputBuffer[inputBufferPointer+a0]==',') a1++;
   }
   return a1+1;
@@ -149,7 +150,7 @@ int countC()
   //
   static int a0,a1;
   //get the first '"'
-  skipWhitespace();
+  //skipWhitespace();
   a0=0;
   a1=0;//printf(":%s\n",inputBuffer+inputBufferPointer+a1);
   if(inputBuffer[inputBufferPointer+a1]=='"')
@@ -430,6 +431,188 @@ void parseProcessorCode()
 }
 void parseProcessorData()
 {
+  static long fptr;
+  static int ofst,a0,a1,a2,a3;
+  //back up pointer
+  fptr = ftell(input);
+  //backup line pointer
+  a0=parseLine;
+  //loop,count element's number.
+  for(a1=0;!readLine();)
+  {//counter:a1
+    //met . : break
+    //printf("#%s\n",inputBuffer+inputBufferPointer);
+    //getchar();
+    if(inputBuffer[inputBufferPointer]==IDENTIFIER) break;
+    else if(inputBuffer[inputBufferPointer]=='I'||inputBuffer[inputBufferPointer]=='R'||inputBuffer[inputBufferPointer]=='C') a1++;
+  }
+  //a0=0, error
+  //printf("@%d",a1);
+  if(!a1)
+  {
+    return;
+  }
+  //allocate space
+  pe->processorTemplates[pListNum-1].initNumGlobal=a1;
+  pe->processorTemplates[pListNum-1].initDataGlobal = malloc(sizeof(initD) * a1);
+  //reatore the file pointer & line pointer
+  parseLine=a0;
+  fseek(input,fptr,SEEK_SET);
+  //read file, start parse loop
+  ofst=0;
+  for(a0=0;!readLine();)
+  {//a0:element no
+    if(inputBuffer[inputBufferPointer]==IDENTIFIER) break;
+    switch(inputBuffer[inputBufferPointer])
+    {//parse each line
+      case 'O'://set offset/ O <int>
+        inputBufferPointer++;
+        skipWhitespace();
+        sscanf(inputBuffer+inputBufferPointer,"%d",&a1);
+        ofst=a1;
+        break;
+      case 'S'://set skip value S <int>
+        inputBufferPointer++;
+        skipWhitespace();
+        sscanf(inputBuffer+inputBufferPointer,"%d",&a1);
+        ofst+=a1;
+        break;
+      case 'I'://integer
+        inputBufferPointer++;
+        skipWhitespace();
+        //getchar();
+        if(inputBuffer[inputBufferPointer]=='F')
+        {//fixed size
+          static int f;
+          inputBufferPointer++;
+          skipWhitespace();
+          sscanf(inputBuffer+inputBufferPointer,"%d",&f);
+          //allocate space
+          pe->processorTemplates[pListNum-1].initDataGlobal[a0].offset=ofst;
+          pe->processorTemplates[pListNum-1].initDataGlobal[a0].length=f * 8;
+          pe->processorTemplates[pListNum-1].initDataGlobal[a0].data=malloc(f*8);
+          //write space
+          skipIdentifier();
+          //skipWhitespace();
+          a1=countI();
+          for(a2=0;a2<a1;a2++)
+          {
+            skipWhitespace();
+            sscanf(inputBuffer+inputBufferPointer,"%ld",(long*)(pe->processorTemplates[pListNum-1].initDataGlobal[a0].data + a2 * 8));
+            skipIdentifier();
+            skipWhitespace();
+            inputBufferPointer++;
+          }
+        }
+        else
+        {
+          a1=countI();
+          //printf("@%d@%d\n",a1,a0);
+          pe->processorTemplates[pListNum-1].initDataGlobal[a0].offset=ofst;
+
+          pe->processorTemplates[pListNum-1].initDataGlobal[a0].length=a1 * 8;
+          pe->processorTemplates[pListNum-1].initDataGlobal[a0].data=malloc(a1*8);
+          //printf("ADDR%ld\n",pe->processorTemplates[pListNum-1].initDataGlobal[a0].data);
+          //printf("@%d@%d\n",a1,a0);
+          for(a2=0;a2<a1;a2++)
+          {
+            skipWhitespace();
+            //printf("$%s\n",inputBuffer+inputBufferPointer);
+            sscanf(inputBuffer+inputBufferPointer,"%ld",(long*)(pe->processorTemplates[pListNum-1].initDataGlobal[a0].data + a2 * 8));
+            skipIdentifier();//getchar();
+            skipWhitespace();
+            inputBufferPointer++;
+          }
+        }
+        a0++;
+        break;
+      case 'R':
+        inputBufferPointer++;
+        skipWhitespace();
+        if(inputBuffer[inputBufferPointer]=='F')
+        {//fixed size
+          static int f;
+          inputBufferPointer++;
+          skipWhitespace();
+          sscanf(inputBuffer+inputBufferPointer,"%d",&f);
+          //allocate space
+          pe->processorTemplates[pListNum-1].initDataGlobal[a0].offset=ofst;
+          pe->processorTemplates[pListNum-1].initDataGlobal[a0].length=f * 8;
+          pe->processorTemplates[pListNum-1].initDataGlobal[a0].data=malloc(f*8);
+          //write space
+          skipIdentifier();
+          //skipWhitespace();
+          a1=countI();
+          for(a2=0;a2<a1;a2++)
+          {
+            skipWhitespace();
+            sscanf(inputBuffer+inputBufferPointer,"%lf",(double*)(pe->processorTemplates[pListNum-1].initDataGlobal[a0].data + a2 * 8));
+            skipIdentifier();
+            skipWhitespace();
+            inputBufferPointer++;
+          }
+        }
+        else
+        {
+          a1=countI();
+          pe->processorTemplates[pListNum-1].initDataGlobal[a0].offset=ofst;
+          pe->processorTemplates[pListNum-1].initDataGlobal[a0].length=a1 * 8;
+          pe->processorTemplates[pListNum-1].initDataGlobal[a0].data=malloc(a1*8);
+          for(a2=0;a2<a1;a2++)
+          {
+            skipWhitespace();
+            sscanf(inputBuffer+inputBufferPointer,"%lf",(double*)(pe->processorTemplates[pListNum-1].initDataGlobal[a0].data + a2 * 8));
+            skipIdentifier();
+            skipWhitespace();
+            inputBufferPointer++;
+          }
+        }
+        a0++;
+        break;
+      case 'C':
+        inputBufferPointer++;
+        skipWhitespace();
+        if(inputBuffer[inputBufferPointer]=='L')
+        {//length appointed
+          static int l;
+          inputBufferPointer++;
+          skipWhitespace();
+          if(inputBuffer[inputBufferPointer]=='F')
+          {//fixed size
+            static int f;
+            //
+          }
+          else
+          {//just l
+            //
+          }
+        }
+        else
+        {//sole string
+          a1=countC();
+          printf("\t%d\n",a1);
+          pe->processorTemplates[pListNum-1].initDataGlobal[a0].offset=ofst;
+          pe->processorTemplates[pListNum-1].initDataGlobal[a0].length=a1;
+          pe->processorTemplates[pListNum-1].initDataGlobal[a0].data=malloc(a1);
+          parseString(pe->processorTemplates[pListNum-1].initDataGlobal[a0].data);
+          //
+        }
+        a0++;
+        break;
+    }
+  }
+  //data recorded,
+  //then go to the next state
+  //printf("%s",inputBuffer+inputBufferPointer);
+  if(!strncmp(inputBuffer+inputBufferPointer,I_CODE_SECTION,strlen(I_CODE_SECTION)))
+  {
+    //equal, goto state
+    //printf();
+    parsingStatus=PS_CODESECTION;
+    return;
+  }
+  //errno
+  errno=8;
 }
 void parseMutex()
 {//find the nearest
