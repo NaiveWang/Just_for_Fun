@@ -64,4 +64,5 @@
 PExe* parseFile(char *fileS);
 void clearFile(PExe *pe,char flag);
 void makeExeFile(char *fileS, PExe *pe);
+void checkStructure(PExe *pe);
 #endif

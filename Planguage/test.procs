@@ -1,7 +1,19 @@
 
 .processor  test 8 256 1000
+
 .code
 PUSH0I8 I 123
 PUSH0I8 I 234
+.processor test1 8 512 1024
+.code
+#START
+PUSH0I8 I 345
+PUSH0I8 R 123.345
 OPADDI
+JMPC 0 START
 .instance a test
+.instance aa test1
+.mutex M0 1024
+.connection a 255 aa
+.connection a 254 M0
+.mutex M1 1022

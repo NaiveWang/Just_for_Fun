@@ -33,7 +33,8 @@ int readLine()
     while(inputBuffer[a0]^'\n'&&inputBuffer[a0]^';') a0++;
     inputBuffer[a0]=0;
     parseLine++;
-    printf("#%s#\n",inputBuffer+inputBufferPointer);
+    //printf("%d#%s\n",parseLine,inputBuffer+inputBufferPointer);
+    //printf("#%s#\n",inputBuffer+inputBufferPointer);
     return 0;
   }
   return -1;
@@ -66,9 +67,9 @@ int ifIdentifierOverdefined(char *List,int n)
   }
   return 0;
 }
-int matchIdentifier(char *List,char *target,int n)
+int matchIdentifier(char *List,int n)
 {
-  strCopy(target,identifierBuffer);
+  //strCopy(target,identifierBuffer);
   while(n--)
   {
     if(!strcmp(identifierBuffer,nameSeek(List,n))) return n;
@@ -98,21 +99,25 @@ void parseStart()
     if(!strncmp(inputBuffer+inputBufferPointer,I_PROCESSOR,strlen(I_PROCESSOR)))
     {//into processor
       inputBufferPointer+=strlen(I_PROCESSOR);
+      //printf("1\n");
       parsingStatus=PS_IN_PROCESSOR;
     }
     else if(!strncmp(inputBuffer+inputBufferPointer,I_MUTEX,strlen(I_MUTEX)))
     {
       inputBufferPointer+=strlen(I_MUTEX);
+      //printf("2\n");
       parsingStatus=PS_MUTEX_SECTION;
     }
     else if(!strncmp(inputBuffer+inputBufferPointer,I_INSTANCE,strlen(I_INSTANCE)))
     {
       inputBufferPointer+=strlen(I_INSTANCE);
+      //printf("3\n");
       parsingStatus=PS_INSTANCE_SECTION;
     }
     else if(!strncmp(inputBuffer+inputBufferPointer,I_CONNECTION,strlen(I_CONNECTION)))
     {
       inputBufferPointer+=strlen(I_CONNECTION);
+      //printf("4\n");
       parsingStatus=PS_CONNECTIONS;
     }
     else errno=2;
@@ -215,14 +220,17 @@ void parseProcessor()
   //get stack0 int
   skipWhitespace();
   sscanf(inputBuffer+inputBufferPointer,"%d",&a0);
+  skipIdentifier();
   pe->processorTemplates[pListNum-1].stack0Size=a0;
   //get stack int
   skipWhitespace();
   sscanf(inputBuffer+inputBufferPointer,"%d",&a0);
+  skipIdentifier();
   pe->processorTemplates[pListNum-1].stackSize=a0;
   //get data size
   skipWhitespace();
   sscanf(inputBuffer+inputBufferPointer,"%d",&a0);
+  //skipIdentifier();
   pe->processorTemplates[pListNum-1].globalSize=a0;
   //set some pointer to NULL at first
   pe->processorTemplates[pListNum-1].initDataGlobal=NULL;
@@ -253,10 +261,11 @@ void parseProcessor()
 void parseProcessorCode()
 {
     static long fb;
-    static int a0,a1,a2;
+    static int a0,a1,a2,a3;
   ///1.calculate length of code section.
   //backup file pointer
   fb=ftell(input);
+  a3=parseLine;
   //loop:count length of each instruction until meet the . identifier
   //initialize the date first
   a0=0;
@@ -301,17 +310,17 @@ void parseProcessorCode()
       return;
   }
   //allocate code space
-  pe->processorTemplates[pListNum].codeLength=a0;
-  pe->processorTemplates[pListNum].code = malloc(a0);
+  pe->processorTemplates[pListNum-1].codeLength=a0;
+  pe->processorTemplates[pListNum-1].code = malloc(a0);
   ///3.recover file pointer, start parsing step
   //recover file pointer
   fseek(input,fb,SEEK_SET);
+  parseLine=a3;
   //loop, parse instructions
   a1=0;//code section offset
   while(!readLine())
   {
       static char c0;
-      static int a3;
       static unsigned short id;
       if(inputBuffer[inputBufferPointer]==IDENTIFIER) break;
       else if(inputBuffer[inputBufferPointer]=='#') continue;
@@ -319,7 +328,7 @@ void parseProcessorCode()
       strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
       id=instructionParser(&a0,identifierBuffer);
       skipIdentifier();
-      *(unsigned short*)(pe->processorTemplates[pListNum].code+a1)=id;
+      *(unsigned short*)(pe->processorTemplates[pListNum-1].code+a1)=id;
       switch(a0)
       {//the content parsing step
           case 2://no operand
@@ -328,21 +337,21 @@ void parseProcessorCode()
             skipWhitespace();
             sscanf(inputBuffer+inputBufferPointer,"%d:%d",&a2,&a3);
             c0=(char)a2;
-            *(char*)(pe->processorTemplates[pListNum].code+a1+2)=c0;
-            *(int*)(pe->processorTemplates[pListNum].code+a1+3)=a3;
+            *(char*)(pe->processorTemplates[pListNum-1].code+a1+2)=c0;
+            *(int*)(pe->processorTemplates[pListNum-1].code+a1+3)=a3;
             skipIdentifier();
             skipWhitespace();
             sscanf(inputBuffer+inputBufferPointer,"%d:%d",&a2,&a3);
             c0=(char)a2;
-            *(char*)(pe->processorTemplates[pListNum].code+a1+7)=c0;
-            *(int*)(pe->processorTemplates[pListNum].code+a1+8)=a3;
+            *(char*)(pe->processorTemplates[pListNum-1].code+a1+7)=c0;
+            *(int*)(pe->processorTemplates[pListNum-1].code+a1+8)=a3;
             break;//todo
           case 7://1 group of base:offset
             skipWhitespace();
             sscanf(inputBuffer+inputBufferPointer,"%d:%d",&a2,&a3);
             c0=(char)a2;
-            *(char*)(pe->processorTemplates[pListNum].code+a1+2)=c0;
-            *(int*)(pe->processorTemplates[pListNum].code+a1+3)=a3;
+            *(char*)(pe->processorTemplates[pListNum-1].code+a1+2)=c0;
+            *(int*)(pe->processorTemplates[pListNum-1].code+a1+3)=a3;
             break;//todo
           case 10://8byte instant number
             skipWhitespace();
@@ -351,12 +360,12 @@ void parseProcessorCode()
               case 'I':
                 inputBufferPointer++;
                 skipWhitespace();
-                sscanf(inputBuffer+inputBufferPointer,"%ld",(long*)(pe->processorTemplates[pListNum].code+a1+2));
+                sscanf(inputBuffer+inputBufferPointer,"%ld",(long*)(pe->processorTemplates[pListNum-1].code+a1+2));
                 break;
               case 'R':
                 inputBufferPointer++;
                 skipWhitespace();
-                sscanf(inputBuffer+inputBufferPointer,"%lf",(double*)(pe->processorTemplates[pListNum].code+a1+2));
+                sscanf(inputBuffer+inputBufferPointer,"%lf",(double*)(pe->processorTemplates[pListNum-1].code+a1+2));
                 break;
               default:
                 errno=15;
@@ -374,24 +383,24 @@ void parseProcessorCode()
               errno=16;
               return;
             }
-            *(int*)(pe->processorTemplates[pListNum].code+a1+2) = a2;
+            *(int*)(pe->processorTemplates[pListNum-1].code+a1+2) = a2;
             break;//todo
           case 3://1 byte instant
             skipWhitespace();
-            sscanf(inputBuffer+inputBufferPointer,"%c",(char*)(pe->processorTemplates[pListNum].code+a1+2));
+            sscanf(inputBuffer+inputBufferPointer,"%c",(char*)(pe->processorTemplates[pListNum-1].code+a1+2));
             break;
           case 14://4 byte mask instant, 8 byte offset
             skipWhitespace();
-            sscanf(inputBuffer+inputBufferPointer,"%d",(int*)(pe->processorTemplates[pListNum].code+a1+2));
+            sscanf(inputBuffer+inputBufferPointer,"%d",(int*)(pe->processorTemplates[pListNum-1].code+a1+2));
             skipIdentifier();
             skipWhitespace();
-            //sscanf(inputBuffer+inputBufferPointer,"%ld",(long*)(pe->processorTemplates[pListNum].code+a1+6));
+            //sscanf(inputBuffer+inputBufferPointer,"%ld",(long*)(pe->processorTemplates[pListNum-1].code+a1+6));
             strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
             for(a2=0;a2<PNLpointer;a2++)
             {
               if(!strcmp(identifierBuffer,PNL[a2].name))
               {//match
-                *(long*)(pe->processorTemplates[pListNum].code+a1+6)=(long)(PNL[a2].ofst-a1);
+                *(long*)(pe->processorTemplates[pListNum-1].code+a1+6)=(long)(PNL[a2].ofst-a1);
                 break;
               }
               errno=18;
@@ -412,6 +421,7 @@ void parseProcessorData()
   static long fBackup,ofst;
   //backup the file offset
   fBackup = ftell(input);
+  a0=parseLine;
   //count data element size
   pe->processorTemplates[pListNum-1].initNumGlobal=0;
   for(;;)
@@ -436,6 +446,7 @@ void parseProcessorData()
   }
   //return to start
   fseek(input,fBackup,SEEK_SET);
+  parseLine=a0;
   //zero element error handle
   if(! pe->processorTemplates[pListNum-1].initNumGlobal)
   {
@@ -743,7 +754,8 @@ void parseConnection()
   skipWhitespace();
   //check if it exist, error return
   inputBufferPointer+=strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
-  a0=matchIdentifier(iNameList,identifierBuffer,iListNum);
+  //printf("#%s#\n",identifierBuffer);
+  a0=matchIdentifier(iNameList,iListNum);
   if(a0==-1)
   {//error return
     errno=5;
@@ -754,14 +766,16 @@ void parseConnection()
   skipWhitespace();
   inputBufferPointer+=strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
   sscanf(identifierBuffer,"%d",&a0);
+  skipIdentifier();
   pe->connectionMapping[cListNum].nodeSPort=a0;
   //get the destination
   skipWhitespace();
   strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
-  a0=matchIdentifier(iNameList,identifierBuffer,iListNum);
+  a0=matchIdentifier(iNameList,iListNum);
   if(a0==-1)
   {
-    a0=matchIdentifier(mNameList,identifierBuffer,mListNum);
+    errno=0;
+    a0=matchIdentifier(mNameList,mListNum);
     if(a0==-1)
     {
       errno=6;
@@ -801,7 +815,7 @@ void parseInstance()
   skipWhitespace();
   inputBufferPointer+=strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
   //check if it is true
-  a0=matchIdentifier(pNameList,identifierBuffer,pListNum);
+  a0=matchIdentifier(pNameList,pListNum);
   //if its true, assign to proper place, not error return.
   if(a0 == -1)
   {
@@ -835,6 +849,7 @@ void parseInstanceData()
   static long fBackup,ofst;
   //backup the file offset
   fBackup = ftell(input);
+  a0=parseLine;
   //count data element size
   pe->processorInstances[iListNum-1].initNum=0;
   for(;;)
@@ -851,6 +866,7 @@ void parseInstanceData()
     else if(inputBuffer[inputBufferPointer]==IDENTIFIER) break;
   }
   //return to start
+  parseLine=a0;
   fseek(input,fBackup,SEEK_SET);
   //zero element error handle
   if(! pe->processorInstances[iListNum-1].initNum)

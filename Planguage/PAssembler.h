@@ -53,7 +53,7 @@ int pListNum,iListNum,cListNum,mListNum;
 int readLine();
 char* nameSeek(char* s, int n);
 int ifIdentifierOverdefined(char *List,int n);
-int matchIdentifier(char *List,char *target,int n);
+int matchIdentifier(char *List,int n);
 int strCopy(char *s,char *d);
 int addIdentifier(char* t,char *List,int *n);
 int countI();
@@ -119,9 +119,13 @@ int main(int argv,char** argc)
     pe->mutexSizeList = malloc(sizeof(int) * pe->mutexNum);
     mNameList=malloc(NAME_BUFFER_SIZE * pe->mutexNum);
   }
+  else
+  {
+    pe->mutexSizeList=NULL;
+  }
   if(pe->processorInstanceNUM)
   {
-    pe->processorInstances = malloc(sizeof(processorI) * pe->processorInstanceNUM);
+    pe->processorInstances = calloc(pe->processorInstanceNUM,sizeof(processorI));
     iNameList=malloc(NAME_BUFFER_SIZE * pe->processorInstanceNUM);
   }
   else
@@ -133,6 +137,10 @@ int main(int argv,char** argc)
   {
     cNameList=malloc(NAME_BUFFER_SIZE * pe->connectionMappingNum);
     pe->connectionMapping = malloc(sizeof(connections) * pe->connectionMappingNum);
+  }
+  else
+  {
+    pe->connectionMapping = NULL;
   }
   //allocate the space for element
   //if(pe->processorTemplateNum)
@@ -189,7 +197,9 @@ int main(int argv,char** argc)
   fclose(input);
   makeExeFile(*(argc+2),pe);
   //output=fopen(*(argc+2),"wb");
-  clearFile(pe,CLEAR_ALL);
+  printf("parse ended.\n");
+  checkStructure(pe);
+  //clearFile(pe,CLEAR_ALL);
   return 0;
 }
 #endif
