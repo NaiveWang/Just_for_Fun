@@ -9,6 +9,8 @@
 #define IDENTIFIER '.'
 #define BUFFER_SIZE 1024
 #define NAME_BUFFER_SIZE 128
+#define POSITION_NAME_SIZE 28
+#define POSITION_NAME_LENGTH 500
 //define identifier reserved key word
 #define I_PROCESSOR "processor "
 #define I_MUTEX "mutex "
@@ -25,11 +27,18 @@
 #define PS_MUTEX_SECTION 5
 #define PS_INSTANCE_SECTION 6
 #define PS_CONNECTIONS 7
+typedef struct positionNameElement
+{
+  int ofst;
+  char name[POSITION_NAME_SIZE];
+}pnl;
 /** Global Variables **/
 char inputBuffer[BUFFER_SIZE];
 char identifierBuffer[NAME_BUFFER_SIZE];
+pnl PNL[POSITION_NAME_LENGTH];
+int PNLpointer;
 int inputBufferPointer;
-FILE *input,*output;
+FILE *input;//*output;
 PExe *pe;
 int parsingStatus;
 int errno;
@@ -174,11 +183,13 @@ int main(int argv,char** argc)
       errorHandler();
       break;
     }
-    _debugShowNameList(pNameList,pListNum);
-    _debugShowNameList(iNameList,iListNum);
     //_debugShowNameList(mNameList,mListNum);
     //parseLine++;
   }
+  fclose(input);
+  makeExeFile(*(argc+2),pe);
+  //output=fopen(*(argc+2),"wb");
+  clearFile(pe,CLEAR_ALL);
   return 0;
 }
 #endif

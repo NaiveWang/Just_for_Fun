@@ -5,6 +5,7 @@
  **/
 #include "PCoreBase.h"
 #include <stdio.h>
+#include <string.h>
 typedef struct referencesOfAssembler
 {
   unsigned short apiNumber;
@@ -15,4 +16,5 @@ void basicIO_Buffer(PBase* p);
 void basicIO_File(PBase* p);
 //decoder
 void *APIHandler(void* vp);
+int fetchAPI(char* target);
 #endif

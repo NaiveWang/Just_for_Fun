@@ -8,8 +8,9 @@ int main(int argv,char **argc)
     printf("PVM Warning: No input file.\n");
     return -1;
   }
-  printf("Dispatching %s\n",*(argc+1));
+  printf("Reading %s\n",*(argc+1));
   VMReadFile(*(argc+1));
+  printf("execution file loaded.\n");
   VMStartUp();
   return 0;
 }

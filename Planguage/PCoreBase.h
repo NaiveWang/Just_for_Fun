@@ -21,7 +21,7 @@ typedef struct AInstanceOfProcessor
   void *PID;
   unsigned int memoryUsage;
   void* APICallAddr;
-  unsigned long APICallID;
+  unsigned int APICallID;
   int status;
   void *pc;
   void *code;

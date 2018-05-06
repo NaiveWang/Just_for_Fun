@@ -253,21 +253,39 @@ void parseProcessor()
 void parseProcessorCode()
 {
     static long fb;
-    static int a0,a1;
+    static int a0,a1,a2;
   ///1.calculate length of code section.
   //backup file pointer
   fb=ftell(input);
   //loop:count length of each instruction until meet the . identifier
   //initialize the date first
   a0=0;
+  PNLpointer=0;
   while(!readLine())
   {
       if(inputBuffer[inputBufferPointer]==IDENTIFIER) break;
+      else if(inputBuffer[inputBufferPointer]=='#')
+      {
+        inputBufferPointer++;
+        //record name and offset
+        strCopy(inputBufferPointer+inputBuffer,identifierBuffer);
+        for(a2=0;a2<PNLpointer;a2++)
+        {
+          if(strcmp(PNL[a2].name,identifierBuffer)) continue;
+          errno=17;//conflict position name
+          return;
+        }
+        //new position
+        strcpy(PNL[PNLpointer].name,identifierBuffer);
+        PNL[PNLpointer].ofst=a0;
+        PNLpointer++;
+        continue;
+      }
       //find the instruction
       strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
-      printf("&%s&\n",identifierBuffer);
+      //printf("&%s&\n",identifierBuffer);
       instructionParser(&a1,identifierBuffer);
-      printf("&%s&%d&\n",identifierBuffer,a1);
+      //printf("&%s&%d&\n",identifierBuffer,a1);
       if(!a1)
       {//error handler: unknown instructions
           errno=14;
@@ -289,13 +307,14 @@ void parseProcessorCode()
   //recover file pointer
   fseek(input,fb,SEEK_SET);
   //loop, parse instructions
-  a1=0;//code section offset;
+  a1=0;//code section offset
   while(!readLine())
   {
       static char c0;
-      static int a2,a3;
+      static int a3;
       static unsigned short id;
       if(inputBuffer[inputBufferPointer]==IDENTIFIER) break;
+      else if(inputBuffer[inputBufferPointer]=='#') continue;
       //switch the instructions;
       strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
       id=instructionParser(&a0,identifierBuffer);
@@ -346,6 +365,16 @@ void parseProcessorCode()
             //sscanf(inputBuffer+inputBufferPointer,"%ld",(long*)(pe->processorTemplates[pListNum].code+a1+2));
             break;
           case 6://4byte, find with system call number
+            skipWhitespace();
+            strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
+            a2=fetchAPI(identifierBuffer);
+            if(a2==-1)
+            {
+              //handle error:api function not found
+              errno=16;
+              return;
+            }
+            *(int*)(pe->processorTemplates[pListNum].code+a1+2) = a2;
             break;//todo
           case 3://1 byte instant
             skipWhitespace();
@@ -356,7 +385,18 @@ void parseProcessorCode()
             sscanf(inputBuffer+inputBufferPointer,"%d",(int*)(pe->processorTemplates[pListNum].code+a1+2));
             skipIdentifier();
             skipWhitespace();
-            sscanf(inputBuffer+inputBufferPointer,"%ld",(long*)(pe->processorTemplates[pListNum].code+a1+6));
+            //sscanf(inputBuffer+inputBufferPointer,"%ld",(long*)(pe->processorTemplates[pListNum].code+a1+6));
+            strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
+            for(a2=0;a2<PNLpointer;a2++)
+            {
+              if(!strcmp(identifierBuffer,PNL[a2].name))
+              {//match
+                *(long*)(pe->processorTemplates[pListNum].code+a1+6)=(long)(PNL[a2].ofst-a1);
+                break;
+              }
+              errno=18;
+              return;
+            }
             break;//todo
       }
       //move pointer forward
@@ -1098,6 +1138,9 @@ void errorHandler()
     case 13:printf("syntax error : expect a string closure");break;
     case 14:printf("unknown instructions");break;
     case 15:printf("syntax error : expect a I or R, not others");break;
+    case 16:printf("api function not found");break;
+    case 17:printf("conflict position name");break;
+    case 18:printf("unknown position name");break;
     case -1:return;//file end
   }
   printf(".\n");
