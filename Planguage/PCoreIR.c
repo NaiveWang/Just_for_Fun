@@ -88,11 +88,13 @@ void PUSH0A(PBase *p)
 }
 void PUSH0I8(PBase *p)
 {
-  asm("leaq (%0),%%rdx"::"r"(p->data + POINTER_STACK0));
+  asm("leaq (%0),%%rdx"::"r"(p->data + POINTER_STACK0));//getchar();
   asm("movq (%rdx),%rbx");
   asm("movq %0,%%rax"::"r"(p->pc+2));
   asm("movq (%rax),%rax");
-  asm("movq %rax,(%rbx)");
+  asm("movq %%rbx,%0":"=r"(p->debugBuffer));
+  printf("!%ld!\n",p->debugBuffer);
+  asm("movq %rax,(%rbx)");getchar();
   asm("addq $8,%rbx");
   asm("movq %rbx,(%rdx)");
   p->pc+=10;
@@ -327,5 +329,8 @@ void executionOneStep(PBase *p)
   unsigned short codeNo;
   asm("movq %0,%%rbx"::"r"(p->pc));
   asm("movw (%%rbx),%0":"=r"(codeNo));
+  //printf("^%d^\n",codeNo);
+  //getchar();
   InstructionSet[codeNo](p);
+  //getchar();
 }

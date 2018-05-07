@@ -10,7 +10,7 @@ int main(int argv,char **argc)
   }
   printf("Reading %s\n",*(argc+1));
   VMReadFile(*(argc+1));
-  checkStructure(VMpe);
+  //checkStructure(VMpe);
   printf("execution file loaded.\n");
   VMStartUp();
   return 0;

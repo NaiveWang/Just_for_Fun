@@ -1,4 +1,4 @@
 assembler:
 	gcc PAssembler.c PFile.c PCoreIR.c PVMAPILib.c -o PAssembler
-PVM:
+pvm:
 	gcc PCoreIR.c PVMAPILib.c PFile.c PVM.c PVMmain.c -lpthread -o PVM

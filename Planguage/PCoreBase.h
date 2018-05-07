@@ -6,12 +6,12 @@
 //offset macros
 #define L_ADDR sizeof(void*)
 #define BASE_DATA 0
-#define BASE_STACK0 BASE_DATA+L_ADDR
-#define BASE_STACK BASE_STACK0+L_ADDR
-#define BASE_GLOBAL BASE_STACK+L_ADDR
-#define BASE_S BASE_GLOBAL+L_ADDR
-#define POINTER_STACK0 BASE_S+L_ADDR
-#define POINTER_STACK POINTER_STACK0+L_ADDR
+#define BASE_STACK0 BASE_DATA+L_ADDR*0
+#define POINTER_STACK0 BASE_DATA+L_ADDR*1
+#define BASE_STACK BASE_DATA+L_ADDR*2
+#define POINTER_STACK BASE_DATA+L_ADDR*3
+#define BASE_GLOBAL BASE_DATA+L_ADDR*4
+
 #define PROCESSOR_STATUS_RUNNING 0
 #define PROCESSOR_STATUS_SUSPENDED -1
 #define PROCESSOR_STATUS_REBOOT 1
@@ -19,6 +19,7 @@
 typedef struct AInstanceOfProcessor
 {
   void *PID;
+  long debugBuffer;
   unsigned int memoryUsage;
   void* APICallAddr;
   unsigned int APICallID;

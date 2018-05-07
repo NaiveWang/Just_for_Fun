@@ -153,7 +153,7 @@ void clearFile(PExe *pe,char flag)
   //except for the code section
   static unsigned int a0,a1;
   //loop, free processorTemplates
-  /**
+
   for(a0=0;a0<pe->processorTemplateNum;a0++)
   {//putchar('$');
     //reserve the code section
@@ -167,20 +167,20 @@ void clearFile(PExe *pe,char flag)
   }
   free(pe->processorTemplates);
   //free mutexList
-  */
+
   if(pe->mutexSizeList)
     free(pe->mutexSizeList);
 
   //free inmstance list, loop
-  /*for(a0=0;a0<pe->processorInstanceNUM;a0++)
+  for(a0=0;a0<pe->processorInstanceNUM;a0++)
   {
     //free the list of init-data;
     for(a1=0;a1<pe->processorInstances[a0].initNum;a1++)
     {
-      //free(pe->processorInstances[a0].initData[a1].data);
+      free(pe->processorInstances[a0].initData[a1].data);
     }
-    //free(pe->processorInstances[a0].initData);
-  }*/
+    free(pe->processorInstances[a0].initData);
+  }
   //printf("#%d\n",pe->processorInstances);
   free(pe->processorInstances);
 

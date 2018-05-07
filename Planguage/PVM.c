@@ -4,13 +4,15 @@ void VMReadFile(char *file)
   int c0;
   //get file
   VMpe=parseFile(file);
+  //checkStructure(VMpe);
   //initialize the code list
   c0=VMpe->processorTemplateNum;
   listCode = malloc(sizeof(void*) * c0);
+  //getchar();
   while(c0--)
   {
     *(listCode+c0)=(VMpe->processorTemplates + c0)->code;
-  }
+  }//getchar();
   //initialaze the mutex list
   c0=VMpe->mutexNum;
   listMutex=malloc(sizeof(mutex) * c0);
@@ -25,45 +27,53 @@ void VMReadFile(char *file)
   //allocate the space
   listInstanceSize = VMpe->processorInstanceNUM;
   listInstance = malloc(sizeof(PBase) * listInstanceSize);
+  printf("%d\n",listInstanceSize);//getchar();
   for(c0=0;c0<listInstanceSize;c0++)
   {
     //allocate data section.
     ///listInstance[c0].data = malloc(VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].dataSize);
     //assign value
     listInstance[c0].code = VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].code;
-    listInstance[c0].pc = VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].code;
+    listInstance[c0].pc = VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].code;//getchar();
     listInstance[c0].PID = &listInstance[c0];
     listInstance[c0].status = 0;
     listInstance[c0].eflag = 0;
+    //allocate data space!
+    listInstance[c0].data=malloc(
+      VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].stack0Size+
+      VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].stackSize+
+      VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].globalSize+
+      256*sizeof(void*));
     {
       void* *ap = listInstance[c0].data;
       //data r
-      *ap = listInstance[c0].data;
-      ap++;
+      ap[0] = listInstance[c0].data;
+      //ap+=sizeof(void*);
       //stack0 base pointer
-      *ap = listInstance[c0].data + 256 * 8;
-      ap++;
+      ap[1] = listInstance[c0].data + 256 * 8;
+      //ap++;
       //stack0 pointer
-      *ap = listInstance[c0].data + 256 * 8;
-      ap++;
+      ap[2] = listInstance[c0].data + 256 * 8;
+      //ap++;
       //stack base pointer
-      *ap = listInstance[c0].data + 256 * 8 + VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].stack0Size;
-      ap++;
+      ap[3] = listInstance[c0].data + 256 * 8 + VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].stack0Size;
+      //ap++;
       //stack pointer
-      *ap = listInstance[c0].data + 256 * 8 + VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].stack0Size;
-      ap++;
+      ap[4] = listInstance[c0].data + 256 * 8 + VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].stack0Size;
+      //ap++;
       //global base pointer
-      *ap = listInstance[c0].data + 256 * 8 +
+      ap[5] = listInstance[c0].data + 256 * 8 +
         VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].stack0Size +
         VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].stackSize;
-      ap++;
+      //ap++;
       //constant/string base pointer.
-      *ap = listInstance[c0].data + 256 * 8 +
+      ap[6] = listInstance[c0].data + 256 * 8 +
         VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].stack0Size +
         VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].stackSize +
         VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].globalSize;
-      ap++;
+      //ap++;
     }
+
     {
       int c1,c2;
       for(c1=0;c1<VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].initNumGlobal;c1++)
@@ -88,17 +98,20 @@ void VMReadFile(char *file)
 void debugVM(PBase *p,int howManyStack0Elem)
 {
   long* stack0p;
-  printf("VM Debug Start\n");
-  printf("ProcessorID:%lud",(unsigned long)p);
+  printf("VM Debug Start\t");
+  printf("ProcessorID:%lu ",(unsigned long)p);
   printf("Next Instruction No:%hu\n",*(unsigned short*)p->pc);
-  printf("Current Status:%x",p->status);
-  printf("Current Flag:%x",p->eflag);
-  stack0p=(long*)*(long*)(p->data + 16);
+  printf("Current Status:%x ",p->status);
+  printf("Current Flag:%x\n",p->eflag);
+  printf("datapointer:%lx \n",(long)(p->data));
+  printf("self0pointer:%lx \n",*(long*)(p->data));
+  printf("Stack0pointer:%lx \n",*(long*)(p->data + POINTER_STACK0));
+  /*stack0p=(long*)*(long*)(p->data + 16);
   while(howManyStack0Elem--)
   {
     printf("stack0:%lx\n",*stack0p);
     stack0p--;
-  }
+  }*/
   printf("VM Debug End\n");
 }
 void *execDebug(void* no)
@@ -108,12 +121,16 @@ void *execDebug(void* no)
   while(!error)
   {//loop for each loadded processor
     //execute one thread
-    while(listInstance[ino].status)//trap not invoked^^^^^^^^^^^
+    printf("@%d\n",listInstance[ino].status);
+    while(!listInstance[ino].status)//trap not invoked^^^^^^^^^^^
     {
       printf("Trying one step...\n");
+      debugVM(&listInstance[ino],4);
       executionOneStep(&listInstance[ino]);
       printf("Ended.\n");
-      scanf("\n");
+      debugVM(&listInstance[ino],4);
+      getchar();
+      //scanf("\n");
     }
     ino+=NUM_E_THREAD;
     if(ino==listInstanceSize) ino = *(int*)no;
