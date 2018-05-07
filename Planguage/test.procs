@@ -16,6 +16,8 @@ I 1,2,3,4,5
 O 30
 I F  10 3,2,1
 S 12
+C L 10 "123","ioksjndc"
+C L 10 F 5 "jisndci","kjsndicnb","ksjbdcihujhuisnciabc","098"
 I 3,2,1
 .code
 #START
@@ -27,6 +29,14 @@ JMPC 0 START
 
 ;I 12233,2,3
 .instance aa test1
+.data
+I 1,2,3,4,5
+O 30
+I F  10 3,2,1
+S 12
+C L 10 "123","ioksjndc"
+C L 10 F 5 "jisndci","kjsndicnb","ksjbdcihujhuisnciabc","098"
+I 3,2,1
 .mutex M0 1024
 .connection a 255 aa
 .connection a 254 M0
