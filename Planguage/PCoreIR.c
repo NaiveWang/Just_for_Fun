@@ -86,17 +86,21 @@ void PUSH0A(PBase *p)
 
   p->pc+=7;
 }
-void PUSH0I8(PBase *p)
+void PUSH0I8(PBase *p)//checked
 {
-  asm("leaq (%0),%%rdx"::"r"(p->data + POINTER_STACK0));//getchar();
+  asm("leaq (%0),%%rdx"::"r"(p->data+POINTER_STACK0));//getchar();
   asm("movq (%rdx),%rbx");
   asm("movq %0,%%rax"::"r"(p->pc+2));
+
   asm("movq (%rax),%rax");
-  asm("movq %%rbx,%0":"=r"(p->debugBuffer));
-  printf("!%ld!\n",p->debugBuffer);
-  asm("movq %rax,(%rbx)");getchar();
+
+
+  asm("movq %rax,(%rbx)");//getchar();
+
   asm("addq $8,%rbx");
   asm("movq %rbx,(%rdx)");
+  //asm("movq %%rax,%0":"=r"(p->debugBuffer));
+  //printf("!%ld!\n",p->debugBuffer);
   p->pc+=10;
 }
 void PUSH08(PBase *p)
@@ -239,6 +243,7 @@ void OPADDI(PBase *p)
   asm("lahf");
   asm("movb %ah,%al");
   asm("movl %%eax,%0":"=r"(p->eflag));
+  p->pc+=2;
 }
 void OPDIVI(PBase *p)
 {

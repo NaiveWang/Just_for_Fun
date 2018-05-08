@@ -46,9 +46,14 @@ void VMReadFile(char *file)
       256*sizeof(void*));
     {
       void* *ap = listInstance[c0].data;
+      //PRINTADDR(listInstance[c0].data);
+      //PRINTADDR(ap);
+      //PRINTADDR(ap[0]);
       //data r
       ap[0] = listInstance[c0].data;
       //ap+=sizeof(void*);
+      //PRINTADDR(ap[0]);
+      //PRINTADDR(*(long*)listInstance[c0].data);
       //stack0 base pointer
       ap[1] = listInstance[c0].data + 256 * 8;
       //ap++;
@@ -73,7 +78,7 @@ void VMReadFile(char *file)
         VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].globalSize;
       //ap++;
     }
-
+/*
     {
       int c1,c2;
       for(c1=0;c1<VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].initNumGlobal;c1++)
@@ -92,7 +97,7 @@ void VMReadFile(char *file)
           *(char*)(listInstance[c0].data + c2) = *(char*)(d->data + c2);
         }
       }
-    }
+    }*/
   }
 }
 void debugVM(PBase *p,int howManyStack0Elem)
@@ -100,14 +105,16 @@ void debugVM(PBase *p,int howManyStack0Elem)
   long* stack0p;
   printf("VM Debug Start\t");
   printf("ProcessorID:%lu ",(unsigned long)p);
-  printf("Next Instruction No:%hu\n",*(unsigned short*)p->pc);
+  printf("Next Instruction P:%lx No:%hu\n",(long)p->pc,*(unsigned short*)p->pc);
   printf("Current Status:%x ",p->status);
   printf("Current Flag:%x\n",p->eflag);
   printf("datapointer:%lx \n",(long)(p->data));
   printf("self0pointer:%lx \n",*(long*)(p->data));
+  PRINTADDR(*(long*)p->data);
   printf("Stack0pointer:%lx \n",*(long*)(p->data + POINTER_STACK0));
-  /*stack0p=(long*)*(long*)(p->data + 16);
-  while(howManyStack0Elem--)
+  stack0p=(long*)*(long*)(p->data + POINTER_STACK0);
+  printf("stack0TopValue:%lx:%ld\n",(long)stack0p,*(stack0p-1));
+  /*while(howManyStack0Elem--)
   {
     printf("stack0:%lx\n",*stack0p);
     stack0p--;

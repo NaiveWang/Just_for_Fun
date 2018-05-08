@@ -10,6 +10,7 @@ C "glgjssykjdnvkjnsklamlscnmlk"
 
 PUSH0I8 I 123
 PUSH0I8 I 234
+OPADDI;
 .processor test1 8 512 1024
 .data
 I 1,2,3,4,5

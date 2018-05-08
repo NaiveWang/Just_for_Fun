@@ -12,6 +12,7 @@
 #include "PFile.h"
 #include "PVMAPILib.h"
 #define NUM_E_THREAD 1
+#define PRINTADDR(x) printf("ADDR:%lx\n",(long)(x));
 /** MACRO Section **/
 //the number of execution threads, it mainly depends on the hardware
 //#define TN_EXE 3//my computer has 8 logical core, extended by the technology known as intel's hyper threading.
