@@ -113,7 +113,7 @@ void debugVM(PBase *p,int howManyStack0Elem)
   //PRINTADDR(*(long*)p->data);
   //printf("Stack0pointer : %lx \n",*(long*)(p->data + POINTER_STACK0));
   stack0p=(long*)*(long*)(p->data + POINTER_STACK0);
-  printf("stack0TopValue : %lx:%ld\n",(long)stack0p,*(stack0p-1));
+  printf("stack0TopValue :%lx:%lx:%ld\n",*(long*)(p->data+8),(long)stack0p,*(stack0p-1));
   /*while(howManyStack0Elem--)
   {
     printf("stack0:%lx\n",*stack0p);
@@ -131,10 +131,10 @@ void *execDebug(void* no)
     printf("@%d\n",listInstance[ino].status);
     while(!listInstance[ino].status)//trap not invoked^^^^^^^^^^^
     {
-      printf("Trying one step...\n");
+      //printf("Trying one step...\n");
       debugVM(&listInstance[ino],4);
       executionOneStep(&listInstance[ino]);
-      printf("Ended.\n");
+      //printf("Ended.\n");
       debugVM(&listInstance[ino],4);
       getchar();
       //scanf("\n");

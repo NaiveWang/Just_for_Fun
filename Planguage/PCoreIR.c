@@ -12,28 +12,31 @@ void MOV8A(PBase *p)
   asm("movq %rbx,(%rdx)");
   p->pc+=2;
 }
-void MOV8(PBase *p)
+void MOV8(PBase *p)//checked0
 {
   asm("movq %0,%%rbx"::"r"(p->pc));
-
   asm("xorq %rdx,%rdx");
   asm("movb 2(%rbx),%dl");
+  asm("movq %0,%%rcx"::"r"(p->data));
+  asm("movq (%rcx,%rdx,8),%rax");
+  asm("xorq %rdx,%rdx");
+  asm("movl 3(%rbx),%edx");
+  asm("addq %rax,%rdx");
 
-  asm("xorq %rbp,%rbp");
-  asm("movl 3(%rbx),%ebp");asm("movq %%rbp,%0":"=r"(p->debugBuffer));printf("$%ld/%lx$\n",p->debugBuffer,p->debugBuffer);
-  asm("add %0,%%rbp"::"r"(p->data));
-
-  asm("movq (%rbp,%rdx,8),%rax");
-
+  asm("movq (%rax),%rax");// value stored at rax
+//asm("movq %%rax,%0":"=r"(p->debugBuffer));printf("$%ld/%lx$\n",p->debugBuffer,p->debugBuffer);
   asm("xorq %rdx,%rdx");
   asm("movb 7(%rbx),%dl");
 
-  asm("xorq %rbp,%rbp");
-  asm("movl 8(%rbx),%ebp");
-  asm("add %0,%%rbp"::"r"(p->data));
+  //asm("movq %0,%%rcx"::"r"(p->data));
 
-  asm("movq %rax,(%rbp,%rdx,8)");
-
+  asm("movq (%rcx,%rdx,8),%rcx");
+  asm("xorb %dl,%dl");
+  asm("movl 8(%rbx),%edx");
+  asm("addq %rdx,%rcx");
+//asm("movq %%rax,%0":"=r"(p->debugBuffer));
+  asm("movq %rax,(%rcx)");
+  printf("$%ld/%lx$\n",p->debugBuffer,p->debugBuffer);
   p->pc+=12;
 }
 void MOVBA(PBase *p)

@@ -11,7 +11,7 @@ C "glgjssykjdnvkjnsklamlscnmlk"
 PUSH0I8 I 245
 PUSH0I8 I 234
 OPDIVI;
-MOV8 2:0 2:1
+MOV8 1:0 1:8
 JMPC 0 S
 .processor test1 8 512 1024
 .data
