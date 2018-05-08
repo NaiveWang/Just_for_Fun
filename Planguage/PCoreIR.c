@@ -234,15 +234,21 @@ void JMPC(PBase *p)
   asm("jump:");
   //get pc
 }
-void OPADDI(PBase *p)
+void OPADDI(PBase *p)//checked
 {
-  asm("movq %0,%%rbx"::"r"(p->data+POINTER_STACK0));
+  asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
+  asm("movq (%rdx),%rbx");
+
   asm("subq $8,%rbx");
   asm("movq (%rbx),%rax");
+
   asm("addq %rax,-8(%rbx)");
-  asm("lahf");
-  asm("movb %ah,%al");
+  asm("lahf");//asm("movq %%rbx,%0":"=r"(p->debugBuffer));
+
+  asm("movq %rbx,(%rdx)");
+  //asm("movb %ah,%al");
   asm("movl %%eax,%0":"=r"(p->eflag));
+  printf("$%ld/%lx$\n",p->debugBuffer,p->debugBuffer);
   p->pc+=2;
 }
 void OPDIVI(PBase *p)

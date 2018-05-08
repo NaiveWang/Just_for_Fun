@@ -108,12 +108,12 @@ void debugVM(PBase *p,int howManyStack0Elem)
   printf("Next Instruction P:%lx No:%hu\n",(long)p->pc,*(unsigned short*)p->pc);
   printf("Current Status:%x ",p->status);
   printf("Current Flag:%x\n",p->eflag);
-  printf("datapointer:%lx \n",(long)(p->data));
-  printf("self0pointer:%lx \n",*(long*)(p->data));
-  PRINTADDR(*(long*)p->data);
-  printf("Stack0pointer:%lx \n",*(long*)(p->data + POINTER_STACK0));
+  printf("datapointer : %lx \n",(long)(p->data));
+  //printf("self0pointer:%lx \n",*(long*)(p->data));
+  //PRINTADDR(*(long*)p->data);
+  //printf("Stack0pointer : %lx \n",*(long*)(p->data + POINTER_STACK0));
   stack0p=(long*)*(long*)(p->data + POINTER_STACK0);
-  printf("stack0TopValue:%lx:%ld\n",(long)stack0p,*(stack0p-1));
+  printf("stack0TopValue : %lx:%ld\n",(long)stack0p,*(stack0p-1));
   /*while(howManyStack0Elem--)
   {
     printf("stack0:%lx\n",*stack0p);
