@@ -1,7 +1,7 @@
 #include "PCoreIR.h"
 void MOV8A(PBase *p)
 {
-  asm("leaq (%0),%%rdx"::"r"(p->data+POINTER_STACK0));
+  asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
   asm("movq (%rdx),%rbx");
   asm("subq $16,%rbx");
 
@@ -20,7 +20,7 @@ void MOV8(PBase *p)
   asm("movb 2(%rbx),%dl");
 
   asm("xorq %rbp,%rbp");
-  asm("movl 3(%rbx),%ebp");
+  asm("movl 3(%rbx),%ebp");asm("movq %%rbp,%0":"=r"(p->debugBuffer));printf("$%ld/%lx$\n",p->debugBuffer,p->debugBuffer);
   asm("add %0,%%rbp"::"r"(p->data));
 
   asm("movq (%rbp,%rdx,8),%rax");
@@ -33,6 +33,7 @@ void MOV8(PBase *p)
   asm("add %0,%%rbp"::"r"(p->data));
 
   asm("movq %rax,(%rbp,%rdx,8)");
+
   p->pc+=12;
 }
 void MOVBA(PBase *p)
@@ -248,55 +249,60 @@ void OPADDI(PBase *p)//checked
   asm("movq %rbx,(%rdx)");
   //asm("movb %ah,%al");
   asm("movl %%eax,%0":"=r"(p->eflag));
-  printf("$%ld/%lx$\n",p->debugBuffer,p->debugBuffer);
+  //printf("$%ld/%lx$\n",p->debugBuffer,p->debugBuffer);
   p->pc+=2;
 }
-void OPDIVI(PBase *p)
+void OPDIVI(PBase *p)//checked
 {
   asm("movq %0,%%rbx"::"r"(p->data+POINTER_STACK0));
   //asm("subq $8,%rbx");
+  asm("movq (%rbx),%rbx");
   asm("movq -8(%rbx),%rcx");
   asm("movq -16(%rbx),%rax");
   asm("cqo");
-  asm("divq %rcx");
-  asm("lahf");
-  asm("movb %ah,%al");
-  asm("movl %%eax,%0":"=r"(p->eflag));
+  asm("idivq %rcx");
   asm("movq %rdx,-8(%rbx)");//quotient
   asm("movq %rax,-16(%rbx)");//reminder
+  //asm("movq %%rax,%0":"=r"(p->debugBuffer));
+  asm("lahf");
+  //asm("movb %ah,%al");
+  asm("movl %%eax,%0":"=r"(p->eflag));
+
+  //printf("$%ld/%lx$\n",p->debugBuffer,p->debugBuffer);
+  p->pc+=2;
 }
-void OPCMPI(PBase *p)
+void OPCMPI(PBase *p)//checked
 {
-  asm("leaq (%0),%%rdx"::"r"(p->data+POINTER_STACK0));
+  asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
   asm("movq (%rdx),%rbx");
   asm("subq $16,%rbx");
-  //asm("movq (%rbx),%rax");
-  asm("movq 4(%rbx),%rcx");
-  asm("cmpq (%rbx),%rcx");
-  asm("lahf");
-  asm("movb %ah,%al");
-  asm("movl %%eax,%0":"=r"(p->eflag));
   asm("movq %rbx,(%rdx)");
+  asm("movq 8(%rbx),%rax");
+  asm("cmpq (%rbx),%rax");
+  asm("lahf");
+  asm("movl %%eax,%0":"=r"(p->eflag));
+  p->pc+=2;
 }
-void OPNOTI(PBase *p)
+void OPNOTI(PBase *p)//checked
 {
   asm("movq %0,%%rbx"::"r"(p->data+POINTER_STACK0));
+  asm("movq (%rbx),%rbx");
   asm("notq -8(%rbx)");
   asm("lahf");
-  asm("movb %ah,%al");
   asm("movl %%eax,%0":"=r"(p->eflag));
+  p->pc+=2;
 }
-void OPTSTI(PBase *p)
+void OPTSTI(PBase *p)//checked
 {
-  asm("leaq (%0),%%rdx"::"r"(p->data+POINTER_STACK0));
+  asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
   asm("movq (%rdx),%rbx");
   asm("subq $16,%rbx");
   asm("movq %rbx,(%rdx)");
   asm("movq 8(%rbx),%rax");
   asm("test (%rbx),%rax");
   asm("lahf");
-  asm("movb %ah,%al");
   asm("movl %%eax,%0":"=r"(p->eflag));
+  p->pc+=2;
 }
 
 void (*InstructionSet[])(PBase *p) = {

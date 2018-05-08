@@ -7,10 +7,12 @@ R 12,13.66,123.758
 I 1,2,3,4,5,6,7,8,9,11,20
 C "glgjssykjdnvkjnsklamlscnmlk"
 .code
-
-PUSH0I8 I 123
+#S
+PUSH0I8 I 245
 PUSH0I8 I 234
-OPADDI;
+OPDIVI;
+MOV8 2:0 2:1
+JMPC 0 S
 .processor test1 8 512 1024
 .data
 I 1,2,3,4,5
