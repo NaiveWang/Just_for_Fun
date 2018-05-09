@@ -8,10 +8,10 @@ I 1,2,3,4,5,6,7,8,9,11,20
 C "glgjssykjdnvkjnsklamlscnmlk"
 .code
 #S
-PUSH0I8 I 245
-PUSH0I8 I 234
-OPDIVI;
-MOV8 1:0 1:8
+PUSH0I8 I 10000
+PUSH0I8 I 20000
+;PUSH08 1:0
+POP08 1:0
 JMPC 0 S
 .processor test1 8 512 1024
 .data
