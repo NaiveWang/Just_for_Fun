@@ -96,11 +96,11 @@ void OPXORI(PBase *p);//2
 void OPTSTB(PBase *p);//2
 void OPTSTI(PBase *p);//2decode=2
 
-void OPINCB(PBase *p);
-void OPINCI(PBase *p);
+void OPINCB(PBase *p);//2
+void OPINCI(PBase *p);//2
 
-void OPDECB(PBase *p);
-void OPDECI(PBase *p);
+void OPDECB(PBase *p);//2
+void OPDECI(PBase *p);//2
 
 void OPSHLB(PBase *p);
 void OPSHLI(PBase *p);

@@ -176,7 +176,7 @@ int main(int argv,char** argc)
   for(;;)
   {
     //parse with status
-    printf("parsing line:%d\n",parseLine);
+    //printf("parsing line:%d\n",parseLine);
     switch(parsingStatus)
     {
       case PS_START:parseStart();break;
@@ -202,10 +202,10 @@ int main(int argv,char** argc)
   printf("parse ended.\n");
   checkStructure(pe);
   clearFile(pe,CLEAR_ALL);
-  printf("----------------------------------Checking execution file\n");
-  pe = parseFile(*(argc+2));
-  checkStructure(pe);
-  clearFile(pe,CLEAR_ALL);
+  //printf("----------------------------------Checking execution file\n");
+  //pe = parseFile(*(argc+2));
+  //checkStructure(pe);
+  //clearFile(pe,CLEAR_ALL);
   return 0;
 }
 #endif

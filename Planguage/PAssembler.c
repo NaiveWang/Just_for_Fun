@@ -524,7 +524,11 @@ void parseProcessorData()
             inputBufferPointer++;
           }
         }
+
+        //printf("$%d/%d\t",ofst,a1);
+        ofst+=pe->processorTemplates[pListNum-1].initDataGlobal[a0].length;
         a0++;
+        //printf("$%d\n",ofst);
         break;
       case 'R':
         inputBufferPointer++;
@@ -567,6 +571,8 @@ void parseProcessorData()
             inputBufferPointer++;
           }
         }
+
+        ofst+=pe->processorTemplates[pListNum-1].initDataGlobal[a0].length;
         a0++;
         break;
       case 'C':
@@ -625,13 +631,14 @@ void parseProcessorData()
         else
         {//sole string
           a1=countC();
-          printf("\t%d\n",a1);
+          //printf("\t%d\n",a1);
           pe->processorTemplates[pListNum-1].initDataGlobal[a0].offset=ofst;
           pe->processorTemplates[pListNum-1].initDataGlobal[a0].length=a1;
           pe->processorTemplates[pListNum-1].initDataGlobal[a0].data=malloc(a1);
           parseString(pe->processorTemplates[pListNum-1].initDataGlobal[a0].data);
           //
         }
+        ofst+=pe->processorTemplates[pListNum-1].initDataGlobal[a0].length;
         a0++;
         break;
     }
@@ -836,6 +843,7 @@ void parseInstanceData()
           //allocate space
           pe->processorInstances[iListNum-1].initData[a0].offset=ofst;
           pe->processorInstances[iListNum-1].initData[a0].length=f * 8;
+
           pe->processorInstances[iListNum-1].initData[a0].data=malloc(f*8);
           //write space
           skipIdentifier();
@@ -870,6 +878,7 @@ void parseInstanceData()
             inputBufferPointer++;
           }
         }
+        ofst+=pe->processorInstances[iListNum-1].initData[a0].length;
         a0++;
         break;
       case 'R':
@@ -913,6 +922,7 @@ void parseInstanceData()
             inputBufferPointer++;
           }
         }
+        ofst+=pe->processorInstances[iListNum-1].initData[a0].length;
         a0++;
         break;
       case 'C':
@@ -978,6 +988,7 @@ void parseInstanceData()
           parseString(pe->processorInstances[iListNum-1].initData[a0].data);
           //
         }
+        ofst+=pe->processorInstances[iListNum-1].initData[a0].length;
         a0++;
         break;
     }

@@ -72,32 +72,30 @@ void VMReadFile(char *file)
         VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].stackSize;
       //ap++;
       //constant/string base pointer.
-      ap[6] = listInstance[c0].data + 256 * 8 +
-        VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].stack0Size +
-        VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].stackSize +
-        VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].globalSize;
       //ap++;
     }
-/*
     {
-      int c1,c2;
+      int c1;
+      void* *dataBase = listInstance[c0].data;//global data base is at [5]
+      printf("\t%d\n",VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].initNumGlobal);
       for(c1=0;c1<VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].initNumGlobal;c1++)
       {
-        initD* d = &VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].initDataGlobal[c1];
-        for(c2=0;c2<d->length;c2++)
-        {
-          *(char*)(listInstance[c0].data + c2) = *(char*)(d->data + c2);
-        }
+        printf(")%d()%d(\n",VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].initDataGlobal[c1].offset,VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].initDataGlobal[c1].length);
+        strncpy(
+          (char*)dataBase[5]+VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].initDataGlobal[c1].offset,
+          VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].initDataGlobal[c1].data,
+          VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].initDataGlobal[c1].length);
+        //read global data
       }
       for(c1=0;c1<VMpe->processorInstances[c0].initNum;c1++)
       {
-        initD* d = &VMpe->processorInstances[c0].initData[c1];
-        for(c2=0;c2<d->length;c2++)
-        {
-          *(char*)(listInstance[c0].data + c2) = *(char*)(d->data + c2);
-        }
+        strncpy(
+          (char*)dataBase[5]+VMpe->processorInstances[c0].initData[c1].offset,
+          VMpe->processorInstances[c0].initData[c1].data,
+          VMpe->processorInstances[c0].initData[c1].length);
+        //read global data
       }
-    }*/
+    }
   }
 }
 void debugVM(PBase *p,int howManyStack0Elem)
@@ -114,6 +112,7 @@ void debugVM(PBase *p,int howManyStack0Elem)
   //printf("Stack0pointer : %lx \n",*(long*)(p->data + POINTER_STACK0));
   stack0p=(long*)*(long*)(p->data + POINTER_STACK0);
   printf("stack0TopValue :%lx:%lx:%ld/%lx\n",*(long*)(p->data+8),(long)stack0p,*(stack0p-1),*(stack0p-1));
+  printf("##%ld\n", *(long*)(p->data+40));
   /*while(howManyStack0Elem--)
   {
     printf("stack0:%lx\n",*stack0p);
