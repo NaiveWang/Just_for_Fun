@@ -209,8 +209,8 @@ void POP08(PBase *p)//checked
   asm("movq %0,%%rcx"::"r"(p->data));
   asm("movq 16(%rcx),%rbx");
   asm("subq $8,%rbx");
-  asm("movq (%rbx),%rax");
-  asm("pushq %rax");
+  asm("movq (%rbx),%r8");
+  //asm("pushq %rax");
   asm("movq %rbx,16(%rcx)");
   //value:rax base:rcx
   asm("movq %0,%%rbx"::"r"(p->pc));
@@ -219,8 +219,8 @@ void POP08(PBase *p)//checked
   asm("movq (%rcx,%rdx,8),%rcx");
   asm("xorb %dl,%dl");
   asm("movl 3(%rbx),%edx");
-  asm("popq %rax");
-  asm("movq %rax,(%rdx,%rcx)");
+  //asm("popq %rax");
+  asm("movq %r8,(%rdx,%rcx)");
   //asm("movq %%rax,%0":"=r"(p->debugBuffer));printf("!%ld!%lx\n",p->debugBuffer,p->debugBuffer);
   p->pc+=7;
 }
@@ -229,8 +229,8 @@ void POP01(PBase *p)
   asm("movq %0,%%rcx"::"r"(p->data));
   asm("movq 16(%rcx),%rbx");
   asm("decq %rbx");
-  asm("movb (%rbx),%al");
-  asm("pushq %rax");
+  asm("movb (%rbx),%r8b");
+  //asm("pushq %rax");
   asm("movq %rbx,16(%rcx)");
   //value:rax base:rcx
   asm("movq %0,%%rbx"::"r"(p->pc));
@@ -239,8 +239,8 @@ void POP01(PBase *p)
   asm("movq (%rcx,%rdx,8),%rcx");
   asm("xorb %dl,%dl");
   asm("movl 3(%rbx),%edx");
-  asm("popq %rax");
-  asm("movb %al,(%rdx,%rcx)");
+  //asm("popq %rax");
+  asm("movb %r8b,(%rdx,%rcx)");
   p->pc+=7;
 }
 void PUSH1(PBase *p)
@@ -265,8 +265,8 @@ void POP1(PBase *p)
   asm("movq %0,%%rcx"::"r"(p->data));
   asm("movq 32(%rcx),%rbx");
   asm("decq %rbx");
-  asm("movb (%rbx),%al");
-  asm("pushq %rax");
+  asm("movb (%rbx),%r8b");
+  //asm("pushq %rax");
   asm("movq %rbx,16(%rcx)");
   //value:rax base:rcx
   asm("movq %0,%%rbx"::"r"(p->pc));
@@ -275,8 +275,8 @@ void POP1(PBase *p)
   asm("movq (%rcx,%rdx,8),%rcx");
   asm("xorb %dl,%dl");
   asm("movl 3(%rbx),%edx");
-  asm("popq %rax");
-  asm("movb %al,(%rdx,%rcx)");
+  //asm("popq %rax");
+  asm("movb %r8b,(%rdx,%rcx)");
   p->pc+=7;
 }
 void PUSH8(PBase *p)//2decode+(1+4)addr=7
@@ -301,8 +301,8 @@ void POP8(PBase *p)//2decode+(1+4)addr=7
   asm("movq %0,%%rcx"::"r"(p->data));
   asm("movq 32(%rcx),%rbx");
   asm("subq $8,%rbx");
-  asm("movq (%rbx),%rax");
-  asm("pushq %rax");
+  asm("movq (%rbx),%r8");
+  //asm("pushq %rax");
   asm("movq %rbx,16(%rcx)");
   //value:rax base:rcx
   asm("movq %0,%%rbx"::"r"(p->pc));
@@ -311,8 +311,8 @@ void POP8(PBase *p)//2decode+(1+4)addr=7
   asm("movq (%rcx,%rdx,8),%rcx");
   asm("xorb %dl,%dl");
   asm("movl 3(%rbx),%edx");
-  asm("popq %rax");
-  asm("movq %rax,(%rdx,%rcx)");
+  //asm("popq %rax");
+  asm("movq %r8,(%rdx,%rcx)");
   p->pc+=7;
 }
 void CALL(PBase *p)

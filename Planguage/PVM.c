@@ -81,6 +81,7 @@ void VMReadFile(char *file)
       for(c1=0;c1<VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].initNumGlobal;c1++)
       {
         printf(")%d()%d(\n",VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].initDataGlobal[c1].offset,VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].initDataGlobal[c1].length);
+        printf("X%ldX\n",*(long*)VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].initDataGlobal[c1].data);
         strncpy(
           (char*)dataBase[5]+VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].initDataGlobal[c1].offset,
           VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].initDataGlobal[c1].data,
@@ -134,7 +135,7 @@ void *execDebug(void* no)
       debugVM(&listInstance[ino],4);
       executionOneStep(&listInstance[ino]);
       //printf("Ended.\n");
-      debugVM(&listInstance[ino],4);
+      //debugVM(&listInstance[ino],4);
       getchar();
       //scanf("\n");
     }
