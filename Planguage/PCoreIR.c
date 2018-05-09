@@ -1,4 +1,16 @@
 #include "PCoreIR.h"
+void HALT(PBase *p)
+{
+  //
+}
+void SUSPEND(PBase *p)
+{
+  //
+}
+void REBOOT(PBase *p)
+{
+  //
+}
 void MOV8A(PBase *p)//checked
 {
   asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
@@ -113,7 +125,7 @@ void PUSH0I8(PBase *p)//checked
 
   p->pc+=10;
 }
-void PUSH08(PBase *p)
+void PUSH08(PBase *p)//checked
 {
   asm("movq %0,%%rbx"::"r"(p->pc));
   asm("xorq %rdx,%rdx");
@@ -130,7 +142,7 @@ void PUSH08(PBase *p)
   asm("addq $8,16(%rcx)");
   p->pc+=7;
 }
-void POP08(PBase *p)
+void POP08(PBase *p)//checked
 {
   asm("movq %0,%%rcx"::"r"(p->data));
   asm("movq 16(%rcx),%rbx");

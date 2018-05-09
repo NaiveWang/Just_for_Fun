@@ -16,9 +16,9 @@ typedef struct compileData
 }IR;
 /**Processor Control**/
 
-void HALT(PBase *p);
-void SUSPEND(PBase *p);
-void REBOOT(PBase *p);
+void HALT(PBase *p);//2
+void SUSPEND(PBase *p);//2
+void REBOOT(PBase *p);//2
 /** Data transfer **/
 void MOV1A(PBase *p);
 void MOV1(PBase *p);
