@@ -20,21 +20,21 @@ void HALT(PBase *p);//2
 void SUSPEND(PBase *p);//2
 void REBOOT(PBase *p);//2
 /** Data transfer **/
-void MOV1A(PBase *p);
-void MOV1(PBase *p);
+void MOV1A(PBase *p);//2
+void MOV1(PBase *p);//2+5*2=12
 void MOV8A(PBase *p);//2decode
 void MOV8(PBase *p);//2decode+(1+4)addr*2=12
 void MOVBA(PBase *p);//2decode:stack0//8addr1,8addr2,4size
 void PUSH0A(PBase *p);//2decode+(1+4)addr=7, put the value into BASE_STACK0
 void PUSH0I8(PBase *p);//2decode+8data=10
-void PUSH0I1(PBase *p);
+void PUSH0I1(PBase *p);//3
 void PUSH08(PBase *p);//2decode+(1+4)addr=7
-void PUSH01(PBase *p);
+void PUSH01(PBase *p);//7
 void POP08(PBase *p);//2decode+(1+4)addr=7
-void POP01(PBase *p);
+void POP01(PBase *p);//7
 
-void PUSH1(PBase *p);
-void POP1(PBase *p);
+void PUSH1(PBase *p);//7
+void POP1(PBase *p);//7
 void PUSH8(PBase *p);//2decode+(1+4)addr=7
 void POP8(PBase *p);//2decode+(1+4)addr=7
 /** Type Conventions**/
@@ -53,13 +53,13 @@ void RETN(PBase *p);//2decode=2:recover pc
 void JUMP(PBase *p);//2decode+8offset=10
 void JMPC(PBase *p);//2decode+4mask+8offset=14
 /** Operation **/
-void OPADDB(PBase *p);
+void OPADDB(PBase *p);//2
 void OPADDI(PBase *p);//2decode=2
-void OPADDR(PBase *p);
+void OPADDR(PBase *p);//2
 
-void OPSUBB(PBase *p);
-void OPSUBI(PBase *p);
-void OPSUBR(PBase *p);
+void OPSUBB(PBase *p);//2
+void OPSUBI(PBase *p);//2
+void OPSUBR(PBase *p);//2
 
 void OPMULB(PBase *p);
 void OPNULI(PBase *p);
@@ -81,19 +81,19 @@ void OPCMPB(PBase *p);
 void OPCMPI(PBase *p);//2decode=2
 void OPCMPR(PBase *p);
 
-void OPNOTB(PBase *p);
+void OPNOTB(PBase *p);//2
 void OPNOTI(PBase *p);//2decode=2
 
-void OPANDB(PBase *p);
-void OPANDI(PBase *p);
+void OPANDB(PBase *p);//2
+void OPANDI(PBase *p);//2
 
-void OPORB(PBase *p);
-void OPORI(PBase *p);
+void OPORB(PBase *p);//2
+void OPORI(PBase *p);//2
 
-void OPXORB(PBase *p);
-void OPXORI(PBase *p);
+void OPXORB(PBase *p);//2
+void OPXORI(PBase *p);//2
 
-void OPTSTB(PBase *p);
+void OPTSTB(PBase *p);//2
 void OPTSTI(PBase *p);//2decode=2
 
 void OPINCB(PBase *p);
