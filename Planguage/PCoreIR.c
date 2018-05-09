@@ -1,15 +1,19 @@
 #include "PCoreIR.h"
 void HALT(PBase *p)
 {
-  //
+  //set the global var to halt
+  p->status = PROCESSOR_STATUS_ERROR;
 }
 void SUSPEND(PBase *p)
 {
   //
+  p->status=PROCESSOR_STATUS_SUSPENDED;
 }
 void REBOOT(PBase *p)
 {
   //
+  p->pc=p->code;
+  p->status = PROCESSOR_STATUS_REBOOT;
 }
 void MOV1A(PBase *p)
 {

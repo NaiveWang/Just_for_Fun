@@ -36,7 +36,7 @@ void VMReadFile(char *file)
     listInstance[c0].code = VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].code;
     listInstance[c0].pc = VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].code;//getchar();
     listInstance[c0].PID = &listInstance[c0];
-    listInstance[c0].status = 0;
+    listInstance[c0].status = PROCESSOR_STATUS_RUNNING;
     listInstance[c0].eflag = 0;
     //allocate data space!
     listInstance[c0].data=malloc(
@@ -82,7 +82,7 @@ void VMReadFile(char *file)
       {
         printf(")%d()%d(\n",VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].initDataGlobal[c1].offset,VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].initDataGlobal[c1].length);
         printf("X%ldX\n",*(long*)VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].initDataGlobal[c1].data);
-        strncpy(
+        memmove(
           (char*)dataBase[5]+VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].initDataGlobal[c1].offset,
           VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].initDataGlobal[c1].data,
           VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].initDataGlobal[c1].length);
@@ -90,7 +90,7 @@ void VMReadFile(char *file)
       }
       for(c1=0;c1<VMpe->processorInstances[c0].initNum;c1++)
       {
-        strncpy(
+        memmove(
           (char*)dataBase[5]+VMpe->processorInstances[c0].initData[c1].offset,
           VMpe->processorInstances[c0].initData[c1].data,
           VMpe->processorInstances[c0].initData[c1].length);
