@@ -370,6 +370,30 @@ void CIR(PBase *p)
   asm("fstl -8(%rbx)");
   p->pc+=2;
 }
+void ALLO(PBase *p)
+{
+  asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
+  asm("movq (%rdx),%rcx");
+  asm("xchgq %rdi,%r8");
+  asm("movq -8(%rcx),%rdi");
+  //asm("extern malloc");
+  asm("callq malloc");
+  asm("xchgq %rdi,%r8");
+  asm("movq %rax,-8(%rcx)");
+  p->pc+=2;
+}
+void FREE(PBase *p)
+{
+  asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
+  asm("movq (%rdx),%rcx");
+  asm("subq $8,%rcx");
+  asm("xchgq %rdi,%r8");
+  asm("movq (%rcx),%rdi");
+  asm("callq free");
+  asm("xchgq %rdi,%r8");
+  asm("movq %rcx,(%rdx)");
+  p->pc+=2;
+}
 void CALL(PBase *p)
 {
   //get stack pointer

@@ -44,8 +44,8 @@ void CIB(PBase *p);//2
 void CRI(PBase *p);
 void CIR(PBase *p);//2
 /** Memory Allocation **/
-void ALLO(PBase *p);
-void FREE(PBase *p);
+void ALLO(PBase *p);//2
+void FREE(PBase *p);//2
 /** Control **/
 void CALL(PBase *p);//2decode+8offset=10,push pc
 void RETN(PBase *p);//2decode=2:recover pc
