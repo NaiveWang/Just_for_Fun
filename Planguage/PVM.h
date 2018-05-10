@@ -19,8 +19,8 @@
 //#define TN_EXE 3//my computer has 8 logical core, extended by the technology known as intel's hyper threading.
 typedef struct MutexStructure
 {
-  void* lock;//can be used to the id of threads
   unsigned long size;
+  void* lock;//can be used to the id of threads
   void* content;
 }mutex;
 /** Global Section **/
