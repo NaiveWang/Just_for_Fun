@@ -12,7 +12,7 @@
 #define CLEAR_ALL 0x00
 #define CODE_RESERVED 0xff
 #define TYP_MUTEX 0x00
-#define TYP_INST 0xff
+#define TYP_INST 0x01
  typedef struct initializingDataStructuresListElement
  {
    int offset;

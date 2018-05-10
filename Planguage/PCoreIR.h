@@ -41,7 +41,7 @@ void POP8(PBase *p);//2decode+(1+4)addr=7
 void CBI(PBase *p);//2
 void CIBI(PBase *p);//2
 void CIB(PBase *p);//2
-void CRI(PBase *p);
+void CRI(PBase *p);//2
 void CIR(PBase *p);//2
 /** Memory Allocation **/
 void ALLO(PBase *p);//2
@@ -72,9 +72,9 @@ void OPDIVB(PBase *p);//2
 void OPDIVI(PBase *p);//2decode=2
 void OPDIVR(PBase *p);//2
 
-void OPIDIVB(PBase *p);
-void OPIDIVI(PBase *p);
-void OPIDIVR(PBase *p);
+void OPIDIVB(PBase *p);//2
+void OPIDIVI(PBase *p);//2
+void OPIDIVR(PBase *p);//2
 
 void OPCMPB(PBase *p);//2
 void OPCMPI(PBase *p);//2decode=2

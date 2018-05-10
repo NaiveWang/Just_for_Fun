@@ -98,6 +98,26 @@ void VMReadFile(char *file)
       }
     }
   }
+  //Connections
+  for(c0=0;c0<VMpe->connectionMappingNum;c0++)
+  {
+    //find the address anyway
+    void* addr;
+    switch(VMpe->connectionMapping[c0].nodeDType)
+    {
+      case TYP_INST:
+        addr = *(void**)(listInstance[VMpe->connectionMapping[c0].nodeDNo].data + 5 * sizeof(void*));
+        break;
+      case TYP_MUTEX:
+        addr = (listMutex[VMpe->connectionMapping[c0].nodeDNo].content);
+        break;
+      default:
+        printf("In connection %d : unknown reference type ID:%d\n",c0,VMpe->connectionMapping[c0].nodeDType);
+        return;
+    }//now we have got the address
+    //put it on to the right instance
+    *(void**)(listInstance[VMpe->connectionMapping[c0].nodeSNo].data + VMpe->connectionMapping[c0].nodeSPort * sizeof(void*))=addr;
+  }
 }
 void debugVM(PBase *p,int howManyStack0Elem)
 {
