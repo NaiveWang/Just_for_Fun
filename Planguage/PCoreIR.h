@@ -14,8 +14,9 @@ typedef struct compileData
   int length;
   char key[28];
 }IR;
+/**SYSTEM CALL**/
+void SYS(PBase *p);//6
 /**Processor Control**/
-
 void HALT(PBase *p);//2
 void SUSPEND(PBase *p);//2
 void REBOOT(PBase *p);//2

@@ -19,10 +19,8 @@ void basicIO_File(PBase* p)
     default:printf("API Error:no such calling identifier in basicIO_File");
   }
 }
-void *APIHandler(void* vp)
+void APIHandler(PBase *p)
 {
-  static PBase* p;
-  p = (PBase*)vp;
   switch(*(short*)&p->APICallID)
   {
     case 0:basicIO_Buffer(p);break;

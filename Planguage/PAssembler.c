@@ -394,6 +394,21 @@ void parseProcessorCode()
                 skipWhitespace();
                 sscanf(inputBuffer+inputBufferPointer,"%lf",(double*)(pe->processorTemplates[pListNum-1].code+a1+2));
                 break;
+              case '#':
+                inputBufferPointer++;
+                strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
+                for(a2=0;a2<PNLpointer;a2++)
+                {
+                  if(!strcmp(identifierBuffer,PNL[a2].name))
+                  {//match
+                    *(long*)(pe->processorTemplates[pListNum-1].code+a1+2)=(long)(PNL[a2].ofst-a1);
+                    //printf("\t%ld\n",*(long*)(pe->processorTemplates[pListNum-1].code+a1+2));
+                    break;
+                  }
+                  errno=18;
+                  return;
+                }
+                break;
               default:
                 errno=15;
                 return;

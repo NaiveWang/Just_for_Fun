@@ -15,6 +15,6 @@ typedef struct referencesOfAssembler
 void basicIO_Buffer(PBase* p);
 void basicIO_File(PBase* p);
 //decoder
-void *APIHandler(void* vp);
+void APIHandler(PBase* p);
 int fetchAPI(char* target);
 #endif

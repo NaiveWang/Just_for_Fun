@@ -21,6 +21,7 @@ void VMReadFile(char *file)
     (listMutex + c0)->lock = NULL;
     (listMutex + c0)->size = *(VMpe->mutexSizeList + c0);
     (listMutex + c0)->content = malloc((listMutex + c0)->size);
+    (listMutex + c0)->waitList = NULL;
   }
 
   //initialize the instance list

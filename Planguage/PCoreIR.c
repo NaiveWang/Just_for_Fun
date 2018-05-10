@@ -1,4 +1,19 @@
 #include "PCoreIR.h"
+void SYS(PBase *p)
+{
+  //put id & push address
+  //make sure we have the proper data to the API functions
+  asm("movq %0,%%rbx"::"r"(p->pc));
+  asm("movl 2(%rbx),%r8d");
+  asm("movl %%r8d,%0":"=r"(p->APICallID));
+  asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
+  asm("movq (%rdx),%rbx");
+  asm("subq $8,%rbx");
+  asm("movq %rbx,(%rdx)");
+  asm("movq (%rbx),%rbx");
+  asm("movq %%rbx,%0":"=r"(p->APICallAddr));
+  p->pc+=6;
+}
 void HALT(PBase *p)
 {
   //set the global var to halt
@@ -417,26 +432,31 @@ void RETN(PBase *p)
 {
   //get recovery pc from stack
   //get stack pointer
-  asm("movq %0,%%rbx"::"r"(p->data + POINTER_STACK));
+  asm("movq %0,%%r9"::"r"(p->data + POINTER_STACK));
   //operate the stack
-  asm("subq $8,%rbx");
+  asm("movq (%r9),%r8");
+  asm("subq $8,%r8");
+  asm("movq %r8,(%r9)");
   //get the value
-  asm("movq (%rbx),%rax");
+  asm("movq (%r8),%rcx");
   //old pc in %rax, put it to his home
-  asm("movq %%rax,%0":"=r"(p->pc));
+  asm("movq %%rcx,%0":"=r"(p->pc));
   //end, notice:no need to influence pc with its length.
 }
 void JUMP(PBase *p)
 {
   //get the offset
   //get pc
-  asm("movq %0,%%rbx"::"r"(p->pc));
+  asm("movq %0,%%rcx"::"r"(p->pc));
   //get offset
-  asm("movq 2(%rbx),%rax");
+  //asm("movq (%rcx),%rax");
+  asm("movq 2(%rcx),%rax");
   //offset in the %rax, add it to the pc
-  asm("addq %rax,%rbx");
-  //put it back to pc's house
-  asm("movq %%rbx,%0":"=r"(p->pc));
+  //asm("movq %rcx,%rbx");
+  asm("addq $10,%rax");
+  //asm("addq %rax,%rbx");
+  asm("movq %%rax,%0":"=r"(p->debugBuffer));printf("$%ld$\n",p->debugBuffer);
+  p->pc+=p->debugBuffer;
 }
 void JMPC(PBase *p)
 {

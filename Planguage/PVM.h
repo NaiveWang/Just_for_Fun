@@ -53,5 +53,7 @@ void VMReadFile(char *file);
 void debugVM(PBase *p,int howManyStack0Elem);
 void *execDebug(void* no);
 void *execNormal();
+void *awaker();
+void *mutexHandler();
 void VMStartUp();
 #endif
