@@ -38,6 +38,7 @@ int readLine()
     //printf("#%s#\n",inputBuffer+inputBufferPointer);
     return 0;
   }
+  inputBuffer[0]=0;
   return -1;
 }
 char* nameSeek(char* s, int n)
@@ -104,6 +105,11 @@ void skipString()
 }
 void parseStart()
 {
+  if(*inputBuffer==0)
+  {
+    errno=-1;
+    return;
+  }
   if(inputBuffer[inputBufferPointer]==IDENTIFIER)
   {//identifier get successful
     inputBufferPointer++;
@@ -139,7 +145,7 @@ void parseStart()
     }
     else errno=2;
   }
-  else errno=1;
+  //else errno=1;
 }
 int countI()
 {
@@ -766,6 +772,7 @@ void parseInstance()
   skipWhitespace();
   inputBufferPointer+=strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
   //check if it is true
+  //printf("#%s#\n",identifierBuffer);
   a0=matchIdentifier(pNameList,pListNum);
   //if its true, assign to proper place, not error return.
   if(a0 == -1)
@@ -774,6 +781,19 @@ void parseInstance()
     return;
   }
   pe->processorInstances[iListNum-1].processorReferenceNo = a0;
+  skipWhitespace();
+  switch(inputBuffer[inputBufferPointer])
+  {
+    case 'S':
+      pe->processorInstances[iListNum-1].initStatus=PROCESSOR_STATUS_SUSPENDED;
+      break;
+    case 'R':
+      pe->processorInstances[iListNum-1].initStatus=PROCESSOR_STATUS_RUNNING;
+      break;
+    default:
+      errno=19;
+      return;
+  }
   pe->processorInstances[iListNum-1].initData=NULL;
   //next line
   if(readLine())
@@ -1057,6 +1077,7 @@ void errorHandler()
     case 16:printf("api function not found");break;
     case 17:printf("conflict position name");break;
     case 18:printf("unknown position name");break;
+    case 19:printf("syntax error : expect a S or R, not others");break;
     case -1:return;//file end
   }
   printf(".\n");

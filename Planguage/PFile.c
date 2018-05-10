@@ -51,6 +51,7 @@ PExe* parseFile(char *fileS)
   {//get instancelist
     processorI *ppi=pe->processorInstances+count;
     fread(&ppi->processorReferenceNo,sizeof(int),1,fp);//number
+    fread(&ppi->initStatus,sizeof(int),1,fp);
     fread(&ppi->initNum,sizeof(int),1,fp);//get the list size
     if(ppi->initNum)
     {
@@ -148,6 +149,7 @@ void makeExeFile(char *fileS, PExe *pe)
   {
     //write reference number int
     fwrite(&pe->processorInstances[a0].processorReferenceNo,sizeof(int),1,fp);
+    fwrite(&pe->processorInstances[a0].initStatus,sizeof(int),1,fp);
     //write init nember int
     fwrite(&pe->processorInstances[a0].initNum,sizeof(int),1,fp);
     //loop, write all if the initializing data.
@@ -262,7 +264,7 @@ void checkStructure(PExe *pe)
   for(a0=0;a0<pe->constraintNum;a0++)
   {
     printf("+%d",pe->constraintList[a0].nodeDNo);
-    printf("+%d",pe->constraintList[a0].nodeSNum);
+    printf("+%d",pe->constraintList[a0].nodeSNum);//getchar();
     printf("+%d\n",*pe->constraintList[a0].nodeSNoList);
   }
 }

@@ -34,11 +34,14 @@ mutex *listMutex;
 int listInstanceSize;
 PBase *listInstance;
 //thread pool
-pthread_t APIHandlerT;
-pthread_t errorHandlerT;
-pthread_t triggerHandlerT;
+pthread_t constraintHandler;
+pthread_t mutexOperationHandler;
 pthread_t executionThread[NUM_E_THREAD];
+//global variables
+char *constraintMap;
 //Statistic Data
+/** utility functions **/
+char getConstraintNum(int i);
 /** Functions **/
 void VMReadFile(char *file);
 void debugVM(PBase *p,int howManyStack0Elem);

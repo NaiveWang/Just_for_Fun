@@ -33,6 +33,7 @@
  typedef struct processorInstanceTableElement
  {
    int processorReferenceNo;
+   int initStatus;
    int initNum;
    initD* initData;
  }processorI;

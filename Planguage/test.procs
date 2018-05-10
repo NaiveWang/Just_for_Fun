@@ -28,10 +28,10 @@ PUSH0I8 I 345
 PUSH0I8 R 123.345
 OPADDI
 JMPC 0 START
-.instance a test
+.instance a test R
 
 ;I 12233,2,3
-.instance aa test1
+.instance aa test1 R
 .data
 I 1,2,3,4,5
 O 30
@@ -40,8 +40,3 @@ S 12
 C L 10 "123","ioksjndc"
 C L 10 F 5 "jisndci","kjsndicnb","ksjbdcihujhuisnciabc","098"
 I 3,2,1
-.mutex M0 1024
-.connection a 255 aa
-.connection a 254 M0
-.mutex M1 1022
-.constraint aa aa,aa,aa

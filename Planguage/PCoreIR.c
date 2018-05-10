@@ -20,7 +20,6 @@ void MOV1A(PBase *p)
   asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
   asm("movq (%rdx),%rbx");
   asm("subq $16,%rbx");
-
   asm("movq (%rbx),%rax");
   asm("movb (%rax),%cl");
   asm("movq 8(%rbx),%rax");

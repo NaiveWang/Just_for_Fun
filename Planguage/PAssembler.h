@@ -101,12 +101,12 @@ int main(int argv,char** argc)
     printf("Error:File opening failure.\n");
     return -1;
   }
-  printf("counting emelemts\n");
+  //printf("counting emelemts\n");
   countIdentifier();
-  printf("Template(s):%d\n",pe->processorTemplateNum);
-  printf("Mutex(es):%d\n",pe->mutexNum);
-  printf("Instance(s):%d\n",pe->processorInstanceNUM);
-  printf("Connection(s):%d\n",pe->connectionMappingNum);
+  printf("Template(s):%d\t",pe->processorTemplateNum);
+  printf("Mutex(es):%d\t",pe->mutexNum);
+  printf("Instance(s):%d\t",pe->processorInstanceNUM);
+  printf("Connection(s):%d\t",pe->connectionMappingNum);
   printf("Constraint(s):%d\n",pe->constraintNum);
   fseek(input,0,SEEK_SET);
   //allocate the space,
@@ -200,6 +200,8 @@ int main(int argv,char** argc)
     if(errno)
     {
       errorHandler();
+      if(errno!=-1)
+        return -1;
       break;
     }
     //_debugShowNameList(mNameList,mListNum);
@@ -208,9 +210,12 @@ int main(int argv,char** argc)
   fclose(input);
   makeExeFile(*(argc+2),pe);
   //output=fopen(*(argc+2),"wb");
-  printf("parse ended.\n");
-  checkStructure(pe);
+  printf("Finished.\n");
+  //checkStructure(pe);
   clearFile(pe,CLEAR_ALL);
+  free(iNameList);
+  free(pNameList);
+  free(mNameList);
   //printf("----------------------------------Checking execution file\n");
   //pe = parseFile(*(argc+2));
   //checkStructure(pe);
