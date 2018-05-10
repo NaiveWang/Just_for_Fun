@@ -79,6 +79,24 @@ PExe* parseFile(char *fileS)
   }
   else pe->connectionMapping=NULL;
   //finished
+  fread(&pe->constraintNum,sizeof(int),1,fp);
+  if(pe->constraintNum)
+  {
+    //allocate space
+    pe->constraintList = malloc(sizeof(constraints) * pe->constraintNum);
+    //read each constraints
+    for(count=0;count<pe->constraintNum;count++)
+    {
+      //read in top-down style
+      fread(&pe->constraintList[count].nodeDNo,sizeof(int),1,fp);
+      fread(&pe->constraintList[count].nodeSNum,sizeof(int),1,fp);
+      //allocate
+      pe->constraintList[count].nodeSNoList = malloc(sizeof(int) * pe->constraintList[count].nodeSNum);
+      fread(pe->constraintList[count].nodeSNoList,sizeof(int),pe->constraintList[count].nodeSNum,fp);
+      //bingo
+    }
+  }
+  else pe->constraintList=NULL;
   fclose(fp);
   return pe;
 }
@@ -117,8 +135,11 @@ void makeExeFile(char *fileS, PExe *pe)
   //write mutex
   //write mutex number int
   fwrite(&pe->mutexNum,sizeof(int),1,fp);
-  //write mutex size array
-  fwrite(pe->mutexSizeList,sizeof(int),pe->mutexNum,fp);
+  if(pe->mutexNum)
+  {
+    //write mutex size array
+    fwrite(pe->mutexSizeList,sizeof(int),pe->mutexNum,fp);
+  }
   //write instance
   //write instance number int
   fwrite(&pe->processorInstanceNUM,sizeof(int),1,fp);
@@ -144,7 +165,18 @@ void makeExeFile(char *fileS, PExe *pe)
   //write connection number int
   fwrite(&pe->connectionMappingNum,sizeof(int),1,fp);
   //write connection array
-  fwrite(pe->connectionMapping,sizeof(connections),pe->connectionMappingNum,fp);
+  if(pe->connectionMappingNum)
+  {
+    fwrite(pe->connectionMapping,sizeof(connections),pe->connectionMappingNum,fp);
+  }
+  //write constraints
+  fwrite(&pe->constraintNum,sizeof(int),1,fp);
+  for(a0=0;a0<pe->constraintNum;a0++)
+  {
+    fwrite(&pe->constraintList[a0].nodeDNo,sizeof(int),1,fp);
+    fwrite(&pe->constraintList[a0].nodeSNum,sizeof(int),1,fp);
+    fwrite(pe->constraintList[a0].nodeSNoList,sizeof(int),pe->constraintList[a0].nodeSNum,fp);
+  }
   //finished
   fclose(fp);
 }
@@ -188,6 +220,14 @@ void clearFile(PExe *pe,char flag)
   if(pe->connectionMapping)
     free(pe->connectionMapping);
   //printf("$\n");
+  if(pe->constraintNum)
+  {
+    for(a0=0;a0<pe->constraintNum;a0++)
+    {
+      free(pe->constraintList[a0].nodeSNoList);
+    }
+    free(pe->constraintList);
+  }
   free(pe);
 }
 void checkStructure(PExe *pe)
@@ -218,5 +258,11 @@ void checkStructure(PExe *pe)
     printf("!%d",pe->connectionMapping[a0].nodeSPort);
     printf("!%d",pe->connectionMapping[a0].nodeDType);
     printf("!%d\n",pe->connectionMapping[a0].nodeDNo);
+  }
+  for(a0=0;a0<pe->constraintNum;a0++)
+  {
+    printf("+%d",pe->constraintList[a0].nodeDNo);
+    printf("+%d",pe->constraintList[a0].nodeSNum);
+    printf("+%d\n",*pe->constraintList[a0].nodeSNoList);
   }
 }

@@ -46,6 +46,12 @@
    char nodeDType;
    int nodeDNo;
  }connections;
+ typedef struct constraintTable
+ {
+   int nodeDNo;
+   int nodeSNum;
+   int* nodeSNoList;
+ }constraints;
  typedef struct ExeReorganizedStructure
  {
    int processorTemplateNum;
@@ -59,6 +65,8 @@
 
    int connectionMappingNum;
    connections* connectionMapping;
+   int constraintNum;
+   constraints* constraintList;
  }PExe;
 /** utility functions **/
 PExe* parseFile(char *fileS);
