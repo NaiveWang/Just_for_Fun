@@ -107,6 +107,7 @@ int main(int argv,char** argc)
   printf("Mutex(es):%d\n",pe->mutexNum);
   printf("Instance(s):%d\n",pe->processorInstanceNUM);
   printf("Connection(s):%d\n",pe->connectionMappingNum);
+  printf("Constraint(s):%d\n",pe->constraintNum);
   fseek(input,0,SEEK_SET);
   //allocate the space,
   if(pe->processorTemplateNum)
@@ -147,6 +148,8 @@ int main(int argv,char** argc)
   {
     pe->connectionMapping = NULL;
   }
+  if(pe->constraintNum) pe->constraintList = malloc(sizeof(constraints) * pe->constraintNum);
+  else pe->constraintList=NULL;
   //allocate the space for element
   //if(pe->processorTemplateNum)
   //if(pe->mutexNum)

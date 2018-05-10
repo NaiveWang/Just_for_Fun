@@ -233,7 +233,7 @@ void clearFile(PExe *pe,char flag)
 void checkStructure(PExe *pe)
 {
   static int a0,a1;
-  printf("T:%d\tM:%d\tI:%d\tC:%d\n",pe->processorTemplateNum,pe->mutexNum,pe->processorInstanceNUM,pe->connectionMappingNum);
+  printf("T:%d\tM:%d\tI:%d\tC:%d\tS:%d\n",pe->processorTemplateNum,pe->mutexNum,pe->processorInstanceNUM,pe->connectionMappingNum,pe->constraintNum);
   for(a0=0;a0<pe->processorTemplateNum;a0++)
   {
     printf("#%d",pe->processorTemplates[a0].codeLength);

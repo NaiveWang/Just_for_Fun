@@ -1012,7 +1012,7 @@ void parseConstraint()
   static int a0;
   //get the neme
   skipWhitespace();
-  inputBufferPointer+=strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
+  inputBufferPointer+=strCopy(inputBuffer+inputBufferPointer,identifierBuffer);//printf("$$$%d$$$\n",sListNum);
   pe->constraintList[sListNum].nodeDNo = matchIdentifier(iNameList,iListNum);
   pe->constraintList[sListNum].nodeSNum = countI();
   pe->constraintList[sListNum].nodeSNoList = malloc(sizeof(int) * pe->constraintList[sListNum].nodeSNum);
@@ -1025,6 +1025,13 @@ void parseConstraint()
     skipWhitespace();
     inputBufferPointer++;
   }
+  sListNum++;
+  if(readLine())
+  {
+    errno=-1;
+    return;
+  }
+  parsingStatus=PS_START;
 }
 void errorHandler()
 {

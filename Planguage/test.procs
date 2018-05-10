@@ -44,3 +44,4 @@ I 3,2,1
 .connection a 255 aa
 .connection a 254 M0
 .mutex M1 1022
+.constraint aa aa,aa,aa
