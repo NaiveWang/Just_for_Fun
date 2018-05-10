@@ -13,6 +13,8 @@ void REBOOT(PBase *p)
 {
   //
   p->pc=p->code;
+  *(void**)(p->data + POINTER_STACK0) = *(void**)(p->data +BASE_STACK0);
+  *(void**)(p->data + POINTER_STACK) = *(void**)(p->data +BASE_STACK);
   p->status = PROCESSOR_STATUS_REBOOT;
 }
 void MOV1A(PBase *p)

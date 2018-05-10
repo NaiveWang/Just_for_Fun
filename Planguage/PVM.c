@@ -36,7 +36,7 @@ void VMReadFile(char *file)
     listInstance[c0].code = VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].code;
     listInstance[c0].pc = VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].code;//getchar();
     listInstance[c0].PID = &listInstance[c0];
-    listInstance[c0].status = PROCESSOR_STATUS_RUNNING;
+    listInstance[c0].status = VMpe->processorInstances[c0].initStatus;
     listInstance[c0].eflag = 0;
     //allocate data space!
     listInstance[c0].data=malloc(
