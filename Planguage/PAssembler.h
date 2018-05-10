@@ -16,6 +16,7 @@
 #define I_MUTEX "mutex "
 #define I_INSTANCE "instance "
 #define I_CONNECTION "connection "
+#define I_CONSTRAINT "constraint "
 #define I_DATA_SECTION ".data"
 #define I_CODE_SECTION ".code"
 //define parsing status
@@ -27,6 +28,7 @@
 #define PS_MUTEX_SECTION 5
 #define PS_INSTANCE_SECTION 6
 #define PS_CONNECTIONS 7
+#define PS_CONSTRAINTS 8
 typedef struct positionNameElement
 {
   int ofst;
@@ -36,7 +38,7 @@ typedef struct positionNameElement
 char inputBuffer[BUFFER_SIZE];
 char identifierBuffer[NAME_BUFFER_SIZE];
 pnl PNL[POSITION_NAME_LENGTH];
-int PNLpointer;
+int PNLpointer;//backup the line number while backtracing
 int inputBufferPointer;
 FILE *input;//*output;
 PExe *pe;
@@ -47,8 +49,8 @@ int parseLine;
 char *pNameList;
 char *iNameList;
 char *mNameList;
-char *cNameList;
-int pListNum,iListNum,cListNum,mListNum;
+//char *cNameList;
+int pListNum,iListNum,cListNum,mListNum,sListNum;
 /**Utility Function Section**/
 int readLine();
 char* nameSeek(char* s, int n);
@@ -71,6 +73,7 @@ void parseMutex();
 void parseConnection();
 void parseInstance();
 void parseInstanceData();
+void parseConstraint();
 void errorHandler();
 void _debugShowNameList(char *list,int n);
 /** Assembler main body **/
@@ -90,6 +93,7 @@ int main(int argv,char** argc)
   pe->mutexNum=0;
   pe->processorInstanceNUM=0;
   pe->connectionMappingNum=0;
+  pe->constraintNum=0;
   input=fopen(*(argc+1),"r");
   if(input!=NULL) printf("reading file successful\n");
   else
@@ -136,7 +140,7 @@ int main(int argv,char** argc)
   }
   if(pe->connectionMappingNum)
   {
-    cNameList=malloc(NAME_BUFFER_SIZE * pe->connectionMappingNum);
+    //cNameList=malloc(NAME_BUFFER_SIZE * pe->connectionMappingNum);
     pe->connectionMapping = malloc(sizeof(connections) * pe->connectionMappingNum);
   }
   else
@@ -156,6 +160,7 @@ int main(int argv,char** argc)
   iListNum=0;
   cListNum=0;
   mListNum=0;
+  sListNum=0;
   /**if(readLine())
   {//read first line failed
     printf("Error:Cannot read file content.\n");
@@ -187,6 +192,7 @@ int main(int argv,char** argc)
       case PS_MUTEX_SECTION:parseMutex();break;
       case PS_INSTANCE_SECTION:parseInstance();break;
       case PS_CONNECTIONS:parseConnection();break;
+      case PS_CONSTRAINTS:parseConstraint();break;
     }
     if(errno)
     {

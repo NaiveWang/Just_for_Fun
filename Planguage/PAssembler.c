@@ -13,6 +13,7 @@ void countIdentifier()
         else if(!strncmp(inputBuffer+inputBufferPointer,I_MUTEX,strlen(I_MUTEX))) pe->mutexNum++;
         else if(!strncmp(inputBuffer+inputBufferPointer,I_INSTANCE,strlen(I_INSTANCE))) pe->processorInstanceNUM++;
         else if(!strncmp(inputBuffer+inputBufferPointer,I_CONNECTION,strlen(I_CONNECTION))) pe->connectionMappingNum++;
+        else if(!strncmp(inputBuffer+inputBufferPointer,I_CONSTRAINT,strlen(I_CONSTRAINT))) pe->constraintNum++;
       }
     }
 }
@@ -129,6 +130,12 @@ void parseStart()
       inputBufferPointer+=strlen(I_CONNECTION);
       //printf("4\n");
       parsingStatus=PS_CONNECTIONS;
+    }
+    else if(!strncmp(inputBuffer+inputBufferPointer,I_CONSTRAINT,strlen(I_CONSTRAINT)))
+    {
+      inputBufferPointer+=strlen(I_CONSTRAINT);
+      //printf("4\n");
+      parsingStatus=PS_CONSTRAINTS;
     }
     else errno=2;
   }
@@ -999,6 +1006,25 @@ void parseInstanceData()
   parsingStatus=PS_START;
   //errno
   //errno=8;
+}
+void parseConstraint()
+{
+  static int a0;
+  //get the neme
+  skipWhitespace();
+  inputBufferPointer+=strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
+  pe->constraintList[sListNum].nodeDNo = matchIdentifier(iNameList,iListNum);
+  pe->constraintList[sListNum].nodeSNum = countI();
+  pe->constraintList[sListNum].nodeSNoList = malloc(sizeof(int) * pe->constraintList[sListNum].nodeSNum);
+  for(a0=0;a0<pe->constraintList[sListNum].nodeSNum;a0++)
+  {
+    //get the beginning
+    skipWhitespace();
+    inputBufferPointer+=strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
+    pe->constraintList[sListNum].nodeSNoList[a0] = matchIdentifier(iNameList,iListNum);
+    skipWhitespace();
+    inputBufferPointer++;
+  }
 }
 void errorHandler()
 {
