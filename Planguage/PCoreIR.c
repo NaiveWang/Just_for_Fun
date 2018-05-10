@@ -423,7 +423,7 @@ void OPADDR(PBase *p)
   //asm("addq %rax,-8(%rbx)");
   asm("faddl -8(%rbx)");
   asm("fstl -8(%rbx)");
-  asm("lahf");
+  asm("fstsw %ax");
   asm("movq %rbx,(%rdx)");
   asm("movl %%eax,%0":"=r"(p->eflag));
   p->pc+=2;
@@ -462,8 +462,102 @@ void OPSUBR(PBase *p)
   //asm("addq %rax,-8(%rbx)");
   asm("fsubl -8(%rbx)");
   asm("fstl -8(%rbx)");
+  asm("fstsw %ax");
+  asm("movq %rbx,(%rdx)");
+  asm("movl %%eax,%0":"=r"(p->eflag));
+  p->pc+=2;
+}
+void OPMULB(PBase *p)
+{
+  asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
+  asm("movq (%rdx),%rbx");
+  asm("decq %rbx");
+  asm("movb (%rbx),%al");
+  asm("mulb -1(%rbx)");
+  asm("movb %al,-1(%rbx)");
   asm("lahf");
   asm("movq %rbx,(%rdx)");
+  asm("movl %%eax,%0":"=r"(p->eflag));
+  p->pc+=2;
+}
+void OPMULI(PBase *p)
+{
+  asm("movq %0,%%rcx"::"r"(p->data+POINTER_STACK0));
+  asm("movq (%rcx),%rbx");
+  asm("subq $8,%rbx");
+  asm("movq (%rbx),%rax");
+  asm("mulq -8(%rbx)");
+  asm("movq %rax,-8(%rbx)");
+  asm("lahf");
+  asm("movq %rbx,(%rcx)");
+  asm("movl %%eax,%0":"=r"(p->eflag));
+  p->pc+=2;
+}
+void OPMULR(PBase *p)
+{
+  asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
+  asm("movq (%rdx),%rbx");
+  asm("subq $8,%rbx");
+  asm("fldl (%rbx)");
+  asm("fmull -8(%rbx)");
+  asm("fstl -8(%rbx)");
+  asm("fstsw %ax");
+  asm("movq %rbx,(%rdx)");
+  asm("movl %%eax,%0":"=r"(p->eflag));
+  p->pc+=2;
+}
+void OPIMULB(PBase *p)
+{
+  asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
+  asm("movq (%rdx),%rbx");
+  asm("decq %rbx");
+  asm("movb (%rbx),%al");
+  asm("imulb -1(%rbx)");
+  asm("movb %al,-1(%rbx)");
+  asm("lahf");
+  asm("movq %rbx,(%rdx)");
+  asm("movl %%eax,%0":"=r"(p->eflag));
+  p->pc+=2;
+}
+void OPIMULI(PBase *p)
+{
+  asm("movq %0,%%rcx"::"r"(p->data+POINTER_STACK0));
+  asm("movq (%rcx),%rbx");
+  asm("subq $8,%rbx");
+  asm("movq (%rbx),%rax");
+  asm("imulq -8(%rbx)");
+  asm("movq %rax,-8(%rbx)");
+  asm("lahf");
+  asm("movq %rbx,(%rcx)");
+  asm("movl %%eax,%0":"=r"(p->eflag));
+  p->pc+=2;
+}
+void OPIMULR(PBase *p)
+{
+  asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
+  asm("movq (%rdx),%rbx");
+  asm("subq $8,%rbx");
+  asm("fldl (%rbx)");
+  asm("fimull -8(%rbx)");
+  asm("fstl -8(%rbx)");
+  asm("fstsw %ax");
+  asm("movq %rbx,(%rdx)");
+  asm("movl %%eax,%0":"=r"(p->eflag));
+  p->pc+=2;
+}
+void OPDIVB(PBase *p)//checked
+{
+  asm("movq %0,%%rbx"::"r"(p->data+POINTER_STACK0));
+  //asm("subq $8,%rbx");
+  asm("movq (%rbx),%rbx");
+  asm("movb -2(%rbx),%cl");
+  asm("xorw %ax,%ax");
+  asm("movb -1(%rbx),%al");
+  //asm("cqo");
+  asm("divb %cl");
+  asm("movb %al,-1(%rbx)");//quotient
+  asm("movb %ah,-2(%rbx)");//reminder
+  asm("lahf");
   asm("movl %%eax,%0":"=r"(p->eflag));
   p->pc+=2;
 }
@@ -472,9 +566,10 @@ void OPDIVI(PBase *p)//checked
   asm("movq %0,%%rbx"::"r"(p->data+POINTER_STACK0));
   //asm("subq $8,%rbx");
   asm("movq (%rbx),%rbx");
+  asm("xorq %rdx,%rdx");
   asm("movq -8(%rbx),%rcx");
   asm("movq -16(%rbx),%rax");
-  asm("cqo");
+  //asm("cqo");
   asm("divq %rcx");
   asm("movq %rdx,-8(%rbx)");//quotient
   asm("movq %rax,-16(%rbx)");//reminder
@@ -486,15 +581,103 @@ void OPDIVI(PBase *p)//checked
   //printf("$%ld/%lx$\n",p->debugBuffer,p->debugBuffer);
   p->pc+=2;
 }
+void OPDIVR(PBase *p)
+{
+  asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
+  asm("movq (%rdx),%rbx");
+  asm("subq $8,%rbx");
+  asm("fldl (%rbx)");
+  asm("fdivl -8(%rbx)");
+  asm("fstl -8(%rbx)");
+  asm("fstsw %ax");
+  asm("movq %rbx,(%rdx)");
+  asm("movl %%eax,%0":"=r"(p->eflag));
+  p->pc+=2;
+}
+void OPIDIVB(PBase *p)//checked
+{
+  asm("movq %0,%%rbx"::"r"(p->data+POINTER_STACK0));
+  //asm("subq $8,%rbx");
+  asm("movq (%rbx),%rbx");
+  asm("movb -2(%rbx),%cl");
+  //asm("xorw %ax,%ax")
+  asm("movsxb -1(%rbx),%ax");
+  //asm("cqo");
+  asm("idivb %cl");
+  asm("movb %al,-1(%rbx)");//quotient
+  asm("movb %ah,-2(%rbx)");//reminder
+  asm("lahf");
+  asm("movl %%eax,%0":"=r"(p->eflag));
+  p->pc+=2;
+}
+void OPIDIVI(PBase *p)//checked
+{
+  asm("movq %0,%%rbx"::"r"(p->data+POINTER_STACK0));
+  //asm("subq $8,%rbx");
+  asm("movq (%rbx),%rbx");
+  //asm("xorq %rdx,%rdx")
+  asm("movq -8(%rbx),%rcx");
+  asm("movq -16(%rbx),%rax");
+  asm("cqo");
+  asm("idivq %rcx");
+  asm("movq %rdx,-8(%rbx)");//quotient
+  asm("movq %rax,-16(%rbx)");//reminder
+  //asm("movq %%rax,%0":"=r"(p->debugBuffer));
+  asm("lahf");
+  //asm("movb %ah,%al");
+  asm("movl %%eax,%0":"=r"(p->eflag));
+
+  //printf("$%ld/%lx$\n",p->debugBuffer,p->debugBuffer);
+  p->pc+=2;
+}
+void OPIDIVR(PBase *p)
+{
+  asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
+  asm("movq (%rdx),%rbx");
+  asm("subq $8,%rbx");
+  asm("fldl (%rbx)");
+  asm("fidivl -8(%rbx)");
+  asm("fstl -8(%rbx)");
+  asm("fstsw %ax");
+  asm("movq %rbx,(%rdx)");
+  asm("movl %%eax,%0":"=r"(p->eflag));
+  p->pc+=2;
+}
+void OPCMPB(PBase *p)//checked
+{
+  asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
+  asm("movq (%rdx),%rbx");
+  asm("subq $2,%rbx");
+  asm("movb (%rbx),%al");
+  asm("cmpb %al,1(%rbx)");
+  asm("lahf");
+  asm("movq %rbx,(%rdx)");
+  asm("movl %%eax,%0":"=r"(p->eflag));
+  p->pc+=2;
+}
 void OPCMPI(PBase *p)//checked
 {
   asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
   asm("movq (%rdx),%rbx");
   asm("subq $16,%rbx");
-  asm("movq %rbx,(%rdx)");
-  asm("movq 8(%rbx),%rax");
-  asm("cmpq (%rbx),%rax");
+  asm("movq (%rbx),%rax");
+  asm("cmpq %rax,8(%rbx)");
   asm("lahf");
+  asm("movq %rbx,(%rdx)");
+  asm("movl %%eax,%0":"=r"(p->eflag));
+  p->pc+=2;
+}
+void OPCMPR(PBase *p)//checked
+{
+  asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
+  asm("movq (%rdx),%rbx");
+  asm("subq $16,%rbx");
+  //asm("movq (%rbx),%rax");
+  asm("fldl (%rbx)");
+  //asm("cmpq %rax,8(%rbx)");
+  asm("fcoml 8(%rbx)");
+  asm("fstsw %ax");
+  asm("movq %rbx,(%rdx)");
   asm("movl %%eax,%0":"=r"(p->eflag));
   p->pc+=2;
 }
@@ -653,6 +836,84 @@ void OPDECI(PBase *p)//checked
   asm("movq %rbx,(%rdx)");
   asm("movl %%eax,%0":"=r"(p->eflag));
   p->pc+=2;
+}
+void OPSHLB(PBase *p)
+{
+  //shift left, byte
+  asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
+  asm("movq (%rdx),%rax");
+  //2 element
+  asm("decq %rax");
+  asm("movq %rax,(%rdx)");
+  asm("movb (%rax),%cl");
+  asm("shlb %cl,-1(%rax)");
+  asm("lahf");
+  asm("movl %%eax,%0":"=r"(p->eflag));
+}
+void OPSHLI(PBase *p)
+{
+  //shift left, byte
+  asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
+  asm("movq (%rdx),%rax");
+  //2 element
+  asm("decq %rax");
+  asm("movq %rax,(%rdx)");
+  asm("movb (%rax),%cl");
+  asm("shlq %cl,-8(%rax)");
+  asm("lahf");
+  asm("movl %%eax,%0":"=r"(p->eflag));
+}
+void OPSHRB(PBase *p)
+{
+  //shift left, byte
+  asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
+  asm("movq (%rdx),%rax");
+  //2 element
+  asm("decq %rax");
+  asm("movq %rax,(%rdx)");
+  asm("movb (%rax),%cl");
+  asm("SHRB %cl,-1(%rax)");
+  asm("lahf");
+  asm("movl %%eax,%0":"=r"(p->eflag));
+}
+void OPSHRI(PBase *p)
+{
+  //shift left, byte
+  asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
+  asm("movq (%rdx),%rax");
+  //2 element
+  asm("decq %rax");
+  asm("movq %rax,(%rdx)");
+  asm("movb (%rax),%cl");
+  asm("SHRq %cl,-8(%rax)");
+  asm("lahf");
+  asm("movl %%eax,%0":"=r"(p->eflag));
+}
+void OPSARB(PBase *p)
+{
+  //shift left, byte
+  asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
+  asm("movq (%rdx),%rax");
+  //2 element
+  asm("decq %rax");
+  asm("movq %rax,(%rdx)");
+  asm("movb (%rax),%cl");
+  asm("SARB %cl,-1(%rax)");
+  asm("lahf");
+  asm("movl %%eax,%0":"=r"(p->eflag));
+}
+void OPSARI(PBase *p)
+{
+  //shift left, byte
+  asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
+  asm("movq (%rdx),%rax");
+  //2 element
+  asm("decq %rax");
+  asm("movq %rax,(%rdx)");
+  asm("movb (%rax),%cl");
+  asm("SARq %cl,8(%rax)");
+  asm("lahf");
+  asm("movl %%eax,%0":"=r"(p->eflag));
 }
 void (*InstructionSet[])(PBase *p) = {
   MOV8A,MOV8,MOVBA,

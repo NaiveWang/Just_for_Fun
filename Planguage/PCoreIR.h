@@ -61,25 +61,25 @@ void OPSUBB(PBase *p);//2
 void OPSUBI(PBase *p);//2
 void OPSUBR(PBase *p);//2
 
-void OPMULB(PBase *p);
-void OPNULI(PBase *p);
-void OPMULR(PBase *p);
+void OPMULB(PBase *p);//2
+void OPNULI(PBase *p);//2
+void OPMULR(PBase *p);//2
 
-void OPIMULB(PBase *p);
-void OPIMULI(PBase *p);
-void OPIMULR(PBase *p);
+void OPIMULB(PBase *p);//2
+void OPIMULI(PBase *p);//2
+void OPIMULR(PBase *p);//2
 
-void OPDIVB(PBase *p);
+void OPDIVB(PBase *p);//2
 void OPDIVI(PBase *p);//2decode=2
-void OPDIVR(PBase *p);
+void OPDIVR(PBase *p);//2
 
 void OPIDIVB(PBase *p);
 void OPIDIVI(PBase *p);
 void OPIDIVR(PBase *p);
 
-void OPCMPB(PBase *p);
+void OPCMPB(PBase *p);//2
 void OPCMPI(PBase *p);//2decode=2
-void OPCMPR(PBase *p);
+void OPCMPR(PBase *p);//2
 
 void OPNOTB(PBase *p);//2
 void OPNOTI(PBase *p);//2decode=2
@@ -102,14 +102,14 @@ void OPINCI(PBase *p);//2
 void OPDECB(PBase *p);//2
 void OPDECI(PBase *p);//2
 
-void OPSHLB(PBase *p);
-void OPSHLI(PBase *p);
+void OPSHLB(PBase *p);//2
+void OPSHLI(PBase *p);//2
 
-void OPSHRB(PBase *p);
-void OPSHRI(PBase *p);
+void OPSHRB(PBase *p);//2
+void OPSHRI(PBase *p);//2
 
-void OPSARB(PBase *p);
-void OPSARI(PBase *p);
+void OPSARB(PBase *p);//2
+void OPSARI(PBase *p);//2
 int instructionParser(int *r0, char* code);
 void executionOneStep(PBase *p);
 //mapping
