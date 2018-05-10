@@ -319,6 +319,57 @@ void POP8(PBase *p)//2decode+(1+4)addr=7
   asm("movq %r8,(%rdx,%rcx)");
   p->pc+=7;
 }
+void CBI(PBase *p)
+{
+  asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
+  asm("movq (%rdx),%rbx");
+  asm("addq $7,%rbx");
+  asm("xorq %rax,%rax");
+  asm("movb (%rbx),%al");
+  asm("movq %rax,-8(%rbx)");
+  asm("movq %rbx,(%rdx)");
+  p->pc+=2;
+}
+void CIBI(PBase *p)
+{
+  asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
+  asm("movq (%rdx),%rbx");
+  asm("addq $7,%rbx");
+  //asm("xorq %rax,%rax");
+  asm("movsxb (%rbx),%ax");
+  asm("cwde");
+  asm("cdqe");
+  asm("movq %rax,-8(%rbx)");
+  asm("movq %rbx,(%rdx)");
+  p->pc+=2;
+}
+void CIB(PBase *p)
+{
+  asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
+  asm("movq (%rdx),%rbx");
+  asm("subq $7,%rbx");
+  //asm("xorq %rax,%rax");
+  asm("movq -1(%rbx),%rax");
+  asm("movb %al,-1(%rbx)");
+  asm("movq %rbx,(%rdx)");
+  p->pc+=2;
+}
+void CRI(PBase *p)
+{
+  asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
+  asm("movq (%rdx),%rbx");
+  asm("fldl -8(%rbx)");
+  asm("fistpq -8(%rbx)");
+  p->pc+=2;
+}
+void CIR(PBase *p)
+{
+  asm("movq %0,%%rdx"::"r"(p->data+POINTER_STACK0));
+  asm("movq (%rdx),%rbx");
+  asm("fildq -8(%rbx)");
+  asm("fstl -8(%rbx)");
+  p->pc+=2;
+}
 void CALL(PBase *p)
 {
   //get stack pointer

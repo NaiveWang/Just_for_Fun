@@ -38,12 +38,11 @@ void POP1(PBase *p);//7
 void PUSH8(PBase *p);//2decode+(1+4)addr=7
 void POP8(PBase *p);//2decode+(1+4)addr=7
 /** Type Conventions**/
-void CBI(PBase *p);
-void CIB(PBase *p);
+void CBI(PBase *p);//2
+void CIBI(PBase *p);//2
+void CIB(PBase *p);//2
 void CRI(PBase *p);
-void CIR(PBase *p);
-void CBR(PBase *p);
-void CRB(PBase *p);
+void CIR(PBase *p);//2
 /** Memory Allocation **/
 void ALLO(PBase *p);
 void FREE(PBase *p);
