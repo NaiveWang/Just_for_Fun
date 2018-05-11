@@ -11,7 +11,9 @@ C "glgjssykjdnvkjnsklamlscnmlk"
 PUSH0I8 I 10000
 PUSH0I8 I 20000
 ;PUSH08 1:0
+JUMP #abc
 POP08 1:0
+#abc
 JUMP #S
 .processor test1 8 512 1024
 .data
@@ -26,7 +28,7 @@ I 3,2,1
 #START
 PUSH0I8 I 345
 PUSH0I8 R 123.345
-JUMP #ABC
+JUMP #abc
 OPADDI
 #abc
 JMPC 0 START

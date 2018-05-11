@@ -330,6 +330,12 @@ void parseProcessorCode()
       //count the number
       a0+=a1;
   }
+  //test section start
+  /**for(a1=0;a1<PNLpointer;a1++)
+  {
+    printf("%d\t%s\n",PNL[a1].ofst,PNL[a1].name);
+  }*/
+  //test section ended
   ///2.allocate the space of code section.
   if(!a0)
   {//zero instructions
@@ -399,12 +405,20 @@ void parseProcessorCode()
                 strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
                 for(a2=0;a2<PNLpointer;a2++)
                 {
+                  //printf("#%s#%s#",identifierBuffer,PNL[a2].name);
                   if(!strcmp(identifierBuffer,PNL[a2].name))
                   {//match
                     *(long*)(pe->processorTemplates[pListNum-1].code+a1+2)=(long)(PNL[a2].ofst-a1);
+                    //printf("$%ld$\n",*(long*)(pe->processorTemplates[pListNum-1].code+a1+2));
+                    //if(*(long*)(pe->processorTemplates[pListNum-1].code+a1+2) > 0)
+                      //*(long*)(pe->processorTemplates[pListNum-1].code+a1+2)+=a0;
                     //printf("\t%ld\n",*(long*)(pe->processorTemplates[pListNum-1].code+a1+2));
                     break;
                   }
+                  //else continue;
+                }
+                if(a2==PNLpointer)
+                {
                   errno=18;
                   return;
                 }
@@ -443,6 +457,8 @@ void parseProcessorCode()
               if(!strcmp(identifierBuffer,PNL[a2].name))
               {//match
                 *(long*)(pe->processorTemplates[pListNum-1].code+a1+6)=(long)(PNL[a2].ofst-a1);
+                if(*(long*)(pe->processorTemplates[pListNum-1].code+a1+2) > 0)
+                  *(long*)(pe->processorTemplates[pListNum-1].code+a1+2)+=a0;
                 break;
               }
               errno=18;

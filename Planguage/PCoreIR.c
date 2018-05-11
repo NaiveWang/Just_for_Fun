@@ -453,7 +453,7 @@ void JUMP(PBase *p)
   asm("movq 2(%rcx),%rax");
   //offset in the %rax, add it to the pc
   //asm("movq %rcx,%rbx");
-  asm("addq $10,%rax");
+  //asm("addq $10,%rax");
   //asm("addq %rax,%rbx");
   asm("movq %%rax,%0":"=r"(p->debugBuffer));printf("$%ld$\n",p->debugBuffer);
   p->pc+=p->debugBuffer;
