@@ -457,8 +457,8 @@ void parseProcessorCode()
               if(!strcmp(identifierBuffer,PNL[a2].name))
               {//match
                 *(long*)(pe->processorTemplates[pListNum-1].code+a1+6)=(long)(PNL[a2].ofst-a1);
-                if(*(long*)(pe->processorTemplates[pListNum-1].code+a1+2) > 0)
-                  *(long*)(pe->processorTemplates[pListNum-1].code+a1+2)+=a0;
+                //if(*(long*)(pe->processorTemplates[pListNum-1].code+a1+2) > 0)
+                  //*(long*)(pe->processorTemplates[pListNum-1].code+a1+2)+=a0;
                 break;
               }
               errno=18;
