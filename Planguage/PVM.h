@@ -65,12 +65,13 @@ PBase *listInstance;
 //halt
 hInfo haltInfo;
 //mutex handler global
+pthread_mutex_t qLock;
 int queueH,queueT;
 MHQ waitingQueue[M_WAITING_LIST_SIZE];
 //thread pool
 pthread_t haltHandler;
 pthread_t constraintHandler;
-pthread_t mutexOperationHandler;
+pthread_t mutexHandler;
 pthread_t executionThread[NUM_E_THREAD];
 IME executionGroup[NUM_E_THREAD];
 //global variables
@@ -78,12 +79,14 @@ char *constraintMap;
 //Statistic Data
 /** utility functions **/
 char getConstraintNum(int i);
+/** mutex **/
+void mutexTinit();
+void *mutexT();
 /** Functions **/
 void VMReadFile(char *file);
 void debugVM(PBase *p,int howManyStack0Elem);
 void *execDebug(void* no);
 void *execNormal();
 void *awaker();
-void *mutexHandler();
 void VMStartUp();
 #endif

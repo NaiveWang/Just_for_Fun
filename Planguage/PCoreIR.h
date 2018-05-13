@@ -20,6 +20,10 @@ void SYS(PBase *p);//6
 void HALT(PBase *p);//2
 void SUSPEND(PBase *p);//2
 void REBOOT(PBase *p);//2
+/** mutex operation **/
+void MUTW(PBase *p);//wait//3
+void MUTL(PBase *p);//leave//3
+void MUTT(PBase *p);//test//3
 /** Data transfer **/
 void MOV1A(PBase *p);//2
 void MOV1(PBase *p);//2+5*2=12

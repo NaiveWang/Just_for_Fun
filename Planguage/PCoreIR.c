@@ -11,7 +11,7 @@ void SYS(PBase *p)
   asm("subq $8,%rbx");
   asm("movq %rbx,(%rdx)");
   asm("movq (%rbx),%rbx");
-  asm("movq %%rbx,%0":"=r"(p->APICallAddr));
+  asm("movq %%rbx,%0":"=r"(p->exAddr));
   p->pc+=6;
 }
 void HALT(PBase *p)
@@ -31,6 +31,42 @@ void REBOOT(PBase *p)
   *(void**)(p->data + POINTER_STACK0) = *(void**)(p->data +BASE_STACK0);
   *(void**)(p->data + POINTER_STACK) = *(void**)(p->data +BASE_STACK);
   p->status = PROCESSOR_STATUS_REBOOT;
+}
+void MUTW(PBase *p)
+{
+  //set the status
+  p->status = PROCESSOR_STATUS_MWAIT;
+  //put addr into exporting address
+  asm("movq %0,%%rax"::"r"(p->pc));
+  asm("xorq %rcx,%rcx");
+  asm("movb 2(%rax),%cl");
+  asm("movq %0,%%rax"::"r"(p->data + POINTER_STACK0));
+  asm("movq (%rax,%rcx,8),%rax");
+  asm("movq %%rax,%0":"=r"(p->exAddr));
+  //modify pc
+  p->pc+=3;
+}
+void MUTL(PBase *p)
+{
+  p->status = PROCESSOR_STATUS_MLEAVE;
+  asm("movq %0,%%rax"::"r"(p->pc));
+  asm("xorq %rcx,%rcx");
+  asm("movb 2(%rax),%cl");
+  asm("movq %0,%%rax"::"r"(p->data + POINTER_STACK0));
+  asm("movq (%rax,%rcx,8),%rax");
+  asm("movq %%rax,%0":"=r"(p->exAddr));
+  p->pc+=3;
+}
+void MUTT(PBase *p)
+{
+  p->status = PROCESSOR_STATUS_MTEST;
+  asm("movq %0,%%rax"::"r"(p->pc));
+  asm("xorq %rcx,%rcx");
+  asm("movb 2(%rax),%cl");
+  asm("movq %0,%%rax"::"r"(p->data + POINTER_STACK0));
+  asm("movq (%rax,%rcx,8),%rax");
+  asm("movq %%rax,%0":"=r"(p->exAddr));
+  p->pc+=3;
 }
 void MOV1A(PBase *p)
 {
@@ -455,8 +491,8 @@ void JUMP(PBase *p)
   //asm("movq %rcx,%rbx");
   //asm("addq $10,%rax");
   //asm("addq %rax,%rbx");
-  asm("movq %%rax,%0":"=r"(p->debugBuffer));printf("$%ld$\n",p->debugBuffer);
-  p->pc+=p->debugBuffer;
+  asm("addq %%rax,%0":"=r"(p->pc));//printf("$%ld$\n",p->debugBuffer);
+  //p->pc+=p->debugBuffer;
 }
 void JMPC(PBase *p)
 {

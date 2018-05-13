@@ -1,4 +1,22 @@
 #include "PVM.h"
+void *mutexT()
+{
+  //wait the mutex of queue
+  pthread_mutex_lock(&qLock);
+  //do the job
+  //unlock mutex
+  pthread_mutex_unlock(&qLock);
+  //ground self
+}
+void mutexTinit()
+{
+  //init the queue
+  queueH=queueT=0;
+  //set lock?
+  pthread_mutex_init(&qLock,NULL);
+  //create the thread
+  pthread_create(&mutexHandler,NULL,mutexT,NULL);
+}
 void VMReadFile(char *file)
 {
   int c0;

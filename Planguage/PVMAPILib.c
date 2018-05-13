@@ -3,11 +3,11 @@ void basicIO_Buffer(PBase* p)
 {
   switch(*(((short*)&p->APICallID)+1))
   {
-    case 0 :printf("%ld ",*(long*)p->APICallAddr);break;//print 8 i
-    case 1 :printf("%c ",*(char*)p->APICallAddr);break;//print c c
-    case 2 :printf("%s",(char*)p->APICallAddr);break;//print string
-    case 3 :scanf("%ld",(long*)p->APICallAddr);break;//scan 8 i
-    case 4 :scanf("%c",(char*)p->APICallAddr);break;//scan c c
+    case 0 :printf("%ld ",*(long*)p->exAddr);break;//print 8 i
+    case 1 :printf("%c ",*(char*)p->exAddr);break;//print c c
+    case 2 :printf("%s",(char*)p->exAddr);break;//print string
+    case 3 :scanf("%ld",(long*)p->exAddr);break;//scan 8 i
+    case 4 :scanf("%c",(char*)p->exAddr);break;//scan c c
     default:printf("API Error:no such calling identifier in basicIO_Buffer");
   }
 }

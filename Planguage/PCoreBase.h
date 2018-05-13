@@ -15,15 +15,17 @@
 #define PROCESSOR_STATUS_RUNNING 0
 #define PROCESSOR_STATUS_ERROR 1
 #define PROCESSOR_STATUS_SUSPENDED 2
-#define PROCESSOR_STATUS_WAIT 3
-#define PROCESSOR_STATUS_REBOOT 4
+#define PROCESSOR_STATUS_MWAIT 3
+#define PROCESSOR_STATUS_MTEST 4
+#define PROCESSOR_STATUS_MLEAVE 5
+#define PROCESSOR_STATUS_REBOOT 6
 
 typedef struct AInstanceOfProcessor
 {
   void *PID;
   long debugBuffer;
   //unsigned int memoryUsage;
-  void* APICallAddr;
+  void* exAddr;
   unsigned int APICallID;
   int status;
   void *pc;
