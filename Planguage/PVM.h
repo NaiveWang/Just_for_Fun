@@ -46,6 +46,9 @@ typedef struct haltInformations
   PBase *pid;
   int val;
 }hInfo;
+#define MTX_HDL_TYP_WAIT 0
+#define MTX_HDL_TYP_TEST 1
+#define MTX_HDL_TYP_LEAVE 2
 typedef struct mutexHandlerWaitingQueue
 {
   PBase *pid;
@@ -65,6 +68,7 @@ PBase *listInstance;
 //halt
 hInfo haltInfo;
 //mutex handler global
+pthread_mutex_t MtxHdllock;
 pthread_mutex_t qLock;
 int queueH,queueT;
 MHQ waitingQueue[M_WAITING_LIST_SIZE];

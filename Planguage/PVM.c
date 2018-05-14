@@ -1,12 +1,103 @@
 #include "PVM.h"
 void *mutexT()
 {
-  //wait the mutex of queue
-  pthread_mutex_lock(&qLock);
-  //do the job
-  //unlock mutex
-  pthread_mutex_unlock(&qLock);
-  //ground self
+  for(;;)
+  {
+    //wait for the handler lock
+    pthread_mutex_lock(&MtxHdllock);
+    //wait the mutex of queue
+    pthread_mutex_lock(&qLock);
+    //do the job
+    while(queueH-queueT)
+    {
+      //some thing on queue handle one node of it
+      //branch, get the resource or wait?
+      switch(waitingQueue[queueT].opType)
+      {
+        case MTX_HDL_TYP_WAIT://wait procedure
+          //look up the mutex lock
+          if(waitingQueue[queueT].mTarget->lock)
+          {
+            //non-zero, wait
+            //put the instance info into the tail
+            if(waitingQueue[queueT].mTarget->waitList)
+            {
+              waitL *wlp = waitingQueue[queueT].mTarget->waitList;
+              //there are some node here
+              //find tail
+              while(wlp->next) wlp = wlp->next;
+              wlp->next = malloc(sizeof(waitL));
+              wlp = wlp->next;
+              wlp->next = NULL;
+              wlp->pid = waitingQueue[queueT].pid;
+            }
+            else
+            {
+              //there are no node, just initlize it.
+              waitingQueue[queueT].mTarget->waitList = malloc(sizeof(waitL));
+              //assign the value
+              waitingQueue[queueT].mTarget->waitList->next=NULL;
+              waitingQueue[queueT].mTarget->waitList->pid = waitingQueue[queueT].pid;
+            }
+            //leave the status to wait(nop)
+          }
+          else
+          {
+            //zero, take the bun!
+            //set the lock
+            waitingQueue[queueT].mTarget->lock = waitingQueue[queueT].pid;
+            //set the status to running
+            waitingQueue[queueT].pid->status = PROCESSOR_STATUS_RUNNING;
+          }
+          break;
+        case MTX_HDL_TYP_TEST:
+          //test, always set running at least
+          //set what ? flag!!!!!!
+          //branch, if the mutex is vacant
+          if(waitingQueue[queueT].mTarget->lock)
+          {
+            //locked, set flag to 0
+            waitingQueue[queueT].pid->eflag = 0;
+          }
+          else
+          {
+            //bingo
+            //set the lock
+            waitingQueue[queueT].mTarget->lock = waitingQueue[queueT].pid;
+            //set flag to -1
+            waitingQueue[queueT].pid->eflag = -1;
+          }
+          //always set the status to runnning
+          waitingQueue[queueT].pid->status = PROCESSOR_STATUS_RUNNING;
+          break;
+        case MTX_HDL_TYP_LEAVE:
+          //set the lock to zero
+          waitingQueue[queueT].mTarget->lock = NULL;
+          //set the current instance to running status
+          waitingQueue[queueT].pid->status = PROCESSOR_STATUS_RUNNING;
+          //if there is any thing on waiting list, get it with lock
+          if(waitingQueue[queueT].mTarget->waitList)
+          {
+            waitL *wlp;
+            //something, give it to it
+            wlp = waitingQueue[queueT].mTarget->waitList;
+            waitingQueue[queueT].mTarget->lock = wlp->pid;
+            wlp->pid->status = PROCESSOR_STATUS_RUNNING;
+            waitingQueue[queueT].mTarget->waitList = waitingQueue[queueT].mTarget->waitList->next;
+            free(wlp);
+          }
+          break;
+        default : ;//error halt;
+      }
+      //delete one of the node
+      queueT++;
+      queueT %= M_WAITING_LIST_SIZE;
+    }
+    //unlock mutex
+    pthread_mutex_unlock(&qLock);
+    //ground self
+    pthread_mutex_lock(&MtxHdllock);
+  }
 }
 void mutexTinit()
 {
@@ -14,6 +105,9 @@ void mutexTinit()
   queueH=queueT=0;
   //set lock?
   pthread_mutex_init(&qLock,NULL);
+  pthread_mutex_init(&MtxHdllock,NULL);
+  //lock the handler lock
+  pthread_mutex_lock(&MtxHdllock);
   //create the thread
   pthread_create(&mutexHandler,NULL,mutexT,NULL);
 }
