@@ -210,6 +210,21 @@ void VMReadFile(char *file)
         //read global data
       }
     }
+    //initialize the constrtaint
+    //1.allocate a map
+    constraintMap = malloc(VMpe->processorInstanceNUM * VMpe->processorInstanceNUM);
+    //set the block to zero
+    memset(constraintMap,0,VMpe->processorInstanceNUM * VMpe->processorInstanceNUM);
+    for(c0=0;c0<VMpe->constraintNum;c0++)
+    {
+      static int c1;
+      for(c1=0;c1<VMpe->constraintList[c0].nodeSNum;c1++)
+      {
+        //heris the descent one
+        constraintMap[SEEK_TABLE(VMpe->constraintList[c0].nodeSNoList[c1],VMpe->constraintList[c0].nodeDNo,VMpe->processorInstanceNUM)] = 1;
+      }
+    }
+    //well done
   }
   //Connections
   for(c0=0;c0<VMpe->connectionMappingNum;c0++)

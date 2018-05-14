@@ -17,7 +17,7 @@ void SYS(PBase *p)
 void HALT(PBase *p)
 {
   //set the global var to halt
-  p->status = PROCESSOR_STATUS_ERROR;
+  p->status = PROCESSOR_STATUS_HALT;
 }
 void SUSPEND(PBase *p)
 {
