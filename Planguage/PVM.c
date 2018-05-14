@@ -287,7 +287,7 @@ void *execNormal(void *initPointer)
   int performance=INITIAL_PERFORMANCE_VAL;//how much step run on each instance
   int delay;//this attrbute means sleep how many ms for each circle scan
   IME *instanceMountingList;
-  int a0;
+  int a0;//a1;
 
   //initialize the list pointer
   instanceMountingList = (IME*)initPointer;
@@ -299,15 +299,43 @@ void *execNormal(void *initPointer)
     {
       //active section
       //execute current instance, switch
-      if(instanceMountingList->list->instance->status)
+      a0=performance;//resource counter
+      while(a0)
+      {
+        //loop enabled block
         switch(instanceMountingList->list->instance->status)
         {
-          case PROCESSOR_STATUS_SYS:break;
+          case PROCESSOR_STATUS_RUNNING:
+            //running
+            executionOneStep(instanceMountingList->list->instance);
+            a0--;
+            break;
+          case PROCESSOR_STATUS_SYS:
+            //system call
+            a0--;
+            break;
+          case PROCESSOR_STATUS_HALT:
+            //halt the VM
+            //maybe here we need to modify some global variables.
+            break;
+          case PROCESSOR_STATUS_SUSPENDED:
+            //instance was suspended
+            //call the suspended handler
+            break;
+          case PROCESSOR_STATUS_REBOOT:
+            //instance is waiting for restart
+            break;
+          case PROCESSOR_STATUS_MWAIT:
+            //call the mutex handler
+            break;
+          case PROCESSOR_STATUS_MTEST:
+            //call the mutex handler
+            break;
+          case PROCESSOR_STATUS_MLEAVE:
+            //call the mutex handler
+            break;
+          default:;//error/unknown status
         }
-      else
-      {
-        //running(high performance)
-        executionOneStep(instanceMountingList->list->instance);
       }
       //instanceMountingList->list = instanceMountingList->list->next;
     }
