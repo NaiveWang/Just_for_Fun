@@ -57,7 +57,7 @@ typedef struct haltInformations
 typedef struct mutexHandlerWaitingQueue
 {
   PBase *pid;
-  int opType;
+  int opTyp;
   mutex *mTarget;
 }MHQ;
 /** Global Section **/

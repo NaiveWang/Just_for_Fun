@@ -12,7 +12,7 @@ void *mutexT()
     {
       //some thing on queue handle one node of it
       //branch, get the resource or wait?
-      switch(waitingQueue[queueT].opType)
+      switch(waitingQueue[queueT].opTyp)
       {
         case MTX_HDL_TYP_WAIT://wait procedure
           //look up the mutex lock
@@ -327,6 +327,7 @@ void *execNormal(void *initPointer)
             break;
           case PROCESSOR_STATUS_SYS:
             //system call
+            APIHandler(instanceMountingList->list->instance);
             a0--;
             break;
           case PROCESSOR_STATUS_HALT:
@@ -339,15 +340,49 @@ void *execNormal(void *initPointer)
             break;
           case PROCESSOR_STATUS_REBOOT:
             //instance is waiting for restart
+            //do something????
+            //change status to suspended
+            instanceMountingList->list->instance->status=PROCESSOR_STATUS_SUSPENDED;
             break;
           case PROCESSOR_STATUS_MWAIT:
             //call the mutex handler
+            //wait for the queue mutex
+            pthread_mutex_lock(&qLock);
+            //write the queue
+            queueH++;
+            queueH %= M_WAITING_LIST_SIZE;
+            waitingQueue[queueH].pid = instanceMountingList->list->instance;
+            waitingQueue[queueH].mTarget = (mutex*)instanceMountingList->list->instance->exAddr;
+            waitingQueue[queueH].opTyp = MTX_HDL_TYP_WAIT;
+            //awake the mutex handler
+            pthread_mutex_unlock(&MtxHdllock);
+            pthread_mutex_unlock(&qLock);
             break;
           case PROCESSOR_STATUS_MTEST:
             //call the mutex handler
+            pthread_mutex_lock(&qLock);
+            //write the queue
+            queueH++;
+            queueH %= M_WAITING_LIST_SIZE;
+            waitingQueue[queueH].pid = instanceMountingList->list->instance;
+            waitingQueue[queueH].mTarget = (mutex*)instanceMountingList->list->instance->exAddr;
+            waitingQueue[queueH].opTyp = MTX_HDL_TYP_TEST;
+            //awake the mutex handler
+            pthread_mutex_unlock(&MtxHdllock);
+            pthread_mutex_unlock(&qLock);
             break;
           case PROCESSOR_STATUS_MLEAVE:
             //call the mutex handler
+            pthread_mutex_lock(&qLock);
+            //write the queue
+            queueH++;
+            queueH %= M_WAITING_LIST_SIZE;
+            waitingQueue[queueH].pid = instanceMountingList->list->instance;
+            waitingQueue[queueH].mTarget = (mutex*)instanceMountingList->list->instance->exAddr;
+            waitingQueue[queueH].opTyp = MTX_HDL_TYP_LEAVE;
+            //awake the mutex handler
+            pthread_mutex_unlock(&MtxHdllock);
+            pthread_mutex_unlock(&qLock);
             break;
           default:;//error/unknown status
         }
