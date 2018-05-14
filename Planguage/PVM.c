@@ -333,10 +333,12 @@ void *execNormal(void *initPointer)
           case PROCESSOR_STATUS_HALT:
             //halt the VM
             //maybe here we need to modify some global variables.
+            a0=-1;
             break;
           case PROCESSOR_STATUS_SUSPENDED:
             //instance was suspended
             //call the suspended handler
+            a0=-1;
             break;
           case PROCESSOR_STATUS_REBOOT:
             //instance is waiting for restart
@@ -357,6 +359,7 @@ void *execNormal(void *initPointer)
             //awake the mutex handler
             pthread_mutex_unlock(&MtxHdllock);
             pthread_mutex_unlock(&qLock);
+            a0=-1;
             break;
           case PROCESSOR_STATUS_MTEST:
             //call the mutex handler
@@ -370,6 +373,7 @@ void *execNormal(void *initPointer)
             //awake the mutex handler
             pthread_mutex_unlock(&MtxHdllock);
             pthread_mutex_unlock(&qLock);
+            a0=-1;
             break;
           case PROCESSOR_STATUS_MLEAVE:
             //call the mutex handler
@@ -383,11 +387,26 @@ void *execNormal(void *initPointer)
             //awake the mutex handler
             pthread_mutex_unlock(&MtxHdllock);
             pthread_mutex_unlock(&qLock);
+            a0=-1;
             break;
           default:;//error/unknown status
         }
+        if(a0 == -1) break;
       }
-      //instanceMountingList->list = instanceMountingList->list->next;
+      if(a0)
+      {//runs properly
+        //increase performance
+        if(performance < MAX_PERFORMANCE_VAL)
+          performance+=INITIAL_PERFORMANCE_VAL;
+      }
+      else
+      {
+        //bump
+        //set the performance to start
+        performance = INITIAL_PERFORMANCE_VAL;
+      }
+      instanceMountingList->list = instanceMountingList->list->next;
+      //TO DO : count the idle instance here
     }
     else
     {
