@@ -14,7 +14,12 @@
 #include "PVMAPILib.h"
 #define NUM_E_THREAD 2
 #define M_WAITING_LIST_SIZE 256
-#define PRINTADDR(x) printf("ADDR:%lx\n",(long)(x));
+#define INITIAL_PERFORMANCE_VAL 32
+#define INITIAL_DELAY_VAL 2
+#define MAX_PERFORMANCE_VAL 32000000
+#define MAX_DELAY_VAL 500;
+#define PRINTADDR(x) printf("ADDR:%lx\n",(long)(x))
+#define SEEK_TABLE(x,y,a) ((x)+(y)*(a))
 /** MACRO Section **/
 //the number of execution threads, it mainly depends on the hardware
 //#define TN_EXE 3//my computer has 8 logical core, extended by the technology known as intel's hyper threading.
@@ -82,7 +87,6 @@ IME executionGroup[NUM_E_THREAD];
 char *constraintMap;
 //Statistic Data
 /** utility functions **/
-char getConstraintNum(int i);
 /** mutex **/
 void mutexTinit();
 void *mutexT();

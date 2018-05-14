@@ -231,6 +231,7 @@ void VMReadFile(char *file)
     //put it on to the right instance
     *(void**)(listInstance[VMpe->connectionMapping[c0].nodeSNo].data + VMpe->connectionMapping[c0].nodeSPort * sizeof(void*))=addr;
   }
+  //constraint
 }
 void debugVM(PBase *p,int howManyStack0Elem)
 {
@@ -274,6 +275,34 @@ void *execDebug(void* no)
     }
     ino+=NUM_E_THREAD;
     if(ino==listInstanceSize) ino = *(int*)no;
+  }
+}
+void *execNormal(void *initPointer)
+{
+  /**
+   * here is the execution function, it belongs to different thread
+   * and the execution list cones to a circular link list
+   */
+  //values on the stack whlie running
+  int performance=INITIAL_PERFORMANCE_VAL;//how much step run on each instance
+  int delay;//this attrbute means sleep how many ms for each circle scan
+  IME instanceMountingList;
+  for(;;)
+  {//the execution step
+    //check the info of performance
+    //branch:idle or active
+    if(performance)
+    {
+      //active section
+      //loop : run a instance with <performance> instructions
+      //get the stop signal or loop finisned.
+    }
+    else
+    {
+      //idle section
+      //check the the list if exist one that is runnnig
+      //branch: longer nap time or go to active section.
+    }
   }
 }
 void VMStartUp()
