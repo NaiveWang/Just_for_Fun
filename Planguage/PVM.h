@@ -16,7 +16,7 @@
 #define M_WAITING_LIST_SIZE 256
 #define INITIAL_PERFORMANCE_VAL 32
 #define INITIAL_DELAY_VAL 2
-#define MAX_PERFORMANCE_VAL 32000000
+#define MAX_PERFORMANCE_VAL 32000
 #define MAX_DELAY_VAL 500;
 #define PRINTADDR(x) printf("ADDR:%lx\n",(long)(x))
 #define SEEK_TABLE(x,y,a) ((x)+(y)*(a))

@@ -19,6 +19,7 @@
 #define PROCESSOR_STATUS_MTEST 4
 #define PROCESSOR_STATUS_MLEAVE 5
 #define PROCESSOR_STATUS_REBOOT 6
+#define PROCESSOR_STATUS_SYS 7
 
 typedef struct AInstanceOfProcessor
 {

@@ -286,7 +286,11 @@ void *execNormal(void *initPointer)
   //values on the stack whlie running
   int performance=INITIAL_PERFORMANCE_VAL;//how much step run on each instance
   int delay;//this attrbute means sleep how many ms for each circle scan
-  IME instanceMountingList;
+  IME *instanceMountingList;
+  int a0;
+
+  //initialize the list pointer
+  instanceMountingList = (IME*)initPointer;
   for(;;)
   {//the execution step
     //check the info of performance
@@ -294,14 +298,44 @@ void *execNormal(void *initPointer)
     if(performance)
     {
       //active section
-      //loop : run a instance with <performance> instructions
-      //get the stop signal or loop finisned.
+      //execute current instance, switch
+      if(instanceMountingList->list->instance->status)
+        switch(instanceMountingList->list->instance->status)
+        {
+          case PROCESSOR_STATUS_SYS:break;
+        }
+      else
+      {
+        //running(high performance)
+        executionOneStep(instanceMountingList->list->instance);
+      }
+      //instanceMountingList->list = instanceMountingList->list->next;
     }
     else
     {
-      //idle section
-      //check the the list if exist one that is runnnig
-      //branch: longer nap time or go to active section.
+      /*idle section*/
+      //loop : check the the list if exist one that is runnnig
+      instanceMountingList->start = instanceMountingList->list;
+      for(;;)
+      {
+        instanceMountingList->list = instanceMountingList->list->next;
+        //check the instance status
+        if(!instanceMountingList->list->instance->status)
+        {
+          //running instance detected
+          performance = INITIAL_PERFORMANCE_VAL;
+          break;
+        }
+        if(instanceMountingList->start - instanceMountingList->list)
+          continue;//not to the end
+        else
+        {
+          //the end, all instances are suspended
+          //set the sleep time longer
+          delay += INITIAL_DELAY_VAL;
+          break;
+        }
+      }
     }
   }
 }
