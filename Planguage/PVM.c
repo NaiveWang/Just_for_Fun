@@ -1,6 +1,7 @@
 #include "PVM.h"
 void *runtimeHandler()
 {
+  int c0,c1;
   for(;;)
   {
     //wait for the handler lock
@@ -85,6 +86,29 @@ void *runtimeHandler()
             wlp->pid->status = PROCESSOR_STATUS_RUNNING;
             waitingQueue[queueT].mTarget->waitList = waitingQueue[queueT].mTarget->waitList->next;
             free(wlp);
+          }
+          break;
+        case TRIGGER:
+        //handle with trigger
+          //add the value into every next processor
+          for(c0=0;&listInstance[c0]==waitingQueue[queueT].pid;c0++);
+          //modify related instance trigger value
+          for(c1=0;c1<triggerList[c0].number;c1++)
+          {
+            //increase the value of list
+            listInstance[triggerList[c0].list[c1]].currentVal++;
+          }
+          //loop : scan the instances
+          for(c0=0;c0<listInstanceSize;c0++)
+          {
+            //condition : suspended/match the value
+            if(listInstance[c0].status == PROCESSOR_STATUS_SUSPENDED && listInstance[c0].triggerVal == listInstance[c0].currentVal)
+            {
+              //set it running,
+              listInstance[c0].status = PROCESSOR_STATUS_RUNNING;
+              //change the current val to 0
+              listInstance[c0].currentVal = 0;
+            }
           }
           break;
         default : ;//error halt;
@@ -356,7 +380,7 @@ void *execNormal(void *initPointer)
             queueH++;
             queueH %= M_WAITING_LIST_SIZE;
             waitingQueue[queueH].pid = instanceMountingList->list->instance;
-            waitingQueue[queueH].mTarget = (mutex*)instanceMountingList->list->instance->exAddr;
+            waitingQueue[queueH].mTarget = NULL;
             waitingQueue[queueH].opTyp = TRIGGER;
             //awake the mutex handler
             pthread_mutex_unlock(&rtLock);
@@ -467,6 +491,20 @@ void *execNormal(void *initPointer)
       }
     }
   }
+}
+void dispatcher()
+{
+  int c0;
+  ///put the instance into each thread link list
+  //initialize the instance structure
+  for(c0=0;c0<NUM_E_THREAD;c0++)
+  {
+    //initialize each of them
+    executionGroup[c0].INumber=0;
+    executionGroup[c0].start=NULL;
+    executionGroup[c0].list=NULL;
+  }
+  //graph operation : modify put it into each mounting list
 }
 void VMStartUp()
 {
