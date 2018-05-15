@@ -91,6 +91,8 @@ pthread_t executionThread[NUM_E_THREAD];
 IME executionGroup[NUM_E_THREAD];
 //global variables
 tgr *triggerList;
+/** Error Handle Val **/
+int errno;
 //Statistic Data
 /** utility functions **/
 /** mutex **/

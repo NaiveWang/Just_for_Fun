@@ -494,7 +494,9 @@ void *execNormal(void *initPointer)
 }
 void dispatcher()
 {
-  int c0;
+  int c0,c1;
+  char *tagL;
+  char tag0;
   ///put the instance into each thread link list
   //initialize the instance structure
   for(c0=0;c0<NUM_E_THREAD;c0++)
@@ -505,6 +507,88 @@ void dispatcher()
     executionGroup[c0].list=NULL;
   }
   //graph operation : modify put it into each mounting list
+  //initialize the tag list
+  tagL = malloc(listInstanceSize);
+  for(c0=0;c0<listInstanceSize;c0++)
+  {
+    if(listInstance[c0].status == PROCESSOR_STATUS_RUNNING)
+    {
+      //the start point found
+      //this section may cause error : all instances are sleeping
+      //tag0=0;
+      tagL[c0]=1;
+    }
+    else tagL[c0]=-1;
+  }
+  //set the instance dispatching pointer
+  c0=0;
+  //set the stop sign to 0
+  tag0=-1;
+  //loop : first round, initializer
+  //for(c0=0)
+  //loop : start
+  while(tagStop)
+  {
+    //assume stop at next round
+    tag0=~tag0;
+    //loop1:add the marked dot into group
+    for(c1=0;c1<listInstanceSize;c1++)
+    {
+      //find it with value 1
+      if(tagL[c1]==1)
+      {
+        //found one
+        //add them to the group
+        //here is the adding section(link list operation)
+        if(executionGroup[c0].start)
+        {
+          IMLList *auxptr;
+          //there has been at least one element in it
+          auxptr = executionGroup[c0].list->next;
+          executionGroup[c0].list->next = malloc(sizeof(IMLList));
+          executionGroup[c0].list->next->next = auxptr;
+          executionGroup[c0].list->next->instance = &listInstance[c1];
+        }
+        else
+        {
+          //this mounter is rookie
+          executionGroup[c0].start = malloc(sizeof(IMLList));
+          executionGroup[c0].list = executionGroup[c0].start;
+          executionGroup[c0].start->instance = &listInstance[c1];
+          executionGroup[c0].start->next = executionGroup[c0].start;
+        }
+        //move the execution group cursor
+        c0++;
+        c0%=NUM_E_THREAD;
+      }
+    }
+    //loop2:find new element
+    for(c1=0;c1<listInstanceSize;c1++)
+    {
+      //find elem with 1
+      if(tagL[c1]==1)
+      {
+        //if there are something in the trigger list
+        if(triggerList[c1].number)
+        {
+          //loop, modify the trigger list
+          int c2;
+          for(c2=0;c2<triggerList[c1].number;c2++)
+          {
+            //if the instance is new, set it to 1
+            if(tag[triggerList[c1].list[c2]]==-1)
+            {
+              //set it to 1
+              tag[triggerList[c1].list[c2]]=1;
+              tag0=~tag0;
+            }
+          }
+        }
+        //set it self to 0
+        tagL[c1]==0;
+      }
+    }
+  }
 }
 void VMStartUp()
 {
