@@ -527,7 +527,7 @@ void dispatcher()
   //loop : first round, initializer
   //for(c0=0)
   //loop : start
-  while(tagStop)
+  while(tag0)
   {
     //assume stop at next round
     tag0=~tag0;
@@ -576,10 +576,10 @@ void dispatcher()
           for(c2=0;c2<triggerList[c1].number;c2++)
           {
             //if the instance is new, set it to 1
-            if(tag[triggerList[c1].list[c2]]==-1)
+            if(tagL[triggerList[c1].list[c2]]==-1)
             {
               //set it to 1
-              tag[triggerList[c1].list[c2]]=1;
+              tagL[triggerList[c1].list[c2]]=1;
               tag0=~tag0;
             }
           }
