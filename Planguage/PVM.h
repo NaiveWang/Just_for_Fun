@@ -105,4 +105,5 @@ void *execDebug(void* no);
 void *execNormal();
 void dispatcher();
 void VMStartUp();
+void *VMHalt();
 #endif

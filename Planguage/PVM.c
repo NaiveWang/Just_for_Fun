@@ -545,6 +545,7 @@ void dispatcher()
           IMLList *auxptr;
           //there has been at least one element in it
           auxptr = executionGroup[c0].list->next;
+          executionGroup[c0].INumber++;
           executionGroup[c0].list->next = malloc(sizeof(IMLList));
           executionGroup[c0].list->next->next = auxptr;
           executionGroup[c0].list->next->instance = &listInstance[c1];
@@ -552,6 +553,7 @@ void dispatcher()
         else
         {
           //this mounter is rookie
+          executionGroup[c0].INumber++;
           executionGroup[c0].start = malloc(sizeof(IMLList));
           executionGroup[c0].list = executionGroup[c0].start;
           executionGroup[c0].start->instance = &listInstance[c1];
@@ -592,7 +594,21 @@ void dispatcher()
 }
 void VMStartUp()
 {
-  int r=0;
-  pthread_create(&executionThread[0],NULL,execDebug,&r);
-  pthread_join(executionThread[0],NULL);
+  //loop :
+  int a0;
+  //check each thread dispatcher,
+  //create the thread which has non-zero list
+  for(a0=0;a0<NUM_E_THREAD;a0++)
+  {
+    //check each group
+    if(executionGroup[a0].INumber)
+    {
+      //run the thread!
+      pthread_create(&executionThread[a0],NULL,execNormal,&executionGroup[a0]);
+    }
+  }
+}
+void *VMHalt()
+{
+  //kill all of the thread
 }
