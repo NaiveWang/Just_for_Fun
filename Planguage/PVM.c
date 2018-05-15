@@ -1,10 +1,10 @@
 #include "PVM.h"
-void *mutexT()
+void *runtimeHandler()
 {
   for(;;)
   {
     //wait for the handler lock
-    pthread_mutex_lock(&MtxHdllock);
+    pthread_mutex_lock(&rtLock);
     //wait the mutex of queue
     pthread_mutex_lock(&qLock);
     //do the job
@@ -96,7 +96,7 @@ void *mutexT()
     //unlock mutex
     pthread_mutex_unlock(&qLock);
     //ground self
-    pthread_mutex_lock(&MtxHdllock);
+    pthread_mutex_lock(&rtLock);
   }
 }
 void mutexTinit()
@@ -105,11 +105,11 @@ void mutexTinit()
   queueH=queueT=0;
   //set lock?
   pthread_mutex_init(&qLock,NULL);
-  pthread_mutex_init(&MtxHdllock,NULL);
+  pthread_mutex_init(&rtLock,NULL);
   //lock the handler lock
-  pthread_mutex_lock(&MtxHdllock);
+  pthread_mutex_lock(&rtLock);
   //create the thread
-  pthread_create(&mutexHandler,NULL,mutexT,NULL);
+  pthread_create(&runtimeT,NULL,runtimeHandler,NULL);
 }
 void VMReadFile(char *file)
 {
@@ -151,6 +151,8 @@ void VMReadFile(char *file)
     listInstance[c0].PID = &listInstance[c0];
     listInstance[c0].status = VMpe->processorInstances[c0].initStatus;
     listInstance[c0].eflag = 0;
+    listInstance[c0].triggerVal=0;
+    listInstance[c0].currentVal=0;
     //allocate data space!
     listInstance[c0].data=malloc(
       VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].stack0Size+
@@ -210,21 +212,6 @@ void VMReadFile(char *file)
         //read global data
       }
     }
-    //initialize the constrtaint
-    //1.allocate a map
-    constraintMap = malloc(VMpe->processorInstanceNUM * VMpe->processorInstanceNUM);
-    //set the block to zero
-    memset(constraintMap,0,VMpe->processorInstanceNUM * VMpe->processorInstanceNUM);
-    for(c0=0;c0<VMpe->constraintNum;c0++)
-    {
-      static int c1;
-      for(c1=0;c1<VMpe->constraintList[c0].nodeSNum;c1++)
-      {
-        //heris the descent one
-        constraintMap[SEEK_TABLE(VMpe->constraintList[c0].nodeSNoList[c1],VMpe->constraintList[c0].nodeDNo,VMpe->processorInstanceNUM)] = 1;
-      }
-    }
-    //well done
   }
   //Connections
   for(c0=0;c0<VMpe->connectionMappingNum;c0++)
@@ -247,6 +234,32 @@ void VMReadFile(char *file)
     *(void**)(listInstance[VMpe->connectionMapping[c0].nodeSNo].data + VMpe->connectionMapping[c0].nodeSPort * sizeof(void*))=addr;
   }
   //constraint
+  //initialize the constrtaint
+  //1.allocate a map
+  triggerList = malloc(VMpe->processorInstanceNUM*sizeof(tgr));
+  //set the block to zero
+  //memset(constraintMap,0,VMpe->processorInstanceNUM * VMpe->processorInstanceNUM);
+  //set the initlalized val to zero
+  for(c0=0;c0<VMpe->processorInstanceNUM;c0++)
+  {
+    //set each trigger number to zero
+    triggerList[c0].number=0;
+    triggerList[c0].list = NULL;
+  }
+  for(c0=0;c0<VMpe->constraintNum;c0++)
+  {
+    static int c1;
+    //put the number into
+    triggerList[VMpe->constraintList[c0].nodeDNo].number = VMpe->constraintList[c0].nodeSNum;
+    triggerList[VMpe->constraintList[c0].nodeDNo].list = malloc(sizeof(int) * VMpe->constraintList[c0].nodeSNum);
+    for(c1=0;c1<VMpe->constraintList[c0].nodeSNum;c1++)
+    {
+      //heris the descent one
+      triggerList[VMpe->constraintList[c0].nodeDNo].list[c1] = VMpe->constraintList[c0].nodeSNoList[c1];
+      listInstance[VMpe->constraintList[c0].nodeSNoList[c1]].triggerVal++;
+    }
+  }
+  //well done
 }
 void debugVM(PBase *p,int howManyStack0Elem)
 {
@@ -302,7 +315,7 @@ void *execNormal(void *initPointer)
   int performance=INITIAL_PERFORMANCE_VAL;//how much step run on each instance
   int delay;//this attrbute means sleep how many ms for each circle scan
   IME *instanceMountingList;
-  int a0;//a1;
+  int a0,a1=0;
 
   //initialize the list pointer
   instanceMountingList = (IME*)initPointer;
@@ -337,7 +350,17 @@ void *execNormal(void *initPointer)
             break;
           case PROCESSOR_STATUS_SUSPENDED:
             //instance was suspended
-            //call the suspended handler
+            //call the trigger handler
+            pthread_mutex_lock(&qLock);
+            //write the queue
+            queueH++;
+            queueH %= M_WAITING_LIST_SIZE;
+            waitingQueue[queueH].pid = instanceMountingList->list->instance;
+            waitingQueue[queueH].mTarget = (mutex*)instanceMountingList->list->instance->exAddr;
+            waitingQueue[queueH].opTyp = TRIGGER;
+            //awake the mutex handler
+            pthread_mutex_unlock(&rtLock);
+            pthread_mutex_unlock(&qLock);
             a0=-1;
             break;
           case PROCESSOR_STATUS_REBOOT:
@@ -357,7 +380,7 @@ void *execNormal(void *initPointer)
             waitingQueue[queueH].mTarget = (mutex*)instanceMountingList->list->instance->exAddr;
             waitingQueue[queueH].opTyp = MTX_HDL_TYP_WAIT;
             //awake the mutex handler
-            pthread_mutex_unlock(&MtxHdllock);
+            pthread_mutex_unlock(&rtLock);
             pthread_mutex_unlock(&qLock);
             a0=-1;
             break;
@@ -371,7 +394,7 @@ void *execNormal(void *initPointer)
             waitingQueue[queueH].mTarget = (mutex*)instanceMountingList->list->instance->exAddr;
             waitingQueue[queueH].opTyp = MTX_HDL_TYP_TEST;
             //awake the mutex handler
-            pthread_mutex_unlock(&MtxHdllock);
+            pthread_mutex_unlock(&rtLock);
             pthread_mutex_unlock(&qLock);
             a0=-1;
             break;
@@ -385,7 +408,7 @@ void *execNormal(void *initPointer)
             waitingQueue[queueH].mTarget = (mutex*)instanceMountingList->list->instance->exAddr;
             waitingQueue[queueH].opTyp = MTX_HDL_TYP_LEAVE;
             //awake the mutex handler
-            pthread_mutex_unlock(&MtxHdllock);
+            pthread_mutex_unlock(&rtLock);
             pthread_mutex_unlock(&qLock);
             a0=-1;
             break;
@@ -398,12 +421,21 @@ void *execNormal(void *initPointer)
         //increase performance
         if(performance < MAX_PERFORMANCE_VAL)
           performance+=INITIAL_PERFORMANCE_VAL;
+        a1=0;
       }
       else
       {
         //bump
         //set the performance to start
         performance = INITIAL_PERFORMANCE_VAL;
+        a1++;
+        if(a1==instanceMountingList->INumber)
+        {
+          //all processor are idle
+          //set the performance to 0, goto the sleep section
+          performance = 0;
+          delay = INITIAL_DELAY_VAL;
+        }
       }
       instanceMountingList->list = instanceMountingList->list->next;
       //TO DO : count the idle instance here

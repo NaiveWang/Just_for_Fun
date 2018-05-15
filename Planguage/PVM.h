@@ -54,12 +54,18 @@ typedef struct haltInformations
 #define MTX_HDL_TYP_WAIT 0
 #define MTX_HDL_TYP_TEST 1
 #define MTX_HDL_TYP_LEAVE 2
+#define TRIGGER 3
 typedef struct mutexHandlerWaitingQueue
 {
   PBase *pid;
   int opTyp;
   mutex *mTarget;
 }MHQ;
+typedef struct triggerListElement
+{
+  int number;
+  int *list;
+}tgr;
 /** Global Section **/
 //necassary sole data
 PExe *VMpe;
@@ -73,28 +79,29 @@ PBase *listInstance;
 //halt
 hInfo haltInfo;
 //mutex handler global
-pthread_mutex_t MtxHdllock;
+pthread_mutex_t rtLock;
 pthread_mutex_t qLock;
 int queueH,queueT;
 MHQ waitingQueue[M_WAITING_LIST_SIZE];
 //thread pool
-pthread_t haltHandler;
+pthread_t haltT;
 pthread_t constraintHandler;
-pthread_t mutexHandler;
+pthread_t runtimeT;
 pthread_t executionThread[NUM_E_THREAD];
 IME executionGroup[NUM_E_THREAD];
 //global variables
-char *constraintMap;
+tgr *triggerList;
 //Statistic Data
 /** utility functions **/
 /** mutex **/
 void mutexTinit();
-void *mutexT();
+void *runtimeHandler();
 /** Functions **/
 void VMReadFile(char *file);
 void debugVM(PBase *p,int howManyStack0Elem);
 void *execDebug(void* no);
 void *execNormal();
 void *awaker();
+void dispatcher();
 void VMStartUp();
 #endif
