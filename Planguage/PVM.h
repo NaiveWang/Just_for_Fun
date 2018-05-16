@@ -92,7 +92,7 @@ MHQ mutexHandlerArg;
 //thread pool
 pthread_t haltT;
 //pthread_t constraintHandler;
-pthread_t runtimeT;
+pthread_t mutexT;
 pthread_t executionThread[NUM_E_THREAD];
 IME executionGroup[NUM_E_THREAD];
 //global variables
@@ -103,7 +103,7 @@ int errno;
 /** utility functions **/
 /** mutex **/
 //void mutexTinit();
-void *runtimeHandler();
+void *mutexHandler();
 /** Functions **/
 void VMReadFile(char *file);
 void debugVM(PBase *p,int howManyStack0Elem);

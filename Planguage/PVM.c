@@ -1,5 +1,5 @@
 #include "PVM.h"
-void *runtimeHandler()
+void *mutexHandler()
 {
   /*int c0,c1;
   for(;;)
@@ -883,7 +883,9 @@ void VMStartUp()
   pthread_mutex_lock(&haltExecLock);
   pthread_mutex_init(&triggerLock,NULL);
   pthread_mutex_init(&rtLock,NULL);
+  pthread_mutex_init(&rtExecLock,NULL);
   pthread_create(&haltT,NULL,VMHalt,NULL);
+  pthread_create(&mutexT,NULL,mutexHandler,NULL);
   pthread_join(haltT,NULL);
 }
 void *VMHalt()
