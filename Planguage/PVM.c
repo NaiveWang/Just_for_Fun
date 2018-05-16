@@ -613,6 +613,7 @@ void VMStartUp()
   pthread_mutex_init(&haltLock,NULL);
   pthread_mutex_lock(&haltLock);
   pthread_create(&haltT,NULL,VMHalt,NULL);
+  pthread_join(haltT,NULL);
 }
 void *VMHalt()
 {

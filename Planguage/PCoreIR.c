@@ -1066,7 +1066,7 @@ void (*InstructionSet[])(PBase *p) = {
   OPINCB,OPINCI,OPDECB,OPDECI,
   OPSHLB,OPSHLI,OPSHRB,OPSHRI,OPSARB,OPSARI
 };
-const int pir_n=18;
+const int pir_n=75;
 IR pir[]={
   {6,"SYS"},{2,"HALT"},{2,"SUSPEND"},{2,"REBOOT"},
   {3,"MUTW"},{3,"MUTL"},{3,"MUTT"},

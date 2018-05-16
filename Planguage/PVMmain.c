@@ -14,6 +14,7 @@ int main(int argv,char **argc)
   clearFile(VMpe,CODE_RESERVED);
   printf("execution file loaded.\n");
   dispatcher();
+  mutexTinit();
   VMStartUp();
   return 0;
 }
