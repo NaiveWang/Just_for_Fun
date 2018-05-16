@@ -355,6 +355,7 @@ void *execNormal(void *initPointer)
       while(a0)
       {
         //loop enabled block
+        debugVM(instanceMountingList->list->instance,2);
         switch(instanceMountingList->list->instance->status)
         {
           case PROCESSOR_STATUS_RUNNING:
@@ -566,6 +567,16 @@ void dispatcher()
         c0%=NUM_E_THREAD;
       }
     }
+    /**debug section start**
+    //print the tag list
+    for(c1=0;c1<listInstanceSize;c1++)
+    {
+      //print each tag of them
+      printf("%d/",tagL[c1]);
+    }
+    //round mark
+    printf("\n");
+    /**debug section ended**/
     //loop2:find new element
     for(c1=0;c1<listInstanceSize;c1++)
     {
@@ -573,24 +584,31 @@ void dispatcher()
       if(tagL[c1]==1)
       {
         //if there are something in the trigger list
+        //printf("%d!%d!%d!%d\n",*tagL,tagL[1],tagL[2],tagL[3]);
+        //set it self to 0
+        tagL[c1]=0;
         if(triggerList[c1].number)
         {
           //loop, modify the trigger list
           int c2;
           for(c2=0;c2<triggerList[c1].number;c2++)
           {
+            //printf("%dWTF\n",tagL[triggerList[c1].list[c2]]);
             //if the instance is new, set it to 1
             if(tagL[triggerList[c1].list[c2]]==-1)
             {
               //set it to 1
-              tagL[triggerList[c1].list[c2]]=1;
-              tag0=~tag0;
+              tagL[triggerList[c1].list[c2]]=2;
+              tag0=-1;
             }
           }
         }
-        //set it self to 0
-        tagL[c1]==0;
       }
+    }
+    //loop 3 : set all the new fellow to the formal state
+    for(c1=0;c1<listInstanceSize;c1++)
+    {
+      if(tagL[c1]==2) tagL[c1]--;
     }
   }
 }
@@ -683,6 +701,12 @@ void debugPrintConstraint()
 {
   //debug section
   int a0,a1;
+  //print all of the instance firstly
+  for(a0=0;a0<listInstanceSize;a0++)
+  {
+    //print each address of the instance
+    printf("No.%d/%ld\n",a0,(long)&listInstance[a0]);
+  }
   for(a0=0;a0 < listInstanceSize;a0++)
   {
     //print each instance
@@ -704,10 +728,11 @@ void debugPrintMountingList()
     printf("Group %d/%d:",a0,executionGroup[a0].INumber);
     if(executionGroup[a0].INumber)
     {
-      executionGroup[a0].list = executionGroup[a0].start->next;
+      executionGroup[a0].list = executionGroup[a0].start;
       do
       {
         /* code */
+        executionGroup[a0].list = executionGroup[a0].list->next;
         printf("%ld/",(long)executionGroup[a0].list->instance);
       }
       while(executionGroup[a0].list - executionGroup[a0].start);
