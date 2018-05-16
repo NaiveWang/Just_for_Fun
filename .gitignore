@@ -97,3 +97,5 @@ Planguage/PAssembler
 Others/test_file_recursive
 
 *.pe
+
+Others/testSignal
