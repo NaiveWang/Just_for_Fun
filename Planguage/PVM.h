@@ -103,6 +103,8 @@ void *runtimeHandler();
 /** Functions **/
 void VMReadFile(char *file);
 void debugVM(PBase *p,int howManyStack0Elem);
+void debugPrintConstraint();
+void debugPrintMountingList();
 void *execDebug(void* no);
 void *execNormal();
 void dispatcher();

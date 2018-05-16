@@ -679,3 +679,40 @@ void releaseMemory()
   }
   free(listInstance);
 }
+void debugPrintConstraint()
+{
+  //debug section
+  int a0,a1;
+  for(a0=0;a0 < listInstanceSize;a0++)
+  {
+    //print each instance
+    printf("No.%d/%d:",a0,triggerList[a0].number);
+    for(a1=0;a1<triggerList[a0].number;a1++)
+    {
+      printf("%d/",triggerList[a0].list[a1]);
+    }
+    printf("\n");
+  }
+}
+void debugPrintMountingList()
+{
+  //print all of the mounting table
+  int a0,a1;
+  for(a0=0;a0<NUM_E_THREAD;a0++)
+  {
+    //each mounting group
+    printf("Group %d/%d:",a0,executionGroup[a0].INumber);
+    if(executionGroup[a0].INumber)
+    {
+      executionGroup[a0].list = executionGroup[a0].start->next;
+      do
+      {
+        /* code */
+        printf("%ld/",(long)executionGroup[a0].list->instance);
+      }
+      while(executionGroup[a0].list - executionGroup[a0].start);
+    }
+    //view all of the element
+    printf("\n");
+  }
+}

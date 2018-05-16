@@ -13,7 +13,9 @@ int main(int argv,char **argc)
   //checkStructure(VMpe);
   clearFile(VMpe,CODE_RESERVED);
   printf("execution file loaded.\n");
+  debugPrintConstraint();
   dispatcher();
+  debugPrintMountingList();
   printf("dispatching finished\n");
   mutexTinit();
   printf("mutex finished\n");
