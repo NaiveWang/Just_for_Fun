@@ -639,5 +639,41 @@ void handlerSegFault(int a)
 {
   //signal();
   printf("bad behavor while accessing memory.\n");
-  //call the 
+  //call the exit thread
+  pthread_mutex_unlock(&haltLock);
+  pthread_join(haltT,NULL);
+  releaseMemory();
+  exit(-1);
+}
+void releaseMemory()
+{
+  //assume that vmpe has already released
+  //free code section
+  int a0,a1;
+  for(a0=0;a0<listCodeSize;a0++)
+    free(listCode[a0]);
+  free(listCode);
+  for(a0=0;a0<listMutexSize;a0++)
+  {
+    //free data section
+    free(listMutex[a0].content);
+    //free the waiting list, if it exist
+    while(listMutex[a0].waitList)
+    {
+      waitL* p = listMutex[a0].waitList;
+      listMutex[a0].waitList = listMutex[a0].waitList->next;
+      free(p);
+    }
+  }
+  free(listMutex);
+  //instance
+  for(a0=0;a0<listInstanceSize;a0++)
+  {
+    //free data section
+    free(listInstance[a0].data);
+    //trigger list inner data
+    if(triggerList[a0].number)
+      free(triggerList[a0].list);
+  }
+  free(listInstance);
 }

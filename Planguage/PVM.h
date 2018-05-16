@@ -109,4 +109,5 @@ void dispatcher();
 void VMStartUp();
 void *VMHalt();
 void handlerSegFault(int);
+void releaseMemory();
 #endif
