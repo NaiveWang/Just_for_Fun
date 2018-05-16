@@ -1,46 +1,31 @@
 
 .processor  test 8 256 1000
-.data
-I 33333333,2222222,11111
-S 90
-R 12,13.66,123.758
-I 1,2,3,4,5,6,7,8,9,11,20
-C "glgjssykjdnvkjnsklamlscnmlk"
 .code
-#S
 PUSH0I8 I 10000
-PUSH0I8 I 20000
+#S
+
+PUSH0I8 I 1
 ;PUSH08 1:0
-JUMP #abc
-POP08 1:0
+OPADDI
 #abc
 JUMP #S
 .processor test1 8 512 1024
-.data
-I 1,2,3,4,5
-O 30
-I F  10 3,2,1
-S 12
-C L 10 "123","ioksjndc"
-C L 10 F 5 "jisndci","kjsndicnb","ksjbdcihujhuisnciabc","098"
-I 3,2,1
 .code
 #START
 PUSH0I8 I 345
-PUSH0I8 R 123.345
 JUMP #abc
-OPADDI
+PUSH0I8 I 1
+OPIMULI
 #abc
-JMPC 0 START
-.instance a test R
-
-;I 12233,2,3
-.instance aa test1 R
-.data
-I 1,2,3,4,5
-O 30
-I F  10 3,2,1
-S 12
-C L 10 "123","ioksjndc"
-C L 10 F 5 "jisndci","kjsndicnb","ksjbdcihujhuisnciabc","098"
-I 3,2,1
+JUMP #START
+.instance i1 test R
+.instance i2 test1 S
+.instance i3 test R
+.instance i4 test S
+.mutex m1 1000
+.mutex m2 1000
+.mutex m3 1000
+.mutex m4 1000
+.mutex m5 1000
+.constraint i1 i2,i3,i4
+.connection i1 255 m1

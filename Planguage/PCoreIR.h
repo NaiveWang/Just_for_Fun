@@ -6,6 +6,7 @@
 #include "PCoreBase.h"
 #include <string.h>
 #include <stdio.h>
+#define INSTRUCTION_VERSION 2
 //instructions
 //template: void <NAME>(PBase)
 /** key word define **/

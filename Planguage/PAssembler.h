@@ -184,7 +184,8 @@ int main(int argv,char** argc)
   for(;;)
   {
     //parse with status
-    //printf("parsing line:%d\n",parseLine);
+    //printf("parsing line:%d,%d\n",parseLine,parsingStatus);
+    //getchar();
     switch(parsingStatus)
     {
       case PS_START:parseStart();break;

@@ -49,9 +49,10 @@ int strCopy(char *s,char *d)
 {
   static int a0;
   a0=0;
-  while((*s != '\n')&&(*s != ' ')&&(*s != '\t')&&(*s != ';')&&(*s != ','))
+  //printf("&%s&\n",s);
+  while((*s != '\n')&&(*s != ' ')&&(*s != '\t')&&(*s != ';')&&(*s != ','&&(*s != '\0')))
   {
-    //printf("%d/",a0);
+    //printf("%d/",*s);
     *d = *s;
     d++;
     s++;
@@ -494,6 +495,7 @@ void parseProcessorData()
   //printf("@%d",a1);
   if(!a1)
   {
+    errno = 9;
     return;
   }
   //allocate space
@@ -1065,16 +1067,18 @@ void parseConstraint()
   skipWhitespace();
   inputBufferPointer+=strCopy(inputBuffer+inputBufferPointer,identifierBuffer);//printf("$$$%d$$$\n",sListNum);
   pe->constraintList[sListNum].nodeDNo = matchIdentifier(iNameList,iListNum);
-  pe->constraintList[sListNum].nodeSNum = countI();
+  pe->constraintList[sListNum].nodeSNum = countI();//printf("$%d\n",pe->constraintList[sListNum].nodeSNum);
   pe->constraintList[sListNum].nodeSNoList = malloc(sizeof(int) * pe->constraintList[sListNum].nodeSNum);
   for(a0=0;a0<pe->constraintList[sListNum].nodeSNum;a0++)
   {
     //get the beginning
     skipWhitespace();
+    //printf("#%s#\t#%s#\n",identifierBuffer,inputBuffer+inputBufferPointer);
     inputBufferPointer+=strCopy(inputBuffer+inputBufferPointer,identifierBuffer);
     pe->constraintList[sListNum].nodeSNoList[a0] = matchIdentifier(iNameList,iListNum);
     skipWhitespace();
     inputBufferPointer++;
+    //printf("$%s$\t$%s$\n",identifierBuffer,inputBuffer+inputBufferPointer);
   }
   sListNum++;
   if(readLine())

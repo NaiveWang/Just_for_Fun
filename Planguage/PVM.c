@@ -606,6 +606,7 @@ void VMStartUp()
     if(executionGroup[a0].INumber)
     {
       //run the thread!
+      printf("creating %d ...\n",a0);
       pthread_create(&executionThread[a0],NULL,execNormal,&executionGroup[a0]);
     }
   }
