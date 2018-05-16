@@ -11,8 +11,8 @@ OPADDI
 JUMP #S
 .processor test1 8 512 1024
 .code
-#START
 PUSH0I8 I 345
+#START
 JUMP #abc
 PUSH0I8 I 1
 OPIMULI
@@ -20,7 +20,7 @@ OPIMULI
 JUMP #START
 .instance i1 test R
 .instance i2 test1 S
-.instance i3 test R
+.instance i3 test S
 .instance i4 test S
 .mutex m1 1000
 .mutex m2 1000

@@ -9,6 +9,7 @@ void *runtimeHandler()
     //wait the mutex of queue
     pthread_mutex_lock(&qLock);
     //do the job
+    printf("Handling!!!%d %d\n",queueH,queueT);
     while(queueH-queueT)
     {
       //some thing on queue handle one node of it
@@ -91,7 +92,8 @@ void *runtimeHandler()
         case TRIGGER:
         //handle with trigger
           //add the value into every next processor
-          for(c0=0;&listInstance[c0]==waitingQueue[queueT].pid;c0++);
+          printf("OOO");
+          for(c0=0;&listInstance[c0]!=waitingQueue[queueT].pid;c0++);
           //modify related instance trigger value
           for(c1=0;c1<triggerList[c0].number;c1++)
           {
@@ -99,6 +101,7 @@ void *runtimeHandler()
             listInstance[triggerList[c0].list[c1]].currentVal++;
           }
           //loop : scan the instances
+
           for(c0=0;c0<listInstanceSize;c0++)
           {
             //condition : suspended/match the value
@@ -121,6 +124,7 @@ void *runtimeHandler()
     pthread_mutex_unlock(&qLock);
     //ground self
     pthread_mutex_lock(&rtLock);
+    printf("handler ended\n");
   }
 }
 void mutexTinit()
@@ -288,24 +292,25 @@ void VMReadFile(char *file)
 void debugVM(PBase *p,int howManyStack0Elem)
 {
   long* stack0p;
-  printf("VM Debug Start\t");
+  printf("\nVM Debug Start\t");
   printf("ProcessorID:%lu ",(unsigned long)p);
   printf("Next Instruction P:%lx No:%hu\n",(long)p->pc,*(unsigned short*)p->pc);
   printf("Current Status:%x ",p->status);
-  printf("Current Flag:%x\n",p->eflag);
+  printf("Current Flag:%x ",p->eflag);
   printf("datapointer : %lx \n",(long)(p->data));
+  printf("Jumping val(maybe)%ld\n",*(long*)(p->pc+2));
   //printf("self0pointer:%lx \n",*(long*)(p->data));
   //PRINTADDR(*(long*)p->data);
   //printf("Stack0pointer : %lx \n",*(long*)(p->data + POINTER_STACK0));
   stack0p=(long*)*(long*)(p->data + POINTER_STACK0);
   printf("stack0TopValue :%lx:%lx:%ld/%lx/%ld\n",*(long*)(p->data+8),(long)stack0p,*(stack0p-1),*(stack0p-1),*(stack0p-1));
-  printf("##%ld\n", *(long*)(p->data+40));
+  printf("##%ld\t", *(long*)(p->data+40));
   /*while(howManyStack0Elem--)
   {
     printf("stack0:%lx\n",*stack0p);
     stack0p--;
   }*/
-  printf("VM Debug End\n");
+  printf("\nVM Debug End\n");
 }
 void *execDebug(void* no)
 {
@@ -347,19 +352,21 @@ void *execNormal(void *initPointer)
   {//the execution step
     //check the info of performance
     //branch:idle or active
+    printf("P:%d\n\n",performance);
     if(performance)
     {
+      printf("running id : %ld\n",*(long*)instanceMountingList->list->instance);
       //active section
       //execute current instance, switch
       a0=performance;//resource counter
       while(a0)
       {
         //loop enabled block
-        debugVM(instanceMountingList->list->instance,2);
         switch(instanceMountingList->list->instance->status)
         {
           case PROCESSOR_STATUS_RUNNING:
             //running
+            //debugVM(instanceMountingList->list->instance,2);
             executionOneStep(instanceMountingList->list->instance);
             a0--;
             break;
@@ -380,11 +387,11 @@ void *execNormal(void *initPointer)
             //call the trigger handler
             pthread_mutex_lock(&qLock);
             //write the queue
-            queueH++;
-            queueH %= M_WAITING_LIST_SIZE;
             waitingQueue[queueH].pid = instanceMountingList->list->instance;
             waitingQueue[queueH].mTarget = NULL;
             waitingQueue[queueH].opTyp = TRIGGER;
+            queueH++;
+            queueH %= M_WAITING_LIST_SIZE;
             //awake the mutex handler
             pthread_mutex_unlock(&rtLock);
             pthread_mutex_unlock(&qLock);
@@ -470,6 +477,7 @@ void *execNormal(void *initPointer)
     else
     {
       /*idle section*/
+      usleep(delay);printf("thread is slept\n");
       //loop : check the the list if exist one that is runnnig
       instanceMountingList->start = instanceMountingList->list;
       for(;;)

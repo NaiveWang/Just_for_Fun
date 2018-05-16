@@ -10,10 +10,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <unistd.h>
 #include "PCore.h"
 #include "PFile.h"
 #include "PVMAPILib.h"
-#define NUM_E_THREAD 2
+#define NUM_E_THREAD 1
 #define M_WAITING_LIST_SIZE 256
 #define INITIAL_PERFORMANCE_VAL 32
 #define INITIAL_DELAY_VAL 2

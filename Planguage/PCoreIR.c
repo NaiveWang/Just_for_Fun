@@ -486,13 +486,16 @@ void JUMP(PBase *p)
   asm("movq %0,%%rcx"::"r"(p->pc));
   //get offset
   //asm("movq (%rcx),%rax");
-  asm("movq 2(%rcx),%rax");
+  asm("movq 2(%rcx),%r8");
   //offset in the %rax, add it to the pc
   //asm("movq %rcx,%rbx");
   //asm("addq $10,%rax");
   //asm("addq %rax,%rbx");
-  asm("addq %%rax,%0":"=r"(p->pc));//printf("$%ld$\n",p->debugBuffer);
   //p->pc+=p->debugBuffer;
+  //asm("movq %0,%%rcx"::"r"(p->pc));
+  asm("addq %r8,%rcx");
+  asm("movq %%rcx,%0":"=r"(p->pc));
+  //printf("$%lx$%ld$\n",p->debugBuffer,p->debugBuffer);
 }
 void JMPC(PBase *p)
 {
