@@ -1,7 +1,7 @@
 #include "PVM.h"
 void *runtimeHandler()
 {
-  int c0,c1;
+  /*int c0,c1;
   for(;;)
   {
     //wait for the handler lock
@@ -116,7 +116,7 @@ void *runtimeHandler()
               listInstance[c0].currentVal = 0;
             }
           }
-          break;*/
+          break;
         default : ;//error halt;
       }
       //delete one of the node
@@ -128,19 +128,101 @@ void *runtimeHandler()
     //ground self
     pthread_mutex_lock(&rtLock);
     printf("handler ended\n");
+  }*/
+  //here is the new one
+  for(;;)
+  {
+      //infinite loop
+      //get the execution permission
+      pthread_mutex_lock(&rtExecLock);
+      //do the job
+      //read arguments global arguments
+      switch(mutexHandlerArg.opTyp)
+      {
+          case MTX_HDL_TYP_WAIT:
+            //test the mutex status
+            if(mutexHandlerArg.mTarget->lock==NULL)
+            {
+                //can take over
+                //take over
+                mutexHandlerArg.mTarget->lock=mutexHandlerArg.pid;
+                //set status to running
+                mutexHandlerArg.pid->status=PROCESSOR_STATUS_RUNNING;
+                mutexHandlerArg.pid->performance=INITIAL_PERFORMANCE_VAL;
+            }
+            else
+            {
+                //need wait, put it on the waiting list
+                //list is empty?
+                if(mutexHandlerArg.mTarget->waitList==NULL)
+                {
+                    //empty, set the first element
+                    mutexHandlerArg.mTarget->waitList = malloc(sizeof(waitL));
+                    mutexHandlerArg.mTarget->waitList->next=NULL;
+                    mutexHandlerArg.mTarget->waitList->pid=mutexHandlerArg.pid;
+                }
+                else
+                {
+                    //find the tail
+                    waitL *p = mutexHandlerArg.mTarget->waitList;
+                    while(p->next) p=p->next;
+                    p->next = malloc(sizeof(waitL));
+                    p->next->next=NULL;
+                    p->next->pid=mutexHandlerArg.pid;
+                }
+            }
+            break;
+          case MTX_HDL_TYP_TEST:
+            //test if it has been take over
+            if(mutexHandlerArg.mTarget->lock==NULL)
+            {
+                //can take over
+                //take over
+                mutexHandlerArg.mTarget->lock=mutexHandlerArg.pid;
+                //set flag to -1
+                mutexHandlerArg.pid->eflag=-1;
+            }
+            else
+            {
+                //can not take over
+                //set flag to 0
+                mutexHandlerArg.pid->eflag=0;
+            }
+            //no matter what happened, set status to running
+            mutexHandlerArg.pid->status=PROCESSOR_STATUS_RUNNING;
+            mutexHandlerArg.pid->performance=INITIAL_PERFORMANCE_VAL;
+            break;
+          case MTX_HDL_TYP_LEAVE:
+              //set the master instance's status to running
+              mutexHandlerArg.pid->status=PROCESSOR_STATUS_RUNNING;
+              mutexHandlerArg.pid->performance=INITIAL_PERFORMANCE_VAL;
+              //look up the list(branch)
+              if(mutexHandlerArg.mTarget->waitList==NULL)
+              {
+                  //waiting list empty
+                  //just set lock to empty
+                  mutexHandlerArg.mTarget->lock=NULL;
+              }
+              else
+              {
+                  waitL *p=mutexHandlerArg.mTarget->waitList;
+                  //someone are waiting
+                  //put the guy to lock
+                  mutexHandlerArg.mTarget->lock=p->pid;
+                  mutexHandlerArg.mTarget->waitList = p->next;
+                  //set this guy running
+                  p->pid->status=PROCESSOR_STATUS_RUNNING;
+                  p->pid->performance=INITIAL_PERFORMANCE_VAL;
+                  //release memory
+                  free(p);
+              }
+              break;
+          default:;//awake error handler
+      }
+      //release the mutex
+      pthread_mutex_unlock(&rtLock);
   }
-}
-void mutexTinit()
-{
-  //init the queue
-  queueH=queueT=0;
-  //set lock?
-  pthread_mutex_init(&qLock,NULL);
-  pthread_mutex_init(&rtLock,NULL);
-  //lock the handler lock
-  pthread_mutex_lock(&rtLock);
-  //create the thread
-  pthread_create(&runtimeT,NULL,runtimeHandler,NULL);
+  //
 }
 void VMReadFile(char *file)
 {
@@ -595,7 +677,7 @@ void *execNormal(void *initPointer)
         switch(instanceMountingList->list->instance->status)
         {
           case PROCESSOR_STATUS_HALT:
-            pthread_mutex_unlock(&haltLock);
+            pthread_mutex_unlock(&haltExecLock);
             errno=0;
             return NULL;
             break;
@@ -606,45 +688,48 @@ void *execNormal(void *initPointer)
               if(listInstance[instanceMountingList->list->instance->triggerList[a0]].status == PROCESSOR_STATUS_SUSPENDED)
               {
                 //suspended & was the chosen one
+                //here is the mutex section
+                pthread_mutex_lock(&triggerLock);
                 listInstance[instanceMountingList->list->instance->triggerList[a0]].status = PROCESSOR_STATUS_RUNNING;
+                pthread_mutex_unlock(&triggerLock);
               }
             }
             break;
           //case PROCESSOR_STATUS_REBOOT:break;
           case PROCESSOR_STATUS_MWAIT:
-            pthread_mutex_lock(&qLock);
-            queueH++;
-            queueH %= M_WAITING_LIST_SIZE;
-            waitingQueue[queueH].pid = instanceMountingList->list->instance;
-            waitingQueue[queueH].mTarget = (mutex*)instanceMountingList->list->instance->exAddr;
-            waitingQueue[queueH].opTyp = MTX_HDL_TYP_WAIT;
+            pthread_mutex_lock(&rtLock);
+            //queueH++;
+            //queueH %= M_WAITING_LIST_SIZE;
+            mutexHandlerArg.pid = instanceMountingList->list->instance;
+            mutexHandlerArg.mTarget = (mutex*)instanceMountingList->list->instance->exAddr;
+            mutexHandlerArg.opTyp = MTX_HDL_TYP_WAIT;
             //awake the mutex handler
-            pthread_mutex_unlock(&rtLock);
-            pthread_mutex_unlock(&qLock);
+            pthread_mutex_unlock(&rtExecLock);
+            //pthread_mutex_unlock(&qLock);
             break;
           case PROCESSOR_STATUS_MTEST:
             //
-            pthread_mutex_lock(&qLock);
-            queueH++;
-            queueH %= M_WAITING_LIST_SIZE;
-            waitingQueue[queueH].pid = instanceMountingList->list->instance;
-            waitingQueue[queueH].mTarget = (mutex*)instanceMountingList->list->instance->exAddr;
-            waitingQueue[queueH].opTyp = MTX_HDL_TYP_TEST;
+            pthread_mutex_lock(&rtLock);
+            //queueH++;
+            //queueH %= M_WAITING_LIST_SIZE;
+            mutexHandlerArg.pid = instanceMountingList->list->instance;
+            mutexHandlerArg.mTarget = (mutex*)instanceMountingList->list->instance->exAddr;
+            mutexHandlerArg.opTyp = MTX_HDL_TYP_TEST;
             //awake the mutex handler
-            pthread_mutex_unlock(&rtLock);
-            pthread_mutex_unlock(&qLock);
+            pthread_mutex_unlock(&rtExecLock);
+            //pthread_mutex_unlock(&qLock);
             break;
           case PROCESSOR_STATUS_MLEAVE:
-            pthread_mutex_lock(&qLock);
-            queueH++;
-            queueH %= M_WAITING_LIST_SIZE;
-            waitingQueue[queueH].pid = instanceMountingList->list->instance;
-            waitingQueue[queueH].mTarget = (mutex*)instanceMountingList->list->instance->exAddr;
-            waitingQueue[queueH].opTyp = MTX_HDL_TYP_LEAVE;
+            pthread_mutex_lock(&rtLock);
+            //queueH++;
+            //queueH %= M_WAITING_LIST_SIZE;
+            mutexHandlerArg.pid = instanceMountingList->list->instance;
+            mutexHandlerArg.mTarget = (mutex*)instanceMountingList->list->instance->exAddr;
+            mutexHandlerArg.opTyp = MTX_HDL_TYP_LEAVE;
             //awake the mutex handler
-            pthread_mutex_unlock(&rtLock);
-            pthread_mutex_unlock(&qLock);
-            a0=-1;
+            pthread_mutex_unlock(&rtExecLock);
+            //pthread_mutex_unlock(&qLock);
+            //a0=-1;
             break;
             default:;//error handler
         }
@@ -794,8 +879,10 @@ void VMStartUp()
     }
   }
   //halt handller
-  pthread_mutex_init(&haltLock,NULL);
-  pthread_mutex_lock(&haltLock);
+  pthread_mutex_init(&haltExecLock,NULL);
+  pthread_mutex_lock(&haltExecLock);
+  pthread_mutex_init(&triggerLock,NULL);
+  pthread_mutex_init(&rtLock,NULL);
   pthread_create(&haltT,NULL,VMHalt,NULL);
   pthread_join(haltT,NULL);
 }
@@ -804,7 +891,7 @@ void *VMHalt()
   int a0;
   //kill all of the thread
   //kill handler
-  pthread_mutex_lock(&haltLock);
+  pthread_mutex_lock(&haltExecLock);
   pthread_kill(runtimeT,SIGUSR1);
   pthread_join(runtimeT,NULL);
   //kill execution thread if it is in the running mode
@@ -825,7 +912,7 @@ void handlerSegFault(int a)
   //signal();
   printf("bad behavor while accessing memory.\n");
   //call the exit thread
-  pthread_mutex_unlock(&haltLock);
+  pthread_mutex_unlock(&haltExecLock);
   pthread_join(haltT,NULL);
   releaseMemory();
   exit(-1);

@@ -5,17 +5,17 @@
  * it describes the organization of the main body.
  * structures and utility functions.
  **/
-#include <pthread.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <pthread.h>
 #include "PCore.h"
 #include "PFile.h"
 #include "PVMAPILib.h"
 #define NUM_E_THREAD 1
-#define M_WAITING_LIST_SIZE 256
+//#define M_WAITING_LIST_SIZE 256
 #define INITIAL_PERFORMANCE_VAL 32
 #define INITIAL_DELAY_VAL 2
 #define MAX_PERFORMANCE_VAL 32000
@@ -56,7 +56,7 @@ typedef struct haltInformations
 #define MTX_HDL_TYP_WAIT 0
 #define MTX_HDL_TYP_TEST 1
 #define MTX_HDL_TYP_LEAVE 2
-#define TRIGGER 3
+//#define TRIGGER 3
 typedef struct mutexHandlerWaitingQueue
 {
   PBase *pid;
@@ -82,10 +82,13 @@ PBase *listInstance;
 hInfo haltInfo;
 //mutex handler global
 pthread_mutex_t rtLock;
-pthread_mutex_t qLock;
-pthread_mutex_t haltLock;
-int queueH,queueT;
-MHQ waitingQueue[M_WAITING_LIST_SIZE];
+pthread_mutex_t rtExecLock
+pthread_mutex_t triggerLock;
+//pthread_mutex_t qLock;
+pthread_mutex_t haltExecLock;
+//int queueH,queueT;
+//MHQ waitingQueue[M_WAITING_LIST_SIZE];
+MHQ mutexHandlerArg;
 //thread pool
 pthread_t haltT;
 //pthread_t constraintHandler;
@@ -99,7 +102,7 @@ int errno;
 //Statistic Data
 /** utility functions **/
 /** mutex **/
-void mutexTinit();
+//void mutexTinit();
 void *runtimeHandler();
 /** Functions **/
 void VMReadFile(char *file);
