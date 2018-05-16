@@ -50,6 +50,7 @@ void *runtimeHandler()
             waitingQueue[queueT].mTarget->lock = waitingQueue[queueT].pid;
             //set the status to running
             waitingQueue[queueT].pid->status = PROCESSOR_STATUS_RUNNING;
+            waitingQueue[queueT].pid->performance = INITIAL_PERFORMANCE_VAL;
           }
           break;
         case MTX_HDL_TYP_TEST:
@@ -71,12 +72,14 @@ void *runtimeHandler()
           }
           //always set the status to runnning
           waitingQueue[queueT].pid->status = PROCESSOR_STATUS_RUNNING;
+          waitingQueue[queueT].pid->performance = INITIAL_PERFORMANCE_VAL;
           break;
         case MTX_HDL_TYP_LEAVE:
           //set the lock to zero
           waitingQueue[queueT].mTarget->lock = NULL;
           //set the current instance to running status
           waitingQueue[queueT].pid->status = PROCESSOR_STATUS_RUNNING;
+          waitingQueue[queueT].pid->performance = INITIAL_PERFORMANCE_VAL;
           //if there is any thing on waiting list, get it with lock
           if(waitingQueue[queueT].mTarget->waitList)
           {
@@ -89,7 +92,7 @@ void *runtimeHandler()
             free(wlp);
           }
           break;
-        case TRIGGER:
+        /*case TRIGGER:
         //handle with trigger
           //add the value into every next processor
           printf("OOO");
@@ -113,7 +116,7 @@ void *runtimeHandler()
               listInstance[c0].currentVal = 0;
             }
           }
-          break;
+          break;*/
         default : ;//error halt;
       }
       //delete one of the node
@@ -181,6 +184,7 @@ void VMReadFile(char *file)
     listInstance[c0].eflag = 0;
     listInstance[c0].triggerVal=0;
     listInstance[c0].currentVal=0;
+    listInstance[c0].performance=INITIAL_PERFORMANCE_VAL;
     //allocate data space!
     listInstance[c0].data=malloc(
       VMpe->processorTemplates[VMpe->processorInstances[c0].processorReferenceNo].stack0Size+
@@ -287,7 +291,13 @@ void VMReadFile(char *file)
       listInstance[VMpe->constraintList[c0].nodeSNoList[c1]].triggerVal++;
     }
   }
-  //well done
+  //assign them to each instances
+  for(c0=0;c0<VMpe->processorInstanceNUM;c0++)
+  {
+    //assign for each, just copy the address
+    listInstance[c0].triggerNum = triggerList[c0].number;
+    listInstance[c0].triggerList = triggerList[c0].list;
+  }
 }
 void debugVM(PBase *p,int howManyStack0Elem)
 {
@@ -341,25 +351,24 @@ void *execNormal(void *initPointer)
    * and the execution list cones to a circular link list
    */
   //values on the stack whlie running
-  int performance=INITIAL_PERFORMANCE_VAL;//how much step run on each instance
+  //int performance=INITIAL_PERFORMANCE_VAL;//how much step run on each instance
   int delay;//this attrbute means sleep how many ms for each circle scan
   IME *instanceMountingList;
-  int a0,a1=0;
-
+  int a0,a1;
+  int idleCounter;
   //initialize the list pointer
   instanceMountingList = (IME*)initPointer;
-  for(;;)
+  /*for(;;)//update the structure of execution unit
   {//the execution step
     //check the info of performance
     //branch:idle or active
-    printf("P:%d\n\n",performance);
     if(performance)
     {
       printf("running id : %ld\n",*(long*)instanceMountingList->list->instance);
       //active section
       //execute current instance, switch
-      a0=performance;//resource counter
-      while(a0)
+      //a0=performance;//resource counter
+      /*while(a0)
       {
         //loop enabled block
         switch(instanceMountingList->list->instance->status)
@@ -449,7 +458,7 @@ void *execNormal(void *initPointer)
           default:;//error/unknown status
         }
         if(a0 == -1) break;
-      }
+      }*
       if(a0)
       {//runs properly
         //increase performance
@@ -476,7 +485,7 @@ void *execNormal(void *initPointer)
     }
     else
     {
-      /*idle section*/
+      /*idle section*
       usleep(delay);printf("thread is slept\n");
       //loop : check the the list if exist one that is runnnig
       instanceMountingList->start = instanceMountingList->list;
@@ -499,6 +508,154 @@ void *execNormal(void *initPointer)
           delay += INITIAL_DELAY_VAL;
           break;
         }
+      }
+    }
+  }*/
+  for(;;)
+  {
+    //running loop, check each of instance list
+    if(delay)
+    {
+      //sleeping section
+      //sleep
+      usleep(delay);
+      //check if exist any instance that at running state
+      for(a0=0;a0<instanceMountingList->INumber;a0++)
+      {
+        if(instanceMountingList->list->instance->status==PROCESSOR_STATUS_RUNNING)
+        {//detected
+          //close the enable flag
+          delay=0;
+          //set performance to start value
+          instanceMountingList->list->instance->performance = INITIAL_PERFORMANCE_VAL;
+          //jump out
+          break;
+        }
+        //check next
+        instanceMountingList->list = instanceMountingList->list->next;
+      }
+      //deal with the situation : nobody was awake
+      if(a0==instanceMountingList->INumber)
+      {
+        //increase the sleeping time
+        if(delay<MAX_DELAY_VAL)//deal with : oops, sleeping to die
+        {
+          //increase it
+          delay += INITIAL_DELAY_VAL;
+        }
+      }
+    }
+    else
+    {
+      //active section
+      //execution section
+      if(instanceMountingList->list->instance->performance)
+      {
+        //running section
+        //set the counter to 0
+        idleCounter=0;
+        a0=instanceMountingList->list->instance->performance;
+        //switch with status
+        while(a0--)
+        {//loop the n cycle
+          switch(instanceMountingList->list->instance->status)
+          {
+            case PROCESSOR_STATUS_RUNNING:
+              //execution
+              executionOneStep(instanceMountingList->list->instance);
+              if(a0==0)
+              {
+                instanceMountingList->list->instance->performance+=INITIAL_PERFORMANCE_VAL;
+                instanceMountingList->list = instanceMountingList->list->next;
+              }
+              break;
+            case PROCESSOR_STATUS_SYS:
+              //api calling
+              APIHandler(instanceMountingList->list->instance);
+              if(a0==0)
+              {
+                instanceMountingList->list->instance->performance+=INITIAL_PERFORMANCE_VAL;
+                instanceMountingList->list = instanceMountingList->list->next;
+              }
+              break;
+            default://meet up with the suspended section
+              //set the counter to 0
+              a0=0;
+              //set the performance to 0
+              instanceMountingList->list->instance->performance=0;
+          }
+        }
+      }
+      else
+      {
+        //suspended(board) section
+        //increase the counter
+        idleCounter++;
+        //switch with status
+        switch(instanceMountingList->list->instance->status)
+        {
+          case PROCESSOR_STATUS_HALT:
+            pthread_mutex_unlock(&haltLock);
+            errno=0;
+            return NULL;
+            break;
+          case PROCESSOR_STATUS_SUSPENDED:
+            //loop, search each "next instance"
+            for(a0=0;a0<instanceMountingList->list->instance->triggerNum;a0++)
+            {
+              if(listInstance[instanceMountingList->list->instance->triggerList[a0]].status == PROCESSOR_STATUS_SUSPENDED)
+              {
+                //suspended & was the chosen one
+                listInstance[instanceMountingList->list->instance->triggerList[a0]].status = PROCESSOR_STATUS_RUNNING;
+              }
+            }
+            break;
+          //case PROCESSOR_STATUS_REBOOT:break;
+          case PROCESSOR_STATUS_MWAIT:
+            pthread_mutex_lock(&qLock);
+            queueH++;
+            queueH %= M_WAITING_LIST_SIZE;
+            waitingQueue[queueH].pid = instanceMountingList->list->instance;
+            waitingQueue[queueH].mTarget = (mutex*)instanceMountingList->list->instance->exAddr;
+            waitingQueue[queueH].opTyp = MTX_HDL_TYP_WAIT;
+            //awake the mutex handler
+            pthread_mutex_unlock(&rtLock);
+            pthread_mutex_unlock(&qLock);
+            break;
+          case PROCESSOR_STATUS_MTEST:
+            //
+            pthread_mutex_lock(&qLock);
+            queueH++;
+            queueH %= M_WAITING_LIST_SIZE;
+            waitingQueue[queueH].pid = instanceMountingList->list->instance;
+            waitingQueue[queueH].mTarget = (mutex*)instanceMountingList->list->instance->exAddr;
+            waitingQueue[queueH].opTyp = MTX_HDL_TYP_TEST;
+            //awake the mutex handler
+            pthread_mutex_unlock(&rtLock);
+            pthread_mutex_unlock(&qLock);
+            break;
+          case PROCESSOR_STATUS_MLEAVE:
+            pthread_mutex_lock(&qLock);
+            queueH++;
+            queueH %= M_WAITING_LIST_SIZE;
+            waitingQueue[queueH].pid = instanceMountingList->list->instance;
+            waitingQueue[queueH].mTarget = (mutex*)instanceMountingList->list->instance->exAddr;
+            waitingQueue[queueH].opTyp = MTX_HDL_TYP_LEAVE;
+            //awake the mutex handler
+            pthread_mutex_unlock(&rtLock);
+            pthread_mutex_unlock(&qLock);
+            a0=-1;
+            break;
+            default:;//error handler
+        }
+      }
+      //move to next instance
+      instanceMountingList->list = instanceMountingList->list->next;
+      //check the counter if all of the instance are slept
+      if(idleCounter==instanceMountingList->INumber)
+      {
+        //sleep ready!
+        delay = INITIAL_DELAY_VAL;
       }
     }
   }

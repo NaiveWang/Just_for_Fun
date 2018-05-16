@@ -30,7 +30,7 @@ void REBOOT(PBase *p)
   p->pc=p->code;
   *(void**)(p->data + POINTER_STACK0) = *(void**)(p->data +BASE_STACK0);
   *(void**)(p->data + POINTER_STACK) = *(void**)(p->data +BASE_STACK);
-  p->status = PROCESSOR_STATUS_REBOOT;
+  p->status = PROCESSOR_STATUS_SUSPENDED;
 }
 void MUTW(PBase *p)
 {
