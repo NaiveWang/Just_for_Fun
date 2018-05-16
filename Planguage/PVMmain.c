@@ -2,7 +2,7 @@
 #include "PVM.h"
 int main(int argv,char **argc)
 {
-
+  signal(SIGSEGV,handlerSegFault);
   if(argv==1)
   {
     printf("PVM Warning: No input file.\n");

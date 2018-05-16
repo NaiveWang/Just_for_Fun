@@ -369,6 +369,8 @@ void *execNormal(void *initPointer)
             break;
           case PROCESSOR_STATUS_HALT:
             //halt the VM
+            pthread_mutex_unlock(&haltLock);
+            errno=0;
             //maybe here we need to modify some global variables.
             a0=-1;
             break;
@@ -607,8 +609,35 @@ void VMStartUp()
       pthread_create(&executionThread[a0],NULL,execNormal,&executionGroup[a0]);
     }
   }
+  //halt handller
+  pthread_mutex_init(&haltLock,NULL);
+  pthread_mutex_lock(&haltLock);
+  pthread_create(&haltT,NULL,VMHalt,NULL);
 }
 void *VMHalt()
 {
+  int a0;
   //kill all of the thread
+  //kill handler
+  pthread_mutex_lock(&haltLock);
+  pthread_kill(runtimeT,SIGUSR1);
+  pthread_join(runtimeT,NULL);
+  //kill execution thread if it is in the running mode
+  for(a0=0;a0<NUM_E_THREAD;a0++)
+  {
+    //check each group
+    if(executionGroup[a0].INumber)
+    {
+      //run the thread!
+      pthread_kill(executionThread[a0],SIGUSR1);
+      pthread_join(executionThread[a0],NULL);
+    }
+  }
+  pthread_exit(NULL);
+}
+void handlerSegFault(int a)
+{
+  //signal();
+  printf("bad behavor while accessing memory.\n");
+  //call the 
 }
