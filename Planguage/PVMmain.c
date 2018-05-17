@@ -17,7 +17,7 @@ int main(int argv,char **argc)
   dispatcher();
   debugPrintMountingList();
   printf("dispatching finished\n");
-  mutexTinit();
+  //mutexTinit();
   printf("mutex finished\n");
   VMStartUp();
   return 0;

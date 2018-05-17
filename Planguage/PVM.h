@@ -14,13 +14,12 @@
 #include "PCore.h"
 #include "PFile.h"
 #include "PVMAPILib.h"
-<<<<<<< Updated upstream
+//<<<<<<< Updated upstream
 #define NUM_E_THREAD 1
 //#define M_WAITING_LIST_SIZE 256
-=======
-#define NUM_E_THREAD 2
-#define M_WAITING_LIST_SIZE 256
->>>>>>> Stashed changes
+//#define NUM_E_THREAD 2
+//#define M_WAITING_LIST_SIZE 256
+//>>>>>>> Stashed changes
 #define INITIAL_PERFORMANCE_VAL 32
 #define INITIAL_DELAY_VAL 2
 #define MAX_PERFORMANCE_VAL 32000
@@ -87,7 +86,7 @@ PBase *listInstance;
 hInfo haltInfo;
 //mutex handler global
 pthread_mutex_t rtLock;
-pthread_mutex_t rtExecLock
+pthread_mutex_t rtExecLock;
 pthread_mutex_t triggerLock;
 //pthread_mutex_t qLock;
 pthread_mutex_t haltExecLock;
@@ -99,6 +98,7 @@ pthread_t haltT;
 //pthread_t constraintHandler;
 pthread_t mutexT;
 pthread_t executionThread[NUM_E_THREAD];
+pthread_t graphT;
 IME executionGroup[NUM_E_THREAD];
 //global variables
 tgr *triggerList;
@@ -119,6 +119,7 @@ void *execNormal();
 void dispatcher();
 void VMStartUp();
 void *VMHalt();
+void *graphMonitor();
 void handlerSegFault(int);
 void releaseMemory();
 #endif

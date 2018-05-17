@@ -385,7 +385,7 @@ void debugVM(PBase *p,int howManyStack0Elem)
 {
   long* stack0p;
   printf("\nVM Debug Start\t");
-  printf("ProcessorID:%lu ",(unsigned long)p);
+  printf("ProcessorID:%lu/%d ",(unsigned long)p,p->performance);
   printf("Next Instruction P:%lx No:%hu\n",(long)p->pc,*(unsigned short*)p->pc);
   printf("Current Status:%x ",p->status);
   printf("Current Flag:%x ",p->eflag);
@@ -885,6 +885,7 @@ void VMStartUp()
   pthread_mutex_init(&triggerLock,NULL);
   pthread_mutex_init(&rtLock,NULL);
   pthread_mutex_init(&rtExecLock,NULL);
+  pthread_mutex_lock(&rtExecLock);
   pthread_create(&haltT,NULL,VMHalt,NULL);
   pthread_create(&mutexT,NULL,mutexHandler,NULL);
   pthread_join(haltT,NULL);
@@ -895,8 +896,8 @@ void *VMHalt()
   //kill all of the thread
   //kill handler
   pthread_mutex_lock(&haltExecLock);
-  pthread_kill(runtimeT,SIGUSR1);
-  pthread_join(runtimeT,NULL);
+  pthread_kill(mutexT,SIGUSR1);
+  pthread_join(mutexT,NULL);
   //kill execution thread if it is in the running mode
   for(a0=0;a0<NUM_E_THREAD;a0++)
   {
