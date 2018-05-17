@@ -14,8 +14,13 @@
 #include "PCore.h"
 #include "PFile.h"
 #include "PVMAPILib.h"
+<<<<<<< Updated upstream
 #define NUM_E_THREAD 1
 //#define M_WAITING_LIST_SIZE 256
+=======
+#define NUM_E_THREAD 2
+#define M_WAITING_LIST_SIZE 256
+>>>>>>> Stashed changes
 #define INITIAL_PERFORMANCE_VAL 32
 #define INITIAL_DELAY_VAL 2
 #define MAX_PERFORMANCE_VAL 32000

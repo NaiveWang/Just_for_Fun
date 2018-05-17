@@ -640,6 +640,7 @@ void *execNormal(void *initPointer)
         //switch with status
         while(a0--)
         {//loop the n cycle
+          debugVM(instanceMountingList->list->instance,1);
           switch(instanceMountingList->list->instance->status)
           {
             case PROCESSOR_STATUS_RUNNING:
