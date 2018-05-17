@@ -21,12 +21,16 @@
 //#define NUM_E_THREAD 2
 //#define M_WAITING_LIST_SIZE 256
 //>>>>>>> Stashed changes
-#define INITIAL_PERFORMANCE_VAL 32
-#define INITIAL_DELAY_VAL 2
+#define INITIAL_PERFORMANCE_VAL 8
+#define INITIAL_DELAY_VAL 2000
 #define MAX_PERFORMANCE_VAL 32000
-#define MAX_DELAY_VAL 500
+#define MAX_DELAY_VAL 500000
 #define PRINTADDR(x) printf("ADDR:%lx\n",(long)(x))
 #define SEEK_TABLE(x,y,a) ((x)+(y)*(a))
+//graph global
+#define GRAPH_WINDOW_L 600
+#define GRAPH_WINDOW_H 400
+#define GRAPH_SLEEPING_TIME 250000
 /** MACRO Section **/
 //the number of execution threads, it mainly depends on the hardware
 //#define TN_EXE 3//my computer has 8 logical core, extended by the technology known as intel's hyper threading.
@@ -73,6 +77,11 @@ typedef struct triggerListElement
   int number;
   int *list;
 }tgr;
+typedef struct graphInstancePosition
+{
+  float x;
+  float y;
+}gPos;
 /** Global Section **/
 //necassary sole data
 PExe *VMpe;
@@ -105,6 +114,9 @@ IME executionGroup[NUM_E_THREAD];
 tgr *triggerList;
 /** Error Handle Val **/
 int errno;
+/** graph global section **/
+gPos *gpp;
+float graph_size;
 //Statistic Data
 /** utility functions **/
 /** mutex **/
@@ -120,7 +132,10 @@ void *execNormal();
 void dispatcher();
 void VMStartUp();
 void *VMHalt();
-void grapgStartUp(int* argv,char* **argc);
+void graphStartUp(int* argv,char **argc);
+void graphShape();
+void graphDrawInstance(int id);
+void graphDisp();
 void *graphMonitor();
 void handlerSegFault(int);
 void releaseMemory();

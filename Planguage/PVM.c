@@ -640,7 +640,7 @@ void *execNormal(void *initPointer)
         //switch with status
         while(a0--)
         {//loop the n cycle
-          debugVM(instanceMountingList->list->instance,1);
+          //debugVM(instanceMountingList->list->instance,1);
           switch(instanceMountingList->list->instance->status)
           {
             case PROCESSOR_STATUS_RUNNING:
@@ -648,7 +648,8 @@ void *execNormal(void *initPointer)
               executionOneStep(instanceMountingList->list->instance);
               if(a0==0)
               {
-                instanceMountingList->list->instance->performance+=INITIAL_PERFORMANCE_VAL;
+                if(instanceMountingList->list->instance->performance<MAX_PERFORMANCE_VAL)
+                  instanceMountingList->list->instance->performance+=INITIAL_PERFORMANCE_VAL;
                 instanceMountingList->list = instanceMountingList->list->next;
               }
               break;
@@ -657,7 +658,8 @@ void *execNormal(void *initPointer)
               APIHandler(instanceMountingList->list->instance);
               if(a0==0)
               {
-                instanceMountingList->list->instance->performance+=INITIAL_PERFORMANCE_VAL;
+                if(instanceMountingList->list->instance->performance<MAX_PERFORMANCE_VAL)
+                  instanceMountingList->list->instance->performance+=INITIAL_PERFORMANCE_VAL;
                 instanceMountingList->list = instanceMountingList->list->next;
               }
               break;
@@ -997,15 +999,78 @@ void debugPrintMountingList()
     printf("\n");
   }
 }
-void grapgStartUp(int* argv,char* **argc)
+void graphStartUp(int* argc,char **argv)
 {
   //initialize section
+  glutInit(argc,argv);
+}
+void graphShape(int w,int h)
+{
+  //
+  glViewport(1,1,w,h);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  gluOrtho2D(-1,graph_size,-1,graph_size);
+  glMatrixMode(GL_MODELVIEW);
+}
+void graphDrawInstance(int id)
+{
+  //set the color
+  static float dot_size;
+  glColor3f(1.0f,
+    1.0-((float)listInstance[id].performance/(float)MAX_PERFORMANCE_VAL),
+    1.0-((float)listInstance[id].performance/(float)MAX_PERFORMANCE_VAL));
+  printf("$%f$\n",(listInstance[id].performance/(float)MAX_PERFORMANCE_VAL));
+  dot_size = graph_size/40;
+  glBegin(GL_QUADS);
+  glVertex2f(gpp[id].x,gpp[id].y);
+  glVertex2f(gpp[id].x+dot_size,gpp[id].y);
+  glVertex2f(gpp[id].x+dot_size,gpp[id].y+dot_size);
+  glVertex2f(gpp[id].x,gpp[id].y+dot_size);
+  glEnd();
+}
+void graphDisp()
+{
+  static int a0;
+  for(;;)
+  {
+    usleep(GRAPH_SLEEPING_TIME);
+    glClearColor(0,0,0,0);
+    glClear(GL_COLOR_BUFFER_BIT);
+    for(a0=0;a0<listInstanceSize;a0++)
+    {
+      //draw each dot
+      graphDrawInstance(a0);
+      //printf("%d/%d\n",a0,listInstance[a0].performance);
+    }
+    glFlush();
+  }
 }
 void *graphMonitor()
 {
   //initializing section
-  for(;;)
+  //glut main loop
+  //reshape func
+  //reshape
+  //for(;;)
+  //{
+  int n,a0;
+  glutInitDisplayMode(GLUT_SINGLE|GLUT_RGB);
+  glutInitWindowSize(GRAPH_WINDOW_L,GRAPH_WINDOW_H);
+  glutCreateWindow("PVM Monitor");
+  //initialize the postion list
+  //initialize data
+  gpp = malloc(listInstanceSize * sizeof(gPos));
+  for(n=2;(n*(n-1))<=listInstanceSize;n++);
+  graph_size=n;
+  for(a0=0;a0<listInstanceSize;a0++)
   {
-    //loop section
+    gpp[a0].x=a0%n;
+    gpp[a0].y=a0/n;
   }
+  //reshape
+  glutReshapeFunc(graphShape);
+  glutDisplayFunc(graphDisp);
+  glutMainLoop();
+  //}
 }
