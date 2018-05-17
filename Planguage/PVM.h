@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <GL/glut.h>
 #include "PCore.h"
 #include "PFile.h"
 #include "PVMAPILib.h"
@@ -119,6 +120,7 @@ void *execNormal();
 void dispatcher();
 void VMStartUp();
 void *VMHalt();
+void grapgStartUp(int* argv,char* **argc);
 void *graphMonitor();
 void handlerSegFault(int);
 void releaseMemory();

@@ -997,3 +997,15 @@ void debugPrintMountingList()
     printf("\n");
   }
 }
+void grapgStartUp(int* argv,char* **argc)
+{
+  //initialize section
+}
+void *graphMonitor()
+{
+  //initializing section
+  for(;;)
+  {
+    //loop section
+  }
+}
