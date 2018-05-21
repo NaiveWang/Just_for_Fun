@@ -3,6 +3,7 @@
 /** no fuss **/
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 /** macro of tokenlizer **/
 #define LENGTH_OF_LINE_BUFFER 2048
