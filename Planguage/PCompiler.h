@@ -37,6 +37,9 @@
 #define TOKEN_INSTANT_INT 'i'//all number
 #define TOKEN_INSTANT_CHAR 'c'//'?'
 #define TOKEN_INSTANT_STRING 's'//"?"
+#define TOKEN_SHL "l"
+#define TOKEN_SHR "r"
+#define TOKEN_SAR "a"
 //reserved
 #define TOKEN_DOT '.'
 #define TOKEN_COMMA ','
@@ -78,6 +81,9 @@
 #define TOKEN_STR_EQUAL "=="
 #define TOKEN_STR_DIFF "!="
 #define TOKEN_STR_GRTEQU ">="
+#define TOKEN_STR_SHL "<<"
+#define TOKEN_STR_SHR ">>"
+#define TOKEN_STR_SAR ">>>"
 #define TOKEN_STR_LESEQU "<="
 #define TOKEN_STR_RAND "&&"
 #define TOKEN_STR_ROR "||"

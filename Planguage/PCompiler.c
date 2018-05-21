@@ -1,3 +1,4 @@
+#include "PCompiler.h"
 void openFile(char *s)
 {
   //tokenlizer initializer
@@ -35,13 +36,25 @@ char readLine()
     return 0;
   }
 }
-symbol* addIdentifier();
-instant* addInstant();
-token* getToken();
+symbol* addIdentifier()
+{
+  //check the identifier in buffer
+  //check if it has been declared
+  //branch : return element address
+}
+instant* addInstant()
+{
+  //check type:
+  //
+}
+token* getToken()
+{
+  //
+}
 void errorNotifier()
 {
   //print error info via the error number
-  printf("Error No.%d:",error);
+  printf("Error No.%d:",errno);
   switch(errno)
   {
     case 1 : printf("cannot open file");break;
