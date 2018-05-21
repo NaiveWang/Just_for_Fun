@@ -129,6 +129,7 @@ int tokenBufferCursor;
 /** Tokenlizer functions **/
 void openFile(char *s);
 char readLine();
+void skipWhitespace();
 symbol* addIdentifier();
 instant* addInstant();
 token* getToken();

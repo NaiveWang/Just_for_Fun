@@ -18,6 +18,7 @@ void openFile(char *s)
     tokenBufferCursor=0;
     lineCursor=0;
     errno=0;
+    readLine();
   }
 }
 char readLine()
@@ -33,8 +34,13 @@ char readLine()
   }
   else
   {
+    fclose(input);
     return 0;
   }
+}
+void skipWhitespace()
+{
+  while(lineBuffer[lineBufferCursor]==' ' || lineBuffer[lineBufferCursor]=='\t') lineBufferCursor++;
 }
 symbol* addIdentifier()
 {
@@ -266,6 +272,35 @@ instant* addInstant()
 token* getToken()
 {
   //match next key word
+  //skip whitespace of a line
+  for(;;)
+  {
+    skipWhitespace();
+    //check if is the end of the line or line comment
+    while(!strncmp(lineBuffer+lineBufferCursor,COMMENT_SINGLELINE,strlen(COMMENT_SINGLELINE)) ||
+        lineBuffer[lineBufferCursor]=='\n')
+    {
+      //skip line
+      readLine();
+      skipWhitespace();
+    }
+    //check if is the start comment
+    if(!strncmp(lineBuffer+lineBufferCursor,COMMENT_START,strlen(COMMENT_START)))
+    {
+      //meet the comment start,
+      lineBufferCursor+=strlen(COMMENT_START);
+      //find the end of comment
+      while(!strncmp(lineBuffer+lineBufferCursor,COMMENT_END,strlen(COMMENT_END)))
+      {
+        if(lineBuffer[lineBufferCursor]=='\n')
+          readLine();
+        else
+          lineBufferCursor++;
+      }
+      lineBufferCursor+=strlen(COMMENT_END);
+    }
+    //loop, until met the read item
+  }
 }
 void errorNotifier()
 {
