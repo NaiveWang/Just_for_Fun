@@ -99,3 +99,5 @@ Others/test_file_recursive
 *.pe
 
 Others/testSignal
+
+Others/test_float_input
