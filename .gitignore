@@ -105,3 +105,5 @@ Others/test_float_input
 Planguage/PCompiler
 
 bison/a
+
+Planguage/Compiler/lexer
