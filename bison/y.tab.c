@@ -62,7 +62,7 @@
 
 
 /* Copy the first part of user declarations.  */
-#line 1 "p.l" /* yacc.c:339  */
+#line 1 "p.y" /* yacc.c:339  */
 
   //#define YYSTYPE double
   #include <ctype.h>
@@ -1190,25 +1190,25 @@ yyreduce:
   switch (yyn)
     {
         case 5:
-#line 19 "p.l" /* yacc.c:1646  */
+#line 19 "p.y" /* yacc.c:1646  */
     { printf ("%d\n", (yyvsp[-1])); }
 #line 1196 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 22 "p.l" /* yacc.c:1646  */
+#line 22 "p.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[0]); }
 #line 1202 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 23 "p.l" /* yacc.c:1646  */
+#line 23 "p.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[-2]) + (yyvsp[0]); }
 #line 1208 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 24 "p.l" /* yacc.c:1646  */
+#line 24 "p.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[-2]) - (yyvsp[0]); }
 #line 1214 "y.tab.c" /* yacc.c:1646  */
     break;
@@ -1442,7 +1442,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 26 "p.l" /* yacc.c:1906  */
+#line 26 "p.y" /* yacc.c:1906  */
 
 int yylex (void)
 {
