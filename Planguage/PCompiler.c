@@ -271,35 +271,182 @@ instant* addInstant()
 }
 token* getToken()
 {
+  int a0;
+  token *rtnp;
+  //the matching list is over here
+  static const int reserveda = TOKEN_GROUPA;
+  static const reserved groupa[TOKEN_GROUPA]=
+    {
+      {TOKEN_PROCESSOR,TOKEN_STR_PROCESSOR},
+      {TOKEN_CONTINUE,TOKEN_STR_CONTINUE},
+      {TOKEN_REBOOT,TOKEN_STR_REBOOT},
+      {TOKEN_RETURN,TOKEN_STR_RETURN},
+      {TOKEN_SWITCH,TOKEN_STR_SWITCH},
+      {TOKEN_WHILE,TOKEN_STR_WHILE},
+      {TOKEN_BREAK,TOKEN_STR_BREAK},
+      {TOKEN_ELSE,TOKEN_STR_ELSE},
+      {TOKEN_HALT,TOKEN_STR_HALT},
+      {TOKEN_REAL,TOKEN_STR_REAL},
+      {TOKEN_CHAR,TOKEN_STR_CHAR},
+      {TOKEN_FOR,TOKEN_STR_FOR},
+      {TOKEN_INT,TOKEN_STR_INT},
+      {TOKEN_IF,TOKEN_STR_IF}
+    };
+  static const int reservedb = TOKEN_GROUPB;
+  static const reserved groupb[TOKEN_GROUPB]=
+    {
+      {TOKEN_EQUAL,TOKEN_STR_EQUAL},
+      {TOKEN_DIFF,TOKEN_STR_DIFF},
+      {TOKEN_GRTEQU,TOKEN_STR_GRTEQU},
+      {TOKEN_SHL,TOKEN_STR_SHL},
+      {TOKEN_SAR,TOKEN_STR_SAR},
+      {TOKEN_SHR,TOKEN_STR_SHR},
+      {TOKEN_LESEQU,TOKEN_STR_LESEQU},
+      {TOKEN_RAND,TOKEN_STR_RAND},
+      {TOKEN_ROR,TOKEN_STR_ROR},
+      {TOKEN_COMMA,TOKEN_COMMA},
+      {TOKEN_SEMI,TOKEN_SEMI},
+      {TOKEN_DOT,TOKEN_DOT},
+      {TOKEN_OPEN_PAREN,TOKEN_OPEN_PAREN},
+      {TOKEN_CLOSE_PAREN,TOKEN_CLOSE_PAREN},
+      {TOKEN_OPEN_BRACE,TOKEN_OPEN_BRACE},
+      {TOKEN_CLOSE_BRACE,TOKEN_CLOSE_BRACE},
+      {TOKEN_OPEN_BRACKET,TOKEN_OPEN_BRACKET},
+      {TOKEN_CLOSE_BRACKET,TOKEN_CLOSE_BRACKET},
+      {TOKEN_PLUS,TOKEN_PLUS},
+      {TOKEN_ASSIGN,TOKEN_ASSIGN},
+      {TOKEN_BAR,TOKEN_BAR},
+      {TOKEN_STAR,TOKEN_STAR},
+      {TOKEN_SLASH,TOKEN_SLASH},
+      {TOKEN_PERCENT,TOKEN_PERCENT},
+      {TOKEN_LAND,TOKEN_LAND},
+      {TOKEN_LOR,TOKEN_LOR},
+      {TOKEN_LEOR,TOKEN_LEOR},
+      {TOKEN_LNOT,TOKEN_LNOT},
+      {TOKEN_RNOT,TOKEN_RNOT},
+      {TOKEN_GRT,TOKEN_GRT},
+      {TOKEN_LES,TOKEN_LES},
+    };
   //match next key word
   //skip whitespace of a line
-  for(;;)
+  for(a0=0;a0;a0=0)
   {
     skipWhitespace();
     //check if is the end of the line or line comment
     while(!strncmp(lineBuffer+lineBufferCursor,COMMENT_SINGLELINE,strlen(COMMENT_SINGLELINE)) ||
         lineBuffer[lineBufferCursor]=='\n')
-    {
+    {//detected
+      a0=1;
       //skip line
-      readLine();
+      if(readLine())
+        continue;
+      else return NULL;
       skipWhitespace();
     }
     //check if is the start comment
     if(!strncmp(lineBuffer+lineBufferCursor,COMMENT_START,strlen(COMMENT_START)))
     {
+      a0=1;
       //meet the comment start,
       lineBufferCursor+=strlen(COMMENT_START);
       //find the end of comment
       while(!strncmp(lineBuffer+lineBufferCursor,COMMENT_END,strlen(COMMENT_END)))
       {
         if(lineBuffer[lineBufferCursor]=='\n')
-          readLine();
+          if(readLine())
+            continue;
+          else return NULL;
         else
           lineBufferCursor++;
       }
       lineBufferCursor+=strlen(COMMENT_END);
     }
     //loop, until met the read item
+  }
+  //finally, we've met the token.
+  //match the reserved first
+  //1.try to match with the group b
+  for(a0=0;a0<reservedb;a0++)
+  {
+    //each
+    if(!strncmp(groupb[a0].matchingString,
+      lineBuffer+lineBufferCursor,
+      strlen(groupb[a0].matchingString)))
+    {
+      //matched
+      //increase line buffer cursor
+      lineBufferCursor+=strlen(groupb[a0].matchingString);
+      //return the value
+      rtnp = malloc(sizeof(token));
+      rtnp->type = groupb[a0].val;
+      rtnp->content = NULL;
+      return rtnp;
+    }
+  }
+  //not match, try to match with groupa
+  for(a0=0;a0<reserveda;a0++)
+  {
+    //each
+    if(!strncmp(groupa[a0].matchingString,
+      lineBuffer+lineBufferCursor,
+      strlen(groupa[a0].matchingString)))
+    {
+      //matched
+      //check if the tail is dirty
+      char temp = lineBuffer[lineBufferCursor+strlen(groupa[a0].matchingString)];
+      if(
+        (temp<='9' && temp>='0')||
+        (temp<='z' && temp>='a')||
+        (temp<='Z' && temp>='Z')||
+        temp=='_'
+      )
+      {
+        //go to the identifier section
+        break;
+      }
+      //increase line buffer cursor
+      lineBufferCursor+=strlen(groupb[a0].matchingString);
+      //return the value
+      rtnp = malloc(sizeof(token));
+      rtnp->type = groupb[a0].val;
+      rtnp->content = NULL;
+      return rtnp;
+    }
+  }
+  //copy the content into token buffer, as an identifier
+  for(tokenBufferCursor=0,a0=0;
+      (lineBuffer[lineBufferCursor+a0]=<'9' && lineBuffer[lineBufferCursor+a0]>='0')||
+      (lineBuffer[lineBufferCursor+a0]|0x20 =<'z' && lineBuffer[lineBufferCursor+a0]0x20 >= 'a')||
+      (lineBuffer[lineBufferCursor+a0]=='_');
+      a0++,tokenBufferCursor++)
+    {
+      //copy the content
+      tokenBuffer[tokenBufferCursor]=lineBuffer[lineBufferCursor+a0];
+    }
+    tokenBuffer[tokenBufferCursor]='\0';
+  //
+  if(a0)
+  {
+    //something in the buffer, test identifier
+    symbol *sp = addIdentifier();
+    if(sp)
+    {
+      //success
+      lineBufferCursor+=strlen(tokenBuffer);
+      rtnp=malloc(sizeof(token));
+      rtnp->type=TOKEN_ID;
+      rtnp->content = sp;
+      return rtnp;
+    }
+  }
+  //copy comtent into the buffer via different manner
+  switch(lineBuffer[lineBufferCursor])
+  {
+    case '"'://string
+      break;
+    case '\''://character
+      break;
+    default:;//number
   }
 }
 void errorNotifier()

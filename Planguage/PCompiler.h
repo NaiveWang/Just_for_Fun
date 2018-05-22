@@ -38,9 +38,9 @@
 #define TOKEN_INSTANT_INT 'i'//all number
 #define TOKEN_INSTANT_CHAR 'c'//'?'
 #define TOKEN_INSTANT_STRING 's'//"?"
-#define TOKEN_SHL "l"
-#define TOKEN_SHR "r"
-#define TOKEN_SAR "a"
+#define TOKEN_SHL 'l'
+#define TOKEN_SHR 'r'
+#define TOKEN_SAR 'a'
 //reserved
 #define TOKEN_DOT '.'
 #define TOKEN_COMMA ','
@@ -65,6 +65,7 @@
 #define TOKEN_GRT '>'
 #define TOKEN_LES '<'
 //string
+#define TOKEN_GROUPA 14
 #define TOKEN_STR_PROCESSOR "processor"
 #define TOKEN_STR_CONTINUE "continue"
 #define TOKEN_STR_REBOOT "reboot"
@@ -79,12 +80,14 @@
 #define TOKEN_STR_FOR "for"
 #define TOKEN_STR_INT "int"
 #define TOKEN_STR_IF "if"
+
+#define TOKEN_GROUPB 31
 #define TOKEN_STR_EQUAL "=="
 #define TOKEN_STR_DIFF "!="
 #define TOKEN_STR_GRTEQU ">="
 #define TOKEN_STR_SHL "<<"
-#define TOKEN_STR_SHR ">>"
 #define TOKEN_STR_SAR ">>>"
+#define TOKEN_STR_SHR ">>"
 #define TOKEN_STR_LESEQU "<="
 #define TOKEN_STR_RAND "&&"
 #define TOKEN_STR_ROR "||"
@@ -110,6 +113,12 @@ typedef struct tokenElement
   char type;
   void* content;
 }token;
+#define RESERVED_TOKEN_MAX_LENGTH 16
+typedef struct reservedTokenConvertingList
+{
+  char val;
+  char matchingString[RESERVED_TOKEN_MAX_LENGTH];
+}reserved;
 /** tokenlizer global data **/
 //some sole arguments
 int lineCursor;//line of the file
