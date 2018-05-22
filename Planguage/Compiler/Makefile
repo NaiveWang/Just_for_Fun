@@ -1,4 +1,4 @@
-lexer:
+compiler:
 	gcc main.c lex.yy.c -o lexer
 l:
 	lex p.l

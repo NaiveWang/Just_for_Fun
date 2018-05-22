@@ -9,7 +9,7 @@ int main(void)
   do{
     //
     ntoken = yylex();
-    printf("|%c|",(int)ntoken);
+    printf("%d\n",(int)ntoken);
   }while(ntoken);
   return 0;
 }
