@@ -618,9 +618,9 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "p.l"
-#line 9 "p.l"
-#include "p.h"
+#line 1 "proc.l"
+#line 9 "proc.l"
+#include "proc.h"
 
 #line 626 "lex.yy.c"
 
@@ -840,7 +840,7 @@ YY_DECL
 		}
 
 	{
-#line 12 "p.l"
+#line 12 "proc.l"
 
 #line 846 "lex.yy.c"
 
@@ -901,363 +901,363 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 13 "p.l"
+#line 13 "proc.l"
 {count();return PROCESSOR;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 15 "p.l"
+#line 15 "proc.l"
 {count();return INT;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 16 "p.l"
+#line 16 "proc.l"
 {count();return REAL;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 17 "p.l"
+#line 17 "proc.l"
 {count();return HALT;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 19 "p.l"
+#line 19 "proc.l"
 {count();return REBOOT;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 20 "p.l"
+#line 20 "proc.l"
 {count();return HALT;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 21 "p.l"
+#line 21 "proc.l"
 {count();return HALT;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 23 "p.l"
+#line 23 "proc.l"
 {count();return IF;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 24 "p.l"
+#line 24 "proc.l"
 {count();return ELSE;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 25 "p.l"
+#line 25 "proc.l"
 {count();return WHILE;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 26 "p.l"
+#line 26 "proc.l"
 {count();return FOR;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 27 "p.l"
+#line 27 "proc.l"
 {count();return CONTINUE;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 28 "p.l"
+#line 28 "proc.l"
 {count();return BREAK;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 29 "p.l"
+#line 29 "proc.l"
 {count();return STATIC;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 31 "p.l"
+#line 31 "proc.l"
 {count();return ID; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 33 "p.l"
-{ count(); return(CONSTANT); }
+#line 33 "proc.l"
+{ count(); return(CONSTANT_INT); }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 34 "p.l"
-{ count(); return(CONSTANT); }
+#line 34 "proc.l"
+{ count(); return(CONSTANT_INT); }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 35 "p.l"
-{ count(); return(CONSTANT); }
+#line 35 "proc.l"
+{ count(); return(CONSTANT_INT); }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 37 "p.l"
-{ count(); return(CONSTANT); }
+#line 37 "proc.l"
+{ count(); return(CONSTANT_REAL); }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 38 "p.l"
-{ count(); return(CONSTANT); }
+#line 38 "proc.l"
+{ count(); return(CONSTANT_REAL); }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 39 "p.l"
-{ count(); return(CONSTANT); }
+#line 39 "proc.l"
+{ count(); return(CONSTANT_REAL); }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 40 "p.l"
-{ count(); return(CONSTANT); }
+#line 40 "proc.l"
+{ count(); return(CONSTANT_REAL); }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 41 "p.l"
-{ count(); return(CONSTANT); }
+#line 41 "proc.l"
+{ count(); return(CONSTANT_REAL); }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 42 "p.l"
-{ count(); return(CONSTANT); }
+#line 42 "proc.l"
+{ count(); return(CONSTANT_REAL); }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 43 "p.l"
+#line 43 "proc.l"
 { count(); return(ASSAR); }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 44 "p.l"
+#line 44 "proc.l"
 { count(); return(ASSHR); }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 45 "p.l"
+#line 45 "proc.l"
 { count(); return(ASSHL); }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 46 "p.l"
+#line 46 "proc.l"
 { count(); return(ASADD); }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 47 "p.l"
+#line 47 "proc.l"
 { count(); return(ASSUB); }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 48 "p.l"
+#line 48 "proc.l"
 { count(); return(ASMUL); }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 49 "p.l"
+#line 49 "proc.l"
 { count(); return(ASDIV); }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 50 "p.l"
+#line 50 "proc.l"
 { count(); return(ASMOD); }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 51 "p.l"
+#line 51 "proc.l"
 { count(); return(ASAND); }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 52 "p.l"
+#line 52 "proc.l"
 { count(); return(ASEOR); }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 53 "p.l"
+#line 53 "proc.l"
 { count(); return(ASOR); }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 54 "p.l"
+#line 54 "proc.l"
 { count(); return(SAR); }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 55 "p.l"
+#line 55 "proc.l"
 { count(); return(SHR); }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 56 "p.l"
+#line 56 "proc.l"
 { count(); return(SHL); }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 57 "p.l"
+#line 57 "proc.l"
 { count(); return(INC); }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 58 "p.l"
+#line 58 "proc.l"
 { count(); return(DEC); }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 59 "p.l"
+#line 59 "proc.l"
 { count(); return(RAND); }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 60 "p.l"
+#line 60 "proc.l"
 { count(); return(ROR); }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 61 "p.l"
+#line 61 "proc.l"
 { count(); return(LESEQU); }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 62 "p.l"
+#line 62 "proc.l"
 { count(); return(GRTEQU); }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 63 "p.l"
+#line 63 "proc.l"
 { count(); return(EQUAL); }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 64 "p.l"
+#line 64 "proc.l"
 { count(); return(DIFF); }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 66 "p.l"
+#line 66 "proc.l"
 { count(); return(';'); }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 67 "p.l"
+#line 67 "proc.l"
 { count(); return('{'); }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 68 "p.l"
+#line 68 "proc.l"
 { count(); return('}'); }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 69 "p.l"
+#line 69 "proc.l"
 { count(); return(','); }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 70 "p.l"
+#line 70 "proc.l"
 { count(); return(':'); }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 71 "p.l"
+#line 71 "proc.l"
 { count(); return('='); }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 72 "p.l"
+#line 72 "proc.l"
 { count(); return('('); }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 73 "p.l"
+#line 73 "proc.l"
 { count(); return(')'); }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 74 "p.l"
+#line 74 "proc.l"
 { count(); return('['); }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 75 "p.l"
+#line 75 "proc.l"
 { count(); return(']'); }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 76 "p.l"
+#line 76 "proc.l"
 { count(); return('.'); }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 77 "p.l"
+#line 77 "proc.l"
 { count(); return('&'); }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 78 "p.l"
+#line 78 "proc.l"
 { count(); return('!'); }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 79 "p.l"
+#line 79 "proc.l"
 { count(); return('~'); }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 80 "p.l"
+#line 80 "proc.l"
 { count(); return('-'); }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 81 "p.l"
+#line 81 "proc.l"
 { count(); return('+'); }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 82 "p.l"
+#line 82 "proc.l"
 { count(); return('*'); }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 83 "p.l"
+#line 83 "proc.l"
 { count(); return('/'); }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 84 "p.l"
+#line 84 "proc.l"
 { count(); return('%'); }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 85 "p.l"
+#line 85 "proc.l"
 { count(); return('<'); }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 86 "p.l"
+#line 86 "proc.l"
 { count(); return('>'); }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 87 "p.l"
+#line 87 "proc.l"
 { count(); return('^'); }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 88 "p.l"
+#line 88 "proc.l"
 { count(); return('|'); }
 	YY_BREAK
 case 70:
 /* rule 70 can match eol */
 YY_RULE_SETUP
-#line 89 "p.l"
+#line 89 "proc.l"
 {count();}
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 90 "p.l"
+#line 90 "proc.l"
 
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 91 "p.l"
+#line 91 "proc.l"
 ECHO;
 	YY_BREAK
 #line 1264 "lex.yy.c"
@@ -2261,7 +2261,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 91 "p.l"
+#line 91 "proc.l"
 
 
 int yywrap(void)

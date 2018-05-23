@@ -23,6 +23,8 @@
 #define ID 'd'//<_/alphabet><...>
 #define CONSTANT_REAL 'r'//<exist one ./e>
 #define CONSTANT_INT 'i'//all number
+#define CONSTANT_HEX 'x'
+#define CONSTANT_OCT 'b'
 #define CONSTANT_CHAR 'c'//'?'
 #define CONSTANT_STRING 's'//"?"
 #define STATIC '$'

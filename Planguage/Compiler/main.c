@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include "p.h"
+#include "proc.h"
+#include "symbol.h"
 extern int yylex();
 extern int yylineno;
 extern char* yytext;

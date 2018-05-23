@@ -34,7 +34,7 @@ IS    ((u|U)|(u|U)?(l|L|ll|LL)|(l|L|ll|LL)(u|U))
 0[0-7]*{IS}?							{ count(); return(CONSTANT_INT); }
 [1-9]{D}*{IS}?						{ count(); return(CONSTANT_INT); }
 
-{D}+{E}{FS}?							{ count(); return(CONSTANT_INT); }
+{D}+{E}{FS}?							{ count(); return(CONSTANT_REAL); }
 {D}*"."{D}+{E}?{FS}?			{ count(); return(CONSTANT_REAL); }
 {D}+"."{D}*{E}?{FS}?			{ count(); return(CONSTANT_REAL); }
 0[xX]{H}+{P}{FS}?					{ count(); return(CONSTANT_REAL); }

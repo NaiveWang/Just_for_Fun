@@ -1,6 +1,3 @@
 compiler:
-	gcc main.c lex.yy.c -o lexer
-l:
-	lex p.l
-clear:
-	rm lexer
+	lex proc.l
+	gcc main.c symbol.c lex.yy.c -o lexer
