@@ -40,6 +40,8 @@ IS    ((u|U)|(u|U)?(l|L|ll|LL)|(l|L|ll|LL)(u|U))
 0[xX]{H}+{P}{FS}?					{ count(); return(CONSTANT_REAL); }
 0[xX]{H}*"."{H}+{P}{FS}?  { count(); return(CONSTANT_REAL); }
 0[xX]{H}+"."{H}*{P}{FS}?  { count(); return(CONSTANT_REAL); }
+L?\"(\\.|[^\\"\n])*\"			{ count(); return(CONSTANT_STRING); }
+L?'(\\.|[^\\'\n])+'	{ count(); return(CONSTANT_CHAR); }
 ">>>="			{ count(); return(ASSAR); }
 ">>="			{ count(); return(ASSHR); }
 "<<="			{ count(); return(ASSHL); }

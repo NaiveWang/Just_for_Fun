@@ -22,7 +22,7 @@ transition_unit
   | transition_unit processor_declaration
   ;
 processor_declaration
-  : PROCESSOR '(' CONSTANT_INT ',' CONSTANT_INT ',' CONSTANT ')' compound_statement
+  : PROCESSOR '(' CONSTANT_INT ',' CONSTANT_INT ',' CONSTANT_INT ')' compound_statement
 %%
 #include <stdio.h>
 

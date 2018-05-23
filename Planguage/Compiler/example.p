@@ -8,5 +8,8 @@ processor ABC
   reboot;
   whilee;
   for000;
+  "iajshixhnjinaoi     hsuhciuhakns"
+  '\n'
+  '2'
   halt;
 }
