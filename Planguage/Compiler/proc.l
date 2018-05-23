@@ -6,7 +6,7 @@ P     ([Pp][+-]?{D}+)
 FS		(f|F|l|L)
 IS    ((u|U)|(u|U)?(l|L|ll|LL)|(l|L|ll|LL)(u|U))
 %{
-#include "p.h"
+#include "proc.h"
 
 %}
 %%

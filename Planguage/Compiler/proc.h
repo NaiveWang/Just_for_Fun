@@ -1,5 +1,5 @@
-#ifndef P_H
-#define P_H
+#ifndef PROC_H
+#define PROC_H
 #define PROCESSOR 'P'
 #define IF 'F'//if
 #define ELSE 'E'//else
