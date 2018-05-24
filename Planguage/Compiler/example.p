@@ -1,4 +1,4 @@
-processor ABC
+processor asd
 {
   int a;
   static int b;
@@ -6,10 +6,9 @@ processor ABC
   a=111;
   c=118.88e13;
   reboot;
-  whilee;
-  for000;
-  "iajshixhnjinaoi     hsuhciuhakns"
-  '\n'
-  '2'
+  while(a);
+{
+;;
+}
   halt;
 }

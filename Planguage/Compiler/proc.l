@@ -6,8 +6,10 @@ P     ([Pp][+-]?{D}+)
 FS		(f|F|l|L)
 IS    ((u|U)|(u|U)?(l|L|ll|LL)|(l|L|ll|LL)(u|U))
 %{
-#include "proc.h"
-
+#include "y.tab.h"
+void yyerror (char *s);
+int yylex();
+void count(void);
 %}
 %%
 "processor"               {count();return PROCESSOR;}

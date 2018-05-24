@@ -1,3 +1,4 @@
 compiler:
 	lex proc.l
-	gcc main.c compiler.c symbol.c lex.yy.c -o lexer
+	yacc -d proc.y
+	gcc main.c compiler.c symbol.c y.tab.c lex.yy.c -o lexer

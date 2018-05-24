@@ -1,9 +1,9 @@
 %{
-void yyerror (char *s);
-//int yylex();
+void yyerror (char const *s);
+int yylex();
 #include <stdio.h>     /* C declarations used in actions */
 #include <stdlib.h>
-#include "proc.h"
+#include "y.tab.h"
 %}
 
 
@@ -20,6 +20,9 @@ void yyerror (char *s);
 %%
 primary_expression
 	: ID
+	| CONSTANT_INT
+	| CONSTANT_REAL
+	| CONSTANT_CHAR
 	| STRING
 	| '(' expression ')'
 	;
@@ -117,13 +120,8 @@ logical_or_expression
 	| logical_or_expression ROR logical_and_expression
 	;
 
-conditional_expression
-	: logical_or_expression
-	| logical_or_expression '?' expression ':' conditional_expression
-	;
-
 assignment_expression
-	: conditional_expression
+	: logical_or_expression
 	| unary_expression assignment_operator assignment_expression
 	;
 
@@ -277,14 +275,9 @@ translation_unit
 	;
 
 processor_declaration
-	: declaration_specifiers declarator declaration_list compound_statement
-	| declaration_specifiers declarator compound_statement
+	: PROCESSOR ID compound_statement
 	;
 
-declaration_list
-	: declaration
-	| declaration_list declaration
-	;
 %%
 #include <stdio.h>
 

@@ -6,6 +6,7 @@
 #include "proc.h"
 /* external reference section */
 extern int yylex();
+extern int yyparse();
 extern int yylineno;
 extern char* yytext;
 /* global argument section */
