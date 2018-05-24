@@ -31,7 +31,7 @@ id* addID(char* s)
     return identifiers+a0-1;
   }
 }
-constant* addConst(char typ,char* str)
+constant* addConst(int typ,char* str)
 {
   //switch it!
   //check if the list is overflow

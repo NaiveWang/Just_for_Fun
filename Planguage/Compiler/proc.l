@@ -20,6 +20,7 @@ void count(void);
 
 "reboot"                  {count();return REBOOT;}
 "halt"                    {count();return HALT;}
+"suspend"                 {count();return SUSPEND;}
 "return"          	      {count();return HALT;}
 
 "if"          	          {count();return IF;}

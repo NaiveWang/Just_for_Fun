@@ -55,39 +55,42 @@ extern int yydebug;
     REBOOT = 265,
     RETURN = 266,
     HALT = 267,
-    INT = 268,
-    REAL = 269,
-    CHAR = 270,
-    STATIC = 271,
-    VOID = 272,
-    STRING = 273,
-    EQUAL = 274,
-    DIFF = 275,
-    GRTEQU = 276,
-    LESEQU = 277,
-    RAND = 278,
-    ROR = 279,
-    ID = 280,
-    CONSTANT_INT = 281,
-    CONSTANT_REAL = 282,
-    CONSTANT_CHAR = 283,
-    CONSTANT_STRING = 284,
-    SHL = 285,
-    SHR = 286,
-    SAR = 287,
-    INC = 288,
-    DEC = 289,
-    ASSAR = 290,
-    ASSHL = 291,
-    ASSHR = 292,
-    ASADD = 293,
-    ASSUB = 294,
-    ASDIV = 295,
-    ASMOD = 296,
-    ASMUL = 297,
-    ASAND = 298,
-    ASOR = 299,
-    ASEOR = 300
+    SUSPEND = 268,
+    INT = 269,
+    REAL = 270,
+    CHAR = 271,
+    STRING = 272,
+    STATIC = 273,
+    VOID = 274,
+    EQUAL = 275,
+    DIFF = 276,
+    GRTEQU = 277,
+    LESEQU = 278,
+    RAND = 279,
+    ROR = 280,
+    ID = 281,
+    CONSTANT_INT = 282,
+    CONSTANT_REAL = 283,
+    CONSTANT_CHAR = 284,
+    CONSTANT_STRING = 285,
+    CONSTANT_HEX = 286,
+    CONSTANT_OCT = 287,
+    SHL = 288,
+    SHR = 289,
+    SAR = 290,
+    INC = 291,
+    DEC = 292,
+    ASSAR = 293,
+    ASSHL = 294,
+    ASSHR = 295,
+    ASADD = 296,
+    ASSUB = 297,
+    ASDIV = 298,
+    ASMOD = 299,
+    ASMUL = 300,
+    ASAND = 301,
+    ASOR = 302,
+    ASEOR = 303
   };
 #endif
 /* Tokens.  */
@@ -101,39 +104,42 @@ extern int yydebug;
 #define REBOOT 265
 #define RETURN 266
 #define HALT 267
-#define INT 268
-#define REAL 269
-#define CHAR 270
-#define STATIC 271
-#define VOID 272
-#define STRING 273
-#define EQUAL 274
-#define DIFF 275
-#define GRTEQU 276
-#define LESEQU 277
-#define RAND 278
-#define ROR 279
-#define ID 280
-#define CONSTANT_INT 281
-#define CONSTANT_REAL 282
-#define CONSTANT_CHAR 283
-#define CONSTANT_STRING 284
-#define SHL 285
-#define SHR 286
-#define SAR 287
-#define INC 288
-#define DEC 289
-#define ASSAR 290
-#define ASSHL 291
-#define ASSHR 292
-#define ASADD 293
-#define ASSUB 294
-#define ASDIV 295
-#define ASMOD 296
-#define ASMUL 297
-#define ASAND 298
-#define ASOR 299
-#define ASEOR 300
+#define SUSPEND 268
+#define INT 269
+#define REAL 270
+#define CHAR 271
+#define STRING 272
+#define STATIC 273
+#define VOID 274
+#define EQUAL 275
+#define DIFF 276
+#define GRTEQU 277
+#define LESEQU 278
+#define RAND 279
+#define ROR 280
+#define ID 281
+#define CONSTANT_INT 282
+#define CONSTANT_REAL 283
+#define CONSTANT_CHAR 284
+#define CONSTANT_STRING 285
+#define CONSTANT_HEX 286
+#define CONSTANT_OCT 287
+#define SHL 288
+#define SHR 289
+#define SAR 290
+#define INC 291
+#define DEC 292
+#define ASSAR 293
+#define ASSHL 294
+#define ASSHR 295
+#define ASADD 296
+#define ASSUB 297
+#define ASDIV 298
+#define ASMOD 299
+#define ASMUL 300
+#define ASAND 301
+#define ASOR 302
+#define ASEOR 303
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED

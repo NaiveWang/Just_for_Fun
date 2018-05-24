@@ -3,24 +3,35 @@ void yyerror (char const *s);
 int yylex();
 #include <stdio.h>     /* C declarations used in actions */
 #include <stdlib.h>
+#include "symbol.h"
 #include "y.tab.h"
+extern char* yytext;
 %}
-
 
 %token PROCESSOR
 %token IF ELSE WHILE FOR
 %token CONTINUE BREAK
-%token REBOOT RETURN HALT
-%token INT REAL CHAR STATIC VOID STRING
+%token REBOOT RETURN HALT SUSPEND
+%token INT
+%token REAL
+%token CHAR
+%token STRING
+%token STATIC VOID
 %token EQUAL DIFF GRTEQU LESEQU RAND ROR
-%token ID CONSTANT_INT CONSTANT_REAL CONSTANT_CHAR CONSTANT_STRING
+%token ID
+%token CONSTANT_INT
+%token CONSTANT_REAL
+%token CONSTANT_CHAR
+%token CONSTANT_STRING
+%token CONSTANT_HEX
+%token CONSTANT_OCT
 %token SHL SHR SAR INC DEC
 %token ASSAR ASSHL ASSHR ASADD ASSUB ASDIV ASMOD ASMUL ASAND ASOR ASEOR
 %start translation_unit
 %%
 primary_expression
 	: ID
-	| CONSTANT_INT
+	| CONSTANT_INT { printf("$%s$",yytext);}
 	| CONSTANT_REAL
 	| CONSTANT_CHAR
 	| STRING
@@ -30,16 +41,10 @@ primary_expression
 postfix_expression
 	: primary_expression
 	| postfix_expression '[' expression ']'
-	| postfix_expression '(' ')'
-	| postfix_expression '(' argument_expression_list ')'
 	| postfix_expression INC
 	| postfix_expression DEC
 	;
 
-argument_expression_list
-	: assignment_expression
-	| argument_expression_list ',' assignment_expression
-	;
 
 unary_expression
 	: postfix_expression
@@ -59,7 +64,7 @@ unary_operator
 
 cast_expression
 	: unary_expression
-	| '(' type_name ')' cast_expression
+	| '(' type_specifier ')' cast_expression
 	;
 
 multiplicative_expression
@@ -171,15 +176,8 @@ type_specifier
 	| REAL
 	| INT
 	;
-
-specifier_qualifier_list
-	: type_specifier specifier_qualifier_list
-	| type_specifier
-	;
-
 declarator
-	: pointer direct_declarator
-	| direct_declarator
+	: direct_declarator
 	;
 
 
@@ -187,36 +185,9 @@ direct_declarator
 	: ID
 	| '(' declarator ')'
 	| direct_declarator '[' assignment_expression ']'
-	| direct_declarator '[' '*' ']'
 	| direct_declarator '[' ']'
-	| direct_declarator '(' parameter_list ')'
-	| direct_declarator '(' identifier_list ')'
-	| direct_declarator '(' ')'
 	;
 
-pointer
-	: '*'
-	| '*' pointer
-	;
-
-parameter_list
-	: parameter_declaration
-	| parameter_list ',' parameter_declaration
-	;
-
-parameter_declaration
-	: declaration_specifiers declarator
-	| declaration_specifiers
-	;
-
-identifier_list
-	: ID
-	| identifier_list ',' ID
-	;
-
-type_name
-	: specifier_qualifier_list
-	;
 statement
   :
 	| compound_statement
@@ -227,8 +198,9 @@ statement
   | control_statement
 	;
 control_statement
-  : HALT ';'
+  : HALT  ';' {printf("\n$halt$\n");}
   | REBOOT ';'
+	| SUSPEND ';'
   ;
 
 compound_statement
@@ -281,7 +253,7 @@ processor_declaration
 %%
 #include <stdio.h>
 
-extern char yytext[];
+//extern char yytext[];
 extern int column;
 
 void yyerror(char const *s)
