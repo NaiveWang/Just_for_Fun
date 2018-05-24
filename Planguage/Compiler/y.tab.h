@@ -52,10 +52,10 @@ extern int yydebug;
     FOR = 262,
     CONTINUE = 263,
     BREAK = 264,
-    REBOOT = 265,
+    _REBOOT = 265,
     RETURN = 266,
-    HALT = 267,
-    SUSPEND = 268,
+    _HALT = 267,
+    _SUSPEND = 268,
     INT = 269,
     REAL = 270,
     CHAR = 271,
@@ -101,10 +101,10 @@ extern int yydebug;
 #define FOR 262
 #define CONTINUE 263
 #define BREAK 264
-#define REBOOT 265
+#define _REBOOT 265
 #define RETURN 266
-#define HALT 267
-#define SUSPEND 268
+#define _HALT 267
+#define _SUSPEND 268
 #define INT 269
 #define REAL 270
 #define CHAR 271

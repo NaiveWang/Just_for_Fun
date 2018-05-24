@@ -11,6 +11,9 @@ extern int yylineno;
 extern char* yytext;
 
 extern void symbolInit();
+
+extern void initGen(char*);
+extern void finishGen();
 /* global argument section */
 /* function section */
 int lexNextToken();

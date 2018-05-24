@@ -930,27 +930,27 @@ YY_RULE_SETUP
 case 4:
 YY_RULE_SETUP
 #line 19 "proc.l"
-{count();return HALT;}
+{count();return CHAR;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 21 "proc.l"
-{count();return REBOOT;}
+{count();return _REBOOT;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 22 "proc.l"
-{count();return HALT;}
+{count();return _HALT;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
 #line 23 "proc.l"
-{count();return SUSPEND;}
+{count();return _SUSPEND;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 24 "proc.l"
-{count();return HALT;}
+{count();return RETURN;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP

@@ -16,12 +16,12 @@ void count(void);
 
 "int"                     {count();return INT;}
 "real"                    {count();return REAL;}
-"char"          	        {count();return HALT;}
+"char"          	        {count();return CHAR;}
 
-"reboot"                  {count();return REBOOT;}
-"halt"                    {count();return HALT;}
-"suspend"                 {count();return SUSPEND;}
-"return"          	      {count();return HALT;}
+"reboot"                  {count();return _REBOOT;}
+"halt"                    {count();return _HALT;}
+"suspend"                 {count();return _SUSPEND;}
+"return"          	      {count();return RETURN;}
 
 "if"          	          {count();return IF;}
 "else"          	        {count();return ELSE;}

@@ -5,13 +5,14 @@ int yylex();
 #include <stdlib.h>
 #include "symbol.h"
 #include "y.tab.h"
+#include "codegen.h"
 extern char* yytext;
 %}
 
 %token PROCESSOR
 %token IF ELSE WHILE FOR
 %token CONTINUE BREAK
-%token REBOOT RETURN HALT SUSPEND
+%token _REBOOT RETURN _HALT _SUSPEND
 %token INT
 %token REAL
 %token CHAR
@@ -198,9 +199,9 @@ statement
   | control_statement
 	;
 control_statement
-  : HALT  ';' {printf("\n$halt$\n");}
-  | REBOOT ';'
-	| SUSPEND ';'
+  : _HALT  ';' {gen2(_HALT);}
+  | _REBOOT ';' {gen2(_REBOOT);}
+	| _SUSPEND ';' {gen2(_SUSPEND);}
   ;
 
 compound_statement

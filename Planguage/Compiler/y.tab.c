@@ -70,9 +70,10 @@ int yylex();
 #include <stdlib.h>
 #include "symbol.h"
 #include "y.tab.h"
+#include "codegen.h"
 extern char* yytext;
 
-#line 76 "y.tab.c" /* yacc.c:339  */
+#line 77 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -114,10 +115,10 @@ extern int yydebug;
     FOR = 262,
     CONTINUE = 263,
     BREAK = 264,
-    REBOOT = 265,
+    _REBOOT = 265,
     RETURN = 266,
-    HALT = 267,
-    SUSPEND = 268,
+    _HALT = 267,
+    _SUSPEND = 268,
     INT = 269,
     REAL = 270,
     CHAR = 271,
@@ -163,10 +164,10 @@ extern int yydebug;
 #define FOR 262
 #define CONTINUE 263
 #define BREAK 264
-#define REBOOT 265
+#define _REBOOT 265
 #define RETURN 266
-#define HALT 267
-#define SUSPEND 268
+#define _HALT 267
+#define _SUSPEND 268
 #define INT 269
 #define REAL 270
 #define CHAR 271
@@ -219,7 +220,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 223 "y.tab.c" /* yacc.c:358  */
+#line 224 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -521,18 +522,18 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    33,    33,    34,    35,    36,    37,    38,    42,    43,
-      44,    45,    50,    51,    52,    53,    57,    58,    59,    60,
-      61,    62,    66,    67,    71,    72,    73,    74,    78,    79,
-      80,    84,    85,    86,    90,    91,    92,    93,    94,    98,
-      99,   100,   104,   105,   109,   110,   114,   115,   119,   120,
-     124,   125,   129,   130,   134,   135,   136,   137,   138,   139,
-     140,   141,   142,   143,   144,   148,   149,   153,   154,   157,
-     158,   159,   160,   163,   164,   168,   169,   174,   175,   176,
-     177,   180,   185,   186,   187,   188,   191,   193,   194,   195,
-     196,   197,   198,   201,   202,   203,   207,   208,   212,   213,
-     217,   218,   222,   223,   227,   228,   232,   233,   234,   238,
-     239,   240,   241,   245,   246,   250
+       0,    34,    34,    35,    36,    37,    38,    39,    43,    44,
+      45,    46,    51,    52,    53,    54,    58,    59,    60,    61,
+      62,    63,    67,    68,    72,    73,    74,    75,    79,    80,
+      81,    85,    86,    87,    91,    92,    93,    94,    95,    99,
+     100,   101,   105,   106,   110,   111,   115,   116,   120,   121,
+     125,   126,   130,   131,   135,   136,   137,   138,   139,   140,
+     141,   142,   143,   144,   145,   149,   150,   154,   155,   158,
+     159,   160,   161,   164,   165,   169,   170,   175,   176,   177,
+     178,   181,   186,   187,   188,   189,   192,   194,   195,   196,
+     197,   198,   199,   202,   203,   204,   208,   209,   213,   214,
+     218,   219,   223,   224,   228,   229,   233,   234,   235,   239,
+     240,   241,   242,   246,   247,   251
 };
 #endif
 
@@ -542,9 +543,9 @@ static const yytype_uint8 yyrline[] =
 static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "PROCESSOR", "IF", "ELSE", "WHILE",
-  "FOR", "CONTINUE", "BREAK", "REBOOT", "RETURN", "HALT", "SUSPEND", "INT",
-  "REAL", "CHAR", "STRING", "STATIC", "VOID", "EQUAL", "DIFF", "GRTEQU",
-  "LESEQU", "RAND", "ROR", "ID", "CONSTANT_INT", "CONSTANT_REAL",
+  "FOR", "CONTINUE", "BREAK", "_REBOOT", "RETURN", "_HALT", "_SUSPEND",
+  "INT", "REAL", "CHAR", "STRING", "STATIC", "VOID", "EQUAL", "DIFF",
+  "GRTEQU", "LESEQU", "RAND", "ROR", "ID", "CONSTANT_INT", "CONSTANT_REAL",
   "CONSTANT_CHAR", "CONSTANT_STRING", "CONSTANT_HEX", "CONSTANT_OCT",
   "SHL", "SHR", "SAR", "INC", "DEC", "ASSAR", "ASSHL", "ASSHR", "ASADD",
   "ASSUB", "ASDIV", "ASMOD", "ASMUL", "ASAND", "ASOR", "ASEOR", "'('",
@@ -1490,19 +1491,31 @@ yyreduce:
   switch (yyn)
     {
         case 3:
-#line 34 "proc.y" /* yacc.c:1646  */
+#line 35 "proc.y" /* yacc.c:1646  */
     { printf("$%s$",yytext);}
-#line 1496 "y.tab.c" /* yacc.c:1646  */
+#line 1497 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 93:
-#line 201 "proc.y" /* yacc.c:1646  */
-    {printf("\n$halt$\n");}
-#line 1502 "y.tab.c" /* yacc.c:1646  */
+#line 202 "proc.y" /* yacc.c:1646  */
+    {gen2(_HALT);}
+#line 1503 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 94:
+#line 203 "proc.y" /* yacc.c:1646  */
+    {gen2(_REBOOT);}
+#line 1509 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 95:
+#line 204 "proc.y" /* yacc.c:1646  */
+    {gen2(_SUSPEND);}
+#line 1515 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1506 "y.tab.c" /* yacc.c:1646  */
+#line 1519 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1730,7 +1743,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 253 "proc.y" /* yacc.c:1906  */
+#line 254 "proc.y" /* yacc.c:1906  */
 
 #include <stdio.h>
 
