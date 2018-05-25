@@ -9,7 +9,7 @@ int yylex();
 extern char* yytext;
 extern int currentScope;
 %}
-
+%union {int dec;char* name;}
 %token PROCESSOR
 %token IF ELSE WHILE FOR
 %token CONTINUE BREAK
@@ -20,8 +20,8 @@ extern int currentScope;
 %token STRING
 %token STATIC VOID
 %token EQUAL DIFF GRTEQU LESEQU RAND ROR
-%token ID
-%token CONSTANT_INT
+%token <name>ID
+%token <dec>CONSTANT_INT
 %token CONSTANT_REAL
 %token CONSTANT_CHAR
 %token CONSTANT_STRING
@@ -244,7 +244,9 @@ translation_unit
 	;
 
 processor_declaration
-	: PROCESSOR ID compound_statement
+	: PROCESSOR ID '(' CONSTANT_INT ',' CONSTANT_INT ',' CONSTANT_INT ')' {
+		genPHeader($2,$4,$6,$8);
+	} compound_statement
 	;
 
 %%

@@ -1,4 +1,4 @@
-processor asd
+processor asd(8,1024,1024)
 {
   int a;
   static int b;

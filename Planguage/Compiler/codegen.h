@@ -18,4 +18,5 @@ void gen7(int,int,int);
 void gen3(int,char);
 void gen14(int,int,long);
 void genMark(int);
+void genPHeader(char*,int,int,int);
 #endif

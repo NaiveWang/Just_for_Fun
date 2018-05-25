@@ -25,3 +25,8 @@ void gen2(int codeTyp)
   }
   fprintf(genOut,"\n");
 }
+void genPHeader(char* s,int st0,int st,int gl)
+{
+  //generate the processor header of the file
+  fprintf(genOut,".processor %s %d %d %d\n",s,st0,st,gl);
+}
