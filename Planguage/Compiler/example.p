@@ -8,7 +8,9 @@ processor asd
   reboot;
   while(a);
 {
-;;
+int q;
+char c;
 }
+int c;
   halt;
 }

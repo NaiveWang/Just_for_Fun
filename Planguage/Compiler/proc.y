@@ -7,6 +7,7 @@ int yylex();
 #include "y.tab.h"
 #include "codegen.h"
 extern char* yytext;
+extern int currentScope;
 %}
 
 %token PROCESSOR
@@ -32,7 +33,7 @@ extern char* yytext;
 %%
 primary_expression
 	: ID
-	| CONSTANT_INT { printf("$%s$",yytext);}
+	| CONSTANT_INT
 	| CONSTANT_REAL
 	| CONSTANT_CHAR
 	| STRING
@@ -166,8 +167,8 @@ init_declarator_list
 	;
 
 init_declarator
-	: declarator
-	| declarator '=' assignment_expression
+	: direct_declarator
+	| direct_declarator '=' assignment_expression
 	;
 
 
@@ -177,14 +178,10 @@ type_specifier
 	| REAL
 	| INT
 	;
-declarator
-	: direct_declarator
-	;
 
 
 direct_declarator
-	: ID
-	| '(' declarator ')'
+	: ID {printf("$$$%d$$$",currentScope);}
 	| direct_declarator '[' assignment_expression ']'
 	| direct_declarator '[' ']'
 	;
@@ -205,8 +202,7 @@ control_statement
   ;
 
 compound_statement
-	: '{' '}'
-	| '{' block_item_list '}'
+	: '{' {currentScope++;} block_item_list '}' {currentScope--;}
 	;
 
 block_item_list

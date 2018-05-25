@@ -4,6 +4,7 @@ void symbolInit()
   //set the cursor to zero
   identifiersCursor=0;
   constantsCursor=0;
+  currentScope=0;
 }
 id* addID(char* s)
 {
@@ -30,6 +31,10 @@ id* addID(char* s)
     identifiersCursor++;
     return identifiers+a0-1;
   }
+}
+id* findID(char* s)
+{
+  //return the
 }
 constant* addConst(int typ,char* str)
 {

@@ -24,6 +24,7 @@ typedef struct identifierList
 {
     char type;
     char name[LENGTH_ID];
+    int scope;
 }id;
 typedef struct constantList
 {
@@ -33,9 +34,11 @@ typedef struct constantList
 /* global data section */
 id identifiers[SIZE_IDLIST];
 int identifiersCursor;
-constant constants[SIZE_CONSTLIST];
 
+constant constants[SIZE_CONSTLIST];
 int constantsCursor;
+
+int currentScope;
 /* buffer */
 /*#define STRING_BUFFER_SIZE 1024
 long bufferI;
@@ -45,6 +48,7 @@ char bufferS[STRING_BUFFER_SIZE];*/
 /* function references */
 /* function section */
 void symbolInit();
-id* addID(char* s);
-constant* addConst(int typ,char* s);
+id* addID(char*);
+id* findID(char*);
+constant* addConst(int,char*);
 #endif
