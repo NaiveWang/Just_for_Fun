@@ -6,10 +6,11 @@ int yylex();
 #include "symbol.h"
 #include "y.tab.h"
 #include "codegen.h"
+//#define SIZE_NAME 128
 extern char* yytext;
 extern int currentScope;
 %}
-%union {int dec;char* name;}
+%union {int dec;char name[128];}
 %token PROCESSOR
 %token IF ELSE WHILE FOR
 %token CONTINUE BREAK
@@ -20,8 +21,6 @@ extern int currentScope;
 %token STRING
 %token STATIC VOID
 %token EQUAL DIFF GRTEQU LESEQU RAND ROR
-%token <name>ID
-%token <dec>CONSTANT_INT
 %token CONSTANT_REAL
 %token CONSTANT_CHAR
 %token CONSTANT_STRING
@@ -29,19 +28,25 @@ extern int currentScope;
 %token CONSTANT_OCT
 %token SHL SHR SAR INC DEC
 %token ASSAR ASSHL ASSHR ASADD ASSUB ASDIV ASMOD ASMUL ASAND ASOR ASEOR
+
+%token <dec>CONSTANT_INT
+%token <name>ID
+
+%type <dec>primary_expression
+
 %start translation_unit
 %%
 primary_expression
-	: ID
-	| CONSTANT_INT
-	| CONSTANT_REAL
-	| CONSTANT_CHAR
-	| STRING
+	: ID {$$=0;}
+	| CONSTANT_INT {$$=1;}
+	| CONSTANT_REAL {$$=2;}
+	| CONSTANT_CHAR {$$=3;}
+	| STRING {$$=4;}
 	| '(' expression ')'
 	;
 
 postfix_expression
-	: primary_expression
+	: primary_expression {printf("TTT%dTTT",$1);}
 	| postfix_expression '[' expression ']'
 	| postfix_expression INC
 	| postfix_expression DEC
@@ -181,7 +186,7 @@ type_specifier
 
 
 direct_declarator
-	: ID {printf("$$$%d$$$",currentScope);}
+	: ID {//printf("$$$%d$$$",currentScope);}
 	| direct_declarator '[' assignment_expression ']'
 	| direct_declarator '[' ']'
 	;
@@ -244,9 +249,9 @@ translation_unit
 	;
 
 processor_declaration
-	: PROCESSOR ID '(' CONSTANT_INT ',' CONSTANT_INT ',' CONSTANT_INT ')' {
-		genPHeader($2,$4,$6,$8);
-	} compound_statement
+	: PROCESSOR ID '(' CONSTANT_INT ',' CONSTANT_INT ',' CONSTANT_INT ')'
+		{genPHeader($2,$4,$6,$8);}
+		compound_statement
 	;
 
 %%

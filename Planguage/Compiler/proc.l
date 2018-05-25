@@ -31,11 +31,11 @@ void count(void);
 "break"          	        {count();return BREAK;}
 "static"    							{count();return STATIC;}
 
-{L}({L}|{D})*		          {count();return ID; }
+{L}({L}|{D})*		          {strcpy(yylval.name,yytext);count();return ID; }
 
 0[xX]{H}+{IS}?						{ count(); return(CONSTANT_INT); }
-0[0-7]*{IS}?							{ count(); return(CONSTANT_INT); }
-[1-9]{D}*{IS}?						{ count(); return(CONSTANT_INT); }
+0[0-7]*{IS}?							{ yylval.dec=atoi(yytext);count(); return(CONSTANT_INT); }
+[1-9]{D}*{IS}?						{ yylval.dec=atoi(yytext);count(); return(CONSTANT_INT); }
 
 {D}+{E}{FS}?							{ count(); return(CONSTANT_REAL); }
 {D}*"."{D}+{E}?{FS}?			{ count(); return(CONSTANT_REAL); }

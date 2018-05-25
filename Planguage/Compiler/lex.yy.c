@@ -990,7 +990,7 @@ YY_RULE_SETUP
 case 16:
 YY_RULE_SETUP
 #line 34 "proc.l"
-{count();return ID; }
+{strcpy(yylval.name,yytext);count();return ID; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
@@ -1000,12 +1000,12 @@ YY_RULE_SETUP
 case 18:
 YY_RULE_SETUP
 #line 37 "proc.l"
-{ count(); return(CONSTANT_INT); }
+{ yylval.dec=atoi(yytext);count(); return(CONSTANT_INT); }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
 #line 38 "proc.l"
-{ count(); return(CONSTANT_INT); }
+{ yylval.dec=atoi(yytext);count(); return(CONSTANT_INT); }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
