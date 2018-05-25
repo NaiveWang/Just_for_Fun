@@ -10,6 +10,10 @@ int yylex();
 extern char* yytext;
 extern int currentScope;
 void typeCheck(int,int);
+void typeErrNotFound();
+void typeErrRedeclared();
+void typeErrMismatch();
+id* temp;
 %}
 %union {int type;long dec;char name[128];double real;}
 %token PROCESSOR
@@ -39,10 +43,23 @@ void typeCheck(int,int);
 %type <type>equality_expression
 %type <type>and_expression exclusive_or_expression inclusive_or_expression
 %type <type>logical_or_expression logical_and_expression
+%type <type>type_specifier declaration_specifiers init_declarator_list
+%type <name>direct_declarator init_declarator
 %start translation_unit
 %%
 primary_expression
-	: ID {$$=0;}
+	: ID
+		{
+			temp=findID($1);
+			if(temp)
+			{
+			$$=temp->type;
+			}
+			else
+			{
+			typeErrNotFound();
+			}
+		}
 	| CONSTANT_INT {$$=TYP_INT;}
 	| CONSTANT_REAL {$$=TYP_REAL;}
 	| CONSTANT_CHAR {$$=TYP_CHAR;}
@@ -52,17 +69,25 @@ primary_expression
 
 postfix_expression
 	: primary_expression
+		{$$=$1;}
 	| postfix_expression '[' expression ']'
+		{$$=$1;}
 	| postfix_expression INC
+		{$$=$1;}
 	| postfix_expression DEC
+		{$$=$1;}
 	;
 
 
 unary_expression
 	: postfix_expression
+		{$$=$1;}
 	| INC unary_expression
+		{$$=$2;}
 	| DEC unary_expression
+		{$$=$2;}
 	| unary_operator cast_expression
+		{$$=$2;}
 	;
 
 unary_operator
@@ -76,89 +101,102 @@ unary_operator
 
 cast_expression
 	: unary_expression
+		{$$=$1;}
 	| '(' type_specifier ')' cast_expression
+		{$$=$2;}
 	;
 
 multiplicative_expression
 	: cast_expression
+		{$$=$1;}
 	| multiplicative_expression '*' cast_expression
-		{typeCheck($1,$3);}
+		{typeCheck($1,$3);$$=$1;}
 	| multiplicative_expression '/' cast_expression
-	 	{typeCheck($1,$3);}
+	 	{typeCheck($1,$3);$$=$1;}
 	| multiplicative_expression '%' cast_expression
-		{typeCheck($1,$3);}
+		{typeCheck($1,$3);$$=$1;}
 	;
 
 additive_expression
 	: multiplicative_expression
+		{$$=$1;}
 	| additive_expression '+' multiplicative_expression
-	 	{typeCheck($1,$3);}
+	 	{typeCheck($1,$3);$$=$1;}
 	| additive_expression '-' multiplicative_expression
-	 	{typeCheck($1,$3);}
+	 	{typeCheck($1,$3);$$=$1;}
 	;
 
 shift_expression
 	: additive_expression
+		{$$=$1;}
 	| shift_expression SHL additive_expression
-		{typeCheck($1,$3);}
+		{typeCheck($1,$3);$$=$1;}
 	| shift_expression SHR additive_expression
-		{typeCheck($1,$3);}
+		{typeCheck($1,$3);$$=$1;}
 	;
 
 relational_expression
 	: shift_expression
+		{$$=$1;}
 	| relational_expression '<' shift_expression
-		{typeCheck($1,$3);}
+		{typeCheck($1,$3);$$=$1;}
 	| relational_expression '>' shift_expression
-		{typeCheck($1,$3);}
+		{typeCheck($1,$3);$$=$1;}
 	| relational_expression LESEQU shift_expression
-		{typeCheck($1,$3);}
+		{typeCheck($1,$3);$$=$1;}
 	| relational_expression GRTEQU shift_expression
-		{typeCheck($1,$3);}
+		{typeCheck($1,$3);$$=$1;}
 	;
 
 equality_expression
 	: relational_expression
+		{$$=$1;}
 	| equality_expression EQUAL relational_expression
-		{typeCheck($1,$3);}
+		{typeCheck($1,$3);$$=$1;}
 	| equality_expression DIFF relational_expression
-		{typeCheck($1,$3);}
+		{typeCheck($1,$3);$$=$1;}
 	;
 
 and_expression
 	: equality_expression
+		{$$=$1;}
 	| and_expression '&' equality_expression
-		{typeCheck($1,$3);}
+		{typeCheck($1,$3);$$=$1;}
 	;
 
 exclusive_or_expression
 	: and_expression
+		{$$=$1;}
 	| exclusive_or_expression '^' and_expression
-		{typeCheck($1,$3);}
+		{typeCheck($1,$3);$$=$1;}
 	;
 
 inclusive_or_expression
 	: exclusive_or_expression
+		{$$=$1;}
 	| inclusive_or_expression '|' exclusive_or_expression
-		{typeCheck($1,$3);}
+		{typeCheck($1,$3);$$=$1;}
 	;
 
 logical_and_expression
 	: inclusive_or_expression
+		{$$=$1;}
 	| logical_and_expression RAND inclusive_or_expression
-		{typeCheck($1,$3);}
+		{typeCheck($1,$3);$$=$1;}
 	;
 
 logical_or_expression
 	: logical_and_expression
+		{$$=$1;}
 	| logical_or_expression ROR logical_and_expression
-		{typeCheck($1,$3);}
+		{typeCheck($1,$3);$$=$1;}
 	;
 
 assignment_expression
 	: logical_or_expression
+		{$$=$1;}
 	| unary_expression assignment_operator assignment_expression
-		{typeCheck($1,$3);}
+		{typeCheck($1,$3);$$=$1;}
 	;
 
 assignment_operator
@@ -185,10 +223,8 @@ declaration
 	| declaration_specifiers init_declarator_list ';'
 	;
 declaration_specifiers
-	: STATIC
-	| STATIC declaration_specifiers
-	| type_specifier
-	| type_specifier declaration_specifiers
+	: STATIC type_specifier {$$=$2;}
+	| type_specifier {$$=$1;}
 	;
 init_declarator_list
 	: init_declarator
@@ -197,21 +233,22 @@ init_declarator_list
 
 init_declarator
 	: direct_declarator
-	| direct_declarator '=' assignment_expression
+	| direct_declarator '=' assignment_expression{typeCheck();}
 	;
 
 
 type_specifier
-	: VOID
-	| CHAR
-	| REAL
-	| INT
+	: VOID {$$=TYP_META;}
+	| CHAR {$$=TYP_CHAR;}
+	| REAL {$$=TYP_REAL;}
+	| INT {$$=TYP_INT;}
 	;
 
 
 direct_declarator
-	: ID //{//printf("$$$%d$$$",currentScope);}
-	| direct_declarator '[' assignment_expression ']'
+	: ID
+		{strcpy($$,$1);}
+	| direct_declarator '[' assignment_expression ']'{if($3!=TYP_INT) typeErrMismatch();}
 	| direct_declarator '[' ']'
 	;
 
@@ -231,7 +268,7 @@ control_statement
   ;
 
 compound_statement
-	: '{' {currentScope++;} block_item_list '}' {currentScope--;}
+	: '{' {currentScope++;} block_item_list '}' {leaveScope();}
 	;
 
 block_item_list
@@ -274,7 +311,13 @@ translation_unit
 
 processor_declaration
 	: PROCESSOR ID '(' CONSTANT_INT ',' CONSTANT_INT ',' CONSTANT_INT ')'
-		{genPHeader($2,$4,$6,$8);}
+		{
+		//check first
+		temp = addID(TYP_PROC,$2);
+		if(!temp)
+			typeErrRedeclared();
+		genPHeader($2,$4,$6,$8);
+		}
 		compound_statement
 	;
 
@@ -291,7 +334,26 @@ void yyerror(char const *s)
 }
 void typeCheck(int l,int r)
 {
-	printf("type checking failure : \n");
+	printf("type checking failure:%d/%d/",l,r);
+	yyerror(yytext);
+	exit(-1);
+}
+
+void typeErrNotFound()
+{
+	printf("type error : cannot find declaration.");
+	yyerror(yytext);
+	exit(-1);
+}
+void typeErrRedeclared()
+{
+	printf("type error : identifier name override.");
+	yyerror(yytext);
+	exit(-1);
+}
+void typeErrMismatch()
+{
+	printf("type error : type mismatch.");
 	yyerror(yytext);
 	exit(-1);
 }

@@ -20,6 +20,7 @@
 #define TYP_INT  2
 #define TYP_REAL 3
 #define TYP_STRING 4
+#define TYP_PROC 5
 typedef struct identifierList
 {
     char type;
@@ -48,7 +49,8 @@ char bufferS[STRING_BUFFER_SIZE];*/
 /* function references */
 /* function section */
 void symbolInit();
-id* addID(char*);
+id* addID(int,char*);
 id* findID(char*);
+void leaveScope();
 constant* addConst(int,char*);
 #endif

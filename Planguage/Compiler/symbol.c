@@ -6,35 +6,43 @@ void symbolInit()
   constantsCursor=0;
   currentScope=0;
 }
-id* addID(char* s)
+id* addID(int typ,char* s)
 {
-  //compare the identifier name first
+  //use before enter a new scope
+  //check there is no name same as the current one
   static int a0;
-  for(a0=0;a0<identifiersCursor;a0++)
+  for(a0=identifiersCursor-1;a0!=-1 || identifiers[a0].scope==currentScope;a0--)
   {
-    //check each list member with target string
-    if(!strcmp(s,identifiers[a0].name))
-    {
-      //same name
-      //return the address
-      return identifiers+a0;
-    }
-    //nothing matched
-    //check if stack oveflow
-    if(a0==SIZE_IDLIST)
-    {
+    //check each content
+    if(!strcmp(s,identifiers[a0].name))//equal
       return NULL;
-    }
-    //all checked, copy the string
-    strcpy(identifiers[a0].name,s);
-    identifiers[a0].type = TYP_META;
-    identifiersCursor++;
-    return identifiers+a0-1;
   }
+  //add new item
+  identifiers[identifiersCursor].type = typ;
+  identifiers[identifiersCursor].scope = currentScope;
+  strcpy(identifiers[identifiersCursor].name,s);
+  identifiersCursor++;
+  return identifiers+identifiersCursor;
 }
 id* findID(char* s)
 {
   //return the
+  //find the id from top to bottom
+  static int a0;
+  for(a0=identifiersCursor-1;a0!=-1;a0--)
+  {
+    if(!strcmp(s,identifiers[a0].name))//found the nearst one
+      return identifiers+a0;
+  }
+  //nothing matched
+  return NULL;
+}
+void leaveScope()
+{
+  //leave current scope
+  while(identifiers[identifiersCursor].scope==currentScope)
+    identifiersCursor--;
+  currentScope--;
 }
 constant* addConst(int typ,char* str)
 {
