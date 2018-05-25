@@ -11,7 +11,7 @@ processor asd (0X10,0xFF,1024)
 int q;
 char c;
 }
-int c;
+int o;
   halt;
 }
 processor qwe(1,2,3)

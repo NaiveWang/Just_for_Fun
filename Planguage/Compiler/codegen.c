@@ -9,7 +9,7 @@ void finishGen()
   fflush(genOut);
   fclose(genOut);
 }
-void gen2(int codeTyp)
+void gen2 (int codeTyp)
 {
   switch(codeTyp)
   {

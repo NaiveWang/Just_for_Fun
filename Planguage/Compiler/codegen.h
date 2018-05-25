@@ -5,8 +5,12 @@
 #include "y.tab.h"
 #include "../PCoreIR.h"
 /* external */
-extern IR pir[];
+//extern IR pir[];
+
 /* global parameter */
+int globalSegOfst;
+int stackSegOfst;
+
 FILE *genOut;
 /* functions */
 void initGen(char*);

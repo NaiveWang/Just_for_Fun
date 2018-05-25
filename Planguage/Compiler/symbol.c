@@ -43,7 +43,9 @@ id* findID(char* s)
 void leaveScope()
 {
   //leave current scope
-  while(identifiers[identifiersCursor].scope==currentScope)
+  while(identifiersCursor&&
+    identifiers[identifiersCursor-1].scope &&
+    identifiers[identifiersCursor-1].scope==currentScope)
     identifiersCursor--;
   currentScope--;
 }
