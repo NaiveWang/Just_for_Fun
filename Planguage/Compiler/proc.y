@@ -43,8 +43,8 @@ id* temp;
 %type <type>equality_expression
 %type <type>and_expression exclusive_or_expression inclusive_or_expression
 %type <type>logical_or_expression logical_and_expression
-%type <type>type_specifier declaration_specifiers init_declarator_list
-%type <name>direct_declarator init_declarator
+%type <type>type_specifier declaration_specifiers
+%type <type>init_declarator init_declarator_list
 %start translation_unit
 %%
 primary_expression
@@ -219,8 +219,11 @@ expression
 	;
 
 declaration
-	: declaration_specifiers ';'
-	| declaration_specifiers init_declarator_list ';'
+	: declaration_specifiers init_declarator_list ';'
+		{
+		typeCheck($1,$2);
+		setMetaType($1);
+		}
 	;
 declaration_specifiers
 	: STATIC type_specifier {$$=$2;}
@@ -228,12 +231,14 @@ declaration_specifiers
 	;
 init_declarator_list
 	: init_declarator
+		{$$=$1;}
 	| init_declarator_list ',' init_declarator
+		{typeCheck($1,$3);$$=$1>$3?$1:$3;}
 	;
 
 init_declarator
-	: direct_declarator
-	| direct_declarator '=' assignment_expression{typeCheck();}
+	: direct_declarator {$$=TYP_META;}
+	| direct_declarator '=' assignment_expression{$$=$3;}
 	;
 
 
@@ -247,7 +252,11 @@ type_specifier
 
 direct_declarator
 	: ID
-		{strcpy($$,$1);}
+		{
+		temp=addID(TYP_META,$1);
+		if(!temp)
+			typeErrRedeclared();
+		}
 	| direct_declarator '[' assignment_expression ']'{if($3!=TYP_INT) typeErrMismatch();}
 	| direct_declarator '[' ']'
 	;
@@ -334,6 +343,8 @@ void yyerror(char const *s)
 }
 void typeCheck(int l,int r)
 {
+printf("$%d#%d$",l,r);
+if(l==TYP_META || r==TYP_META || l==r) return;
 	printf("type checking failure:%d/%d/",l,r);
 	yyerror(yytext);
 	exit(-1);

@@ -11,7 +11,8 @@ id* addID(int typ,char* s)
   //use before enter a new scope
   //check there is no name same as the current one
   static int a0;
-  for(a0=identifiersCursor-1;a0!=-1 || identifiers[a0].scope==currentScope;a0--)
+  //debug01();
+  for(a0=identifiersCursor-1;a0!=-1 && identifiers[a0].scope==currentScope;a0--)
   {
     //check each content
     if(!strcmp(s,identifiers[a0].name))//equal
@@ -22,6 +23,7 @@ id* addID(int typ,char* s)
   identifiers[identifiersCursor].scope = currentScope;
   strcpy(identifiers[identifiersCursor].name,s);
   identifiersCursor++;
+  //a0=123++;
   return identifiers+identifiersCursor;
 }
 id* findID(char* s)
@@ -29,6 +31,7 @@ id* findID(char* s)
   //return the
   //find the id from top to bottom
   static int a0;
+  debug01();
   for(a0=identifiersCursor-1;a0!=-1;a0--)
   {
     if(!strcmp(s,identifiers[a0].name))//found the nearst one
@@ -43,6 +46,14 @@ void leaveScope()
   while(identifiers[identifiersCursor].scope==currentScope)
     identifiersCursor--;
   currentScope--;
+}
+void setMetaType(int typ)
+{
+  static int a0;
+  for(a0=identifiersCursor-1;a0!=-1 && identifiers[a0].type==TYP_META;a0--)
+  {
+    identifiers[a0].type=typ;
+  }
 }
 constant* addConst(int typ,char* str)
 {
@@ -174,4 +185,14 @@ constant* addConst(int typ,char* str)
     default:
       return NULL;
   }
+}
+void debug01()
+{
+  int a0;
+  printf("\n++++++++DEBUG START+++++++++\n");
+  for(a0=identifiersCursor;a0;a0--)
+  {
+    printf("%d/%d %s\n",identifiers[a0-1].type,identifiers[a0-1].scope,identifiers[a0-1].name);
+  }
+  printf("\n========DEBUG ENDED=========\n");
 }

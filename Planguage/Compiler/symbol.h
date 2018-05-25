@@ -53,4 +53,6 @@ id* addID(int,char*);
 id* findID(char*);
 void leaveScope();
 constant* addConst(int,char*);
+void setMetaType(int);
+void debug01();
 #endif

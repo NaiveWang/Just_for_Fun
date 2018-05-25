@@ -1,11 +1,10 @@
 processor asd (0X10,0xFF,1024)
 {
-  int a;
+  int a,w;
   static int b;
   real c;
   a=111;
   c=118.88e13;
-  b=a+c;
   reboot;
   while(a);
 {
@@ -14,4 +13,11 @@ char c;
 }
 int c;
   halt;
+}
+processor qwe(1,2,3)
+{
+int a,s,d=2442;
+real c=.222,f=(real)22;
+a=s;
+c=(real)(3234--);
 }
