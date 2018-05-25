@@ -4,7 +4,7 @@ H			[a-fA-F0-9]
 E			([Ee][+-]?{D}+)
 P     ([Pp][+-]?{D}+)
 FS		(f|F|l|L)
-IS    ((u|U)|(u|U)?(l|L|ll|LL)|(l|L|ll|LL)(u|U))
+IS    ((u|U)|(u|U)?(u|U))
 %{
 #include "y.tab.h"
 void yyerror (char *s);
@@ -33,17 +33,17 @@ void count(void);
 
 {L}({L}|{D})*		          {strcpy(yylval.name,yytext);count();return ID; }
 
-0[xX]{H}+{IS}?						{ count(); return(CONSTANT_INT); }
-0[0-7]*{IS}?							{ yylval.dec=atoi(yytext);count(); return(CONSTANT_INT); }
-[1-9]{D}*{IS}?						{ yylval.dec=atoi(yytext);count(); return(CONSTANT_INT); }
+0[xX]{H}+{IS}?						{ sscanf(yytext,"%lx",&yylval.dec);count(); return(CONSTANT_INT); }
+0[0-7]*{IS}?							{ sscanf(yytext,"%lo",&yylval.dec);count(); return(CONSTANT_INT); }
+[1-9]{D}*{IS}?						{ sscanf(yytext,"%ld",&yylval.dec);count(); return(CONSTANT_INT); }
 
-{D}+{E}{FS}?							{ count(); return(CONSTANT_REAL); }
-{D}*"."{D}+{E}?{FS}?			{ count(); return(CONSTANT_REAL); }
-{D}+"."{D}*{E}?{FS}?			{ count(); return(CONSTANT_REAL); }
-0[xX]{H}+{P}{FS}?					{ count(); return(CONSTANT_REAL); }
-0[xX]{H}*"."{H}+{P}{FS}?  { count(); return(CONSTANT_REAL); }
-0[xX]{H}+"."{H}*{P}{FS}?  { count(); return(CONSTANT_REAL); }
-L?\"(\\.|[^\\"\n])*\"			{ count(); return(CONSTANT_STRING); }
+{D}+{E}{FS}?							{ sscanf(yytext,"%lf",&yylval.real);count(); return(CONSTANT_REAL); }
+{D}*"."{D}+{E}?{FS}?			{ sscanf(yytext,"%lf",&yylval.real);count(); return(CONSTANT_REAL); }
+{D}+"."{D}*{E}?{FS}?			{ sscanf(yytext,"%lf",&yylval.real);count(); return(CONSTANT_REAL); }
+0[xX]{H}+{P}{FS}?					{ sscanf(yytext,"%lf",&yylval.real);count(); return(CONSTANT_REAL); }
+0[xX]{H}*"."{H}+{P}{FS}?  { sscanf(yytext,"%lf",&yylval.real);count(); return(CONSTANT_REAL); }
+0[xX]{H}+"."{H}*{P}{FS}?  { sscanf(yytext,"%lf",&yylval.real);count(); return(CONSTANT_REAL); }
+L?\"(\\.|[^\\"\n])*\"			{ strcpy(yylval.name,yytext);count(); return(CONSTANT_STRING); }
 L?'(\\.|[^\\'\n])+'	{ count(); return(CONSTANT_CHAR); }
 ">>>="			{ count(); return(ASSAR); }
 ">>="			{ count(); return(ASSHR); }

@@ -16,10 +16,10 @@
 #define SIZE_CONSTLIST 4096
 #define TYP_META 0
 #define TYP_PTR 'P'
-#define TYP_CHAR 'C'
-#define TYP_INT 'I'
-#define TYP_REAL 'R'
-#define TYP_STRING 'S'
+#define TYP_CHAR 1
+#define TYP_INT  2
+#define TYP_REAL 3
+#define TYP_STRING 4
 typedef struct identifierList
 {
     char type;
