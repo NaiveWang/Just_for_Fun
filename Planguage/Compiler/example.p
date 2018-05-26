@@ -9,6 +9,8 @@ processor asd (0X10,0xFF,1024)
   while(a);
 {
 int q;
+q=q+a;
+a=123+666;
 char c;
 }
 int o;

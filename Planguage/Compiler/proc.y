@@ -15,7 +15,7 @@ void typeErrRedeclared();
 void typeErrMismatch();
 id* temp;
 %}
-%union {int type;long dec;char name[128];double real;}
+%union {char cr;int type;long dec;char name[128];double real;}
 %token PROCESSOR
 %token IF ELSE WHILE FOR
 %token CONTINUE BREAK
@@ -26,11 +26,11 @@ id* temp;
 %token STRING
 %token STATIC VOID
 %token EQUAL DIFF GRTEQU LESEQU RAND ROR
-%token CONSTANT_REAL
-%token CONSTANT_CHAR
-%token CONSTANT_STRING
-%token CONSTANT_HEX
-%token CONSTANT_OCT
+%token <real>CONSTANT_REAL
+%token <cr>CONSTANT_CHAR
+%token <name>CONSTANT_STRING
+%token <dec>CONSTANT_HEX
+%token <dec>CONSTANT_OCT
 %token SHL SHR SAR INC DEC
 %token ASSAR ASSHL ASSHR ASADD ASSUB ASDIV ASMOD ASMUL ASAND ASOR ASEOR
 
@@ -60,8 +60,8 @@ primary_expression
 			typeErrNotFound();
 			}
 		}
-	| CONSTANT_INT {$$=TYP_INT;}
-	| CONSTANT_REAL {$$=TYP_REAL;}
+	| CONSTANT_INT {$$=TYP_INT;genImmI("PUSH0I8 I",$1);}
+	| CONSTANT_REAL {$$=TYP_REAL;genImmR("PUSH0I8 R",$1);}
 	| CONSTANT_CHAR {$$=TYP_CHAR;}
 	| STRING {$$=TYP_STRING;}
 	| '(' expression ')' {$$=$2;}
@@ -73,9 +73,9 @@ postfix_expression
 	| postfix_expression '[' expression ']'
 		{$$=$1;}
 	| postfix_expression INC
-		{$$=$1;}
+		{$$=$1;gen2OP("INC",$1);}
 	| postfix_expression DEC
-		{$$=$1;}
+		{$$=$1;gen2OP("DEC",$1);}
 	;
 
 
@@ -87,16 +87,16 @@ unary_expression
 	| DEC unary_expression
 		{$$=$2;}
 	| unary_operator cast_expression
-		{$$=$2;}
+		{$$=$2;gen2OP_1($2);}
 	;
 
 unary_operator
-	: '&'
-	| '*'
-	| '+'
-	| '-'
-	| '~'
-	| '!'
+	: '&' {gen2OP_0("AND");}
+	| '*' {gen2OP_0("MUL");}
+	| '+' {gen2OP_0("ADD");}
+	| '-' {gen2OP_0("SUB");}
+	| '~' {gen2OP_0("NOT");}
+	| '!' {gen2OP_0("?");}
 	;
 
 cast_expression
@@ -110,29 +110,29 @@ multiplicative_expression
 	: cast_expression
 		{$$=$1;}
 	| multiplicative_expression '*' cast_expression
-		{typeCheck($1,$3);$$=$1;}
+		{typeCheck($1,$3);$$=$1;gen2OP("MUL",$1);}
 	| multiplicative_expression '/' cast_expression
-	 	{typeCheck($1,$3);$$=$1;}
+	 	{typeCheck($1,$3);$$=$1;gen2OP("DIV",$1);}
 	| multiplicative_expression '%' cast_expression
-		{typeCheck($1,$3);$$=$1;}
+		{typeCheck($1,$3);$$=$1;gen2OP("DIV",$1);}
 	;
 
 additive_expression
 	: multiplicative_expression
 		{$$=$1;}
 	| additive_expression '+' multiplicative_expression
-	 	{typeCheck($1,$3);$$=$1;}
+	 	{typeCheck($1,$3);$$=$1;gen2OP("ADD",$1);}
 	| additive_expression '-' multiplicative_expression
-	 	{typeCheck($1,$3);$$=$1;}
+	 	{typeCheck($1,$3);$$=$1;gen2OP("SUB",$1);}
 	;
 
 shift_expression
 	: additive_expression
 		{$$=$1;}
 	| shift_expression SHL additive_expression
-		{typeCheck($1,$3);$$=$1;}
+		{typeCheck($1,$3);$$=$1;gen2OP("SHL",$1);}
 	| shift_expression SHR additive_expression
-		{typeCheck($1,$3);$$=$1;}
+		{typeCheck($1,$3);$$=$1;gen2OP("SHR",$1);}
 	;
 
 relational_expression
@@ -161,21 +161,21 @@ and_expression
 	: equality_expression
 		{$$=$1;}
 	| and_expression '&' equality_expression
-		{typeCheck($1,$3);$$=$1;}
+		{typeCheck($1,$3);$$=$1;gen2OP("AND",$1);}
 	;
 
 exclusive_or_expression
 	: and_expression
 		{$$=$1;}
 	| exclusive_or_expression '^' and_expression
-		{typeCheck($1,$3);$$=$1;}
+		{typeCheck($1,$3);$$=$1;gen2OP("XOR",$1);}
 	;
 
 inclusive_or_expression
 	: exclusive_or_expression
 		{$$=$1;}
 	| inclusive_or_expression '|' exclusive_or_expression
-		{typeCheck($1,$3);$$=$1;}
+		{typeCheck($1,$3);$$=$1;gen2OP("OR",$1);}
 	;
 
 logical_and_expression
@@ -326,6 +326,7 @@ processor_declaration
 		if(!temp)
 			typeErrRedeclared();
 		genPHeader($2,$4,$6,$8);
+		gen(".code\n");
 		}
 		compound_statement
 	;

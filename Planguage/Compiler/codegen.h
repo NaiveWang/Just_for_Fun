@@ -16,11 +16,13 @@ FILE *genOut;
 void initGen(char*);
 void finishGen();
 void gen2(int);
-void gen12(int,int,int,int,int);
-void gen10(int,long);
-void gen7(int,int,int);
-void gen3(int,char);
-void gen14(int,int,long);
+void gen2OP(char*,int);
+void gen2OP_0(char*);
+void gen2OP_1(int);
+void genImmI(char*,long);
+void genImmR(char*,double);
+void genImmC(char*,char);
 void genMark(int);
 void genPHeader(char*,int,int,int);
+void gen(char*);
 #endif
