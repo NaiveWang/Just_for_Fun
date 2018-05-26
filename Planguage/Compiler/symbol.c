@@ -196,5 +196,5 @@ void debug01()
   {
     printf("%d/%d %s\n",identifiers[a0-1].type,identifiers[a0-1].scope,identifiers[a0-1].name);
   }
-  printf("\n========DEBUG ENDED=========\n");
+  printf("========DEBUG ENDED=========\n");
 }
