@@ -1,11 +1,4 @@
 #include "codegen.h"
-void codeGeneratorInit()
-{
-  fStackPtr=1;
-  //reserved 0 for error handler
-  flagMarker=0;
-  //flag marker starts from 0
-}
 void fStackPush(int n,char t)
 {
   if(fStackPtr==SIZE_FSTACK)
@@ -39,6 +32,10 @@ void initGen(char *s)
 {
   //open file
   genOut = fopen(s,"w");
+  fStackPtr=1;
+  //reserved 0 for error handler
+  flagMarker=0;
+  //flag marker starts from 0
 }
 void finishGen()
 {
@@ -120,4 +117,42 @@ void genImmC(char* s,char v)
 void genFlagRelated(char* s,int n)
 {
   fprintf(genOut,"%s%d\n",s,n);
+}
+void gen7(int typ,char* s,char seg,int ofst)
+{
+  fprintf(genOut,"%s",s);
+  switch(typ)
+  {
+    case TYP_INT:
+      fprintf(genOut,"8");
+      break;
+    case TYP_REAL:
+
+      fprintf(genOut,"8");
+      break;
+    case TYP_CHAR:
+      fprintf(genOut,"1");
+
+      break;
+  }
+  fprintf(genOut," %d:%d\n",seg,ofst);
+}
+void gen12(int typ,char* s,char s1,int o1,char s2,int o2)
+{
+  fprintf(genOut,"%s",s);
+  switch(typ)
+  {
+    case TYP_INT:
+      fprintf(genOut,"8");
+      break;
+    case TYP_REAL:
+
+      fprintf(genOut,"8");
+      break;
+    case TYP_CHAR:
+      fprintf(genOut,"1");
+
+      break;
+  }
+  fprintf(genOut," %d:%d %d:%d\n",s1,o1,s2,o2);
 }

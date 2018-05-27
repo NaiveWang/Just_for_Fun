@@ -9,7 +9,7 @@ processor asd (0X10,0xFF,1024)
   while(a);
 {
 int q;
-q=q+a;
+q=q+a*b^q*(a+b);
 a=123+666;
 char c;
 }

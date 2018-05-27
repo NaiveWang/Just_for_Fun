@@ -4,6 +4,7 @@
 #include "symbol.h"
 #include "y.tab.h"
 #include "../PCoreIR.h"
+#include "../PCoreBase.h"
 #define TYP_LOOP 0
 #define TYP_LOOP_ESCAPE 1
 #define TYP_BRANCH_TRUE 2
@@ -20,24 +21,23 @@ typedef struct flagStack
 //extern IR pir[];
 
 /* global parameter */
-int globalSegOfst;
-int stackSegOfst;
-int stackCounter;
+
 int flagMarker;
 
 FILE *genOut;
 
 fSt fStack[SIZE_FSTACK];
 int fStackPtr;
-/*initializer*/
-void codeGeneratorInit();
+
 /* util functions */
 void fStackPush(int,char);
 int fStackFind(char);
 int fStackPop();
-/* gen functions */
+/*initializer*/
 void initGen(char*);
+/*closeing function*/
 void finishGen();
+/* gen functions */
 void gen2(int);
 void gen2OP(char*,int);
 void gen2OP_0(char*);
@@ -49,4 +49,6 @@ void genMark(int);
 void genPHeader(char*,int,int,int);
 void gen(char*);
 void genFlagRelated(char*,int);
+void gen7(int,char*,char,int);
+void gen12(int,char*,char,int,char,int);
 #endif

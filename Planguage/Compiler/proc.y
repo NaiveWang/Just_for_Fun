@@ -10,7 +10,7 @@ int yylex();
 
 extern char* yytext;
 extern int currentScope;
-void typeCheck(int,int);
+void typeCheck(struct value_and_type,struct value_and_type);
 void typeErrNotFound();
 void typeErrRedeclared();
 void typeErrMismatch();
@@ -67,6 +67,7 @@ primary_expression
 			{
 			$$.type=temp->type;
 			$$.isID=1;
+			gen7(temp->type,"PUSH0",temp->seg,temp->ofst);
 			}
 			else
 			{
@@ -74,16 +75,32 @@ primary_expression
 			}
 		}
 	| CONSTANT_INT
+	{
+	$$.type=TYP_INT;
+	$$.isID=0;
+	genImmI("PUSH0I8 I ",$1.vali);
+	}
 	| CONSTANT_REAL
+	{
+	$$.type=TYP_REAL;
+	$$.isID=0;
+	genImmR("PUSH0I8 R ",$1.valr);
+	}
 	| CONSTANT_CHAR
+	{
+	$$.type=TYP_CHAR;
+	$$.isID=0;
+	genImmC("PUSH0I1 ",$1.valc);
+	}
 	| STRING
 	| '(' expression ')'
+	{
+	$$=$2;
+	}
 	;
 
 postfix_expression
 	: primary_expression
-		{$$=$1;}
-	| postfix_expression '[' expression ']'
 		{$$=$1;}
 	| postfix_expression INC
 		{$$=$1;gen2OP("INC",$1.type);}
@@ -123,98 +140,120 @@ multiplicative_expression
 	: cast_expression
 		{$$=$1;}
 	| multiplicative_expression '*' cast_expression
-		{typeCheck($1.type,$3.type);$$=$1;gen2OP("MUL",$1.type);}
+		{typeCheck($1,$3);$$=$1;gen2OP("MUL",$1.type);}
 	| multiplicative_expression '/' cast_expression
-	 	{typeCheck($1.type,$3.type);$$=$1;gen2OP("DIV",$1.type);}
+	 	{typeCheck($1,$3);$$=$1;gen2OP("DIV",$1.type);}
 	| multiplicative_expression '%' cast_expression
-		{typeCheck($1.type,$3.type);$$=$1;gen2OP("DIV",$1.type);}
+		{typeCheck($1,$3);$$=$1;gen2OP("DIV",$1.type);}
 	;
 
 additive_expression
 	: multiplicative_expression
 		{$$=$1;}
 	| additive_expression '+' multiplicative_expression
-	 	{typeCheck($1.type,$3.type);$$=$1;gen2OP("ADD",$1.type);}
+	 	{typeCheck($1,$3);$$=$1;gen2OP("ADD",$1.type);}
 	| additive_expression '-' multiplicative_expression
-	 	{typeCheck($1.type,$3.type);$$=$1;gen2OP("SUB",$1.type);}
+	 	{typeCheck($1,$3);$$=$1;gen2OP("SUB",$1.type);}
 	;
 
 shift_expression
 	: additive_expression
 		{$$=$1;}
 	| shift_expression SHL additive_expression
-		{typeCheck($1.type,$3.type);$$=$1;gen2OP("SHL",$1.type);}
+		{typeCheck($1,$3);$$=$1;gen2OP("SHL",$1.type);}
 	| shift_expression SHR additive_expression
-		{typeCheck($1.type,$3.type);$$=$1;gen2OP("SHR",$1.type);}
+		{typeCheck($1,$3);$$=$1;gen2OP("SHR",$1.type);}
 	;
 
 relational_expression
 	: shift_expression
 		{$$=$1;}
 	| relational_expression '<' shift_expression
-		{typeCheck($1.type,$3.type);$$=$1;}
+		{typeCheck($1,$3);$$=$1;}
 	| relational_expression '>' shift_expression
-		{typeCheck($1.type,$3.type);$$=$1;}
+		{typeCheck($1,$3);$$=$1;}
 	| relational_expression LESEQU shift_expression
-		{typeCheck($1.type,$3.type);$$=$1;}
+		{typeCheck($1,$3);$$=$1;}
 	| relational_expression GRTEQU shift_expression
-		{typeCheck($1.type,$3.type);$$=$1;}
+		{typeCheck($1,$3);$$=$1;}
 	;
 
 equality_expression
 	: relational_expression
 		{$$=$1;}
 	| equality_expression EQUAL relational_expression
-		{typeCheck($1.type,$3.type);$$=$1;}
+		{typeCheck($1,$3);$$=$1;}
 	| equality_expression DIFF relational_expression
-		{typeCheck($1.type,$3.type);$$=$1;}
+		{typeCheck($1,$3);$$=$1;}
 	;
 
 and_expression
 	: equality_expression
 		{$$=$1;}
 	| and_expression '&' equality_expression
-		{typeCheck($1.type,$3.type);$$=$1;gen2OP("AND",$1.type);}
+		{typeCheck($1,$3);$$=$1;gen2OP("AND",$1.type);}
 	;
 
 exclusive_or_expression
 	: and_expression
 		{$$=$1;}
 	| exclusive_or_expression '^' and_expression
-		{typeCheck($1.type,$3.type);$$=$1;gen2OP("XOR",$1.type);}
+		{typeCheck($1,$3);$$=$1;gen2OP("XOR",$1.type);}
 	;
 
 inclusive_or_expression
 	: exclusive_or_expression
 		{$$=$1;}
 	| inclusive_or_expression '|' exclusive_or_expression
-		{typeCheck($1.type,$3.type);$$=$1;gen2OP("OR",$1.type);}
+		{typeCheck($1,$3);$$=$1;gen2OP("OR",$1.type);}
 	;
 
 logical_and_expression
 	: inclusive_or_expression
 		{$$=$1;}
 	| logical_and_expression RAND inclusive_or_expression
-		{typeCheck($1.type,$3.type);$$=$1;}
+		{typeCheck($1,$3);$$=$1;}
 	;
 
 logical_or_expression
 	: logical_and_expression
 		{$$=$1;}
 	| logical_or_expression ROR logical_and_expression
-		{typeCheck($1.type,$3.type);$$=$1;}
+		{typeCheck($1,$3);$$=$1;}
 	;
 
 assignment_expression
 	: logical_or_expression
 		{$$=$1;}
-	| unary_expression assignment_operator assignment_expression
-		{typeCheck($1.type,$3.type);$$=$1;}
+	| ID '=' assignment_expression
+		{
+		//check id
+		temp=findID($1);
+		if(temp)
+			{
+			//check type
+			if(temp->type==$3.type)
+				{
+				//assign value
+				//copy the top stack to the target
+				gen12($3.type,"MOV",POINTER_STACK0,$3.type==TYP_CHAR?-1:-8,temp->seg,temp->ofst);
+				}
+			else
+				{
+				//typeErrMismatch
+				typeErrMismatch();
+				}
+			}
+		else
+			{
+			typeErrNotFound();
+			}
+		}
+	| ID assignment_operator assignment_expression
 	;
 
 assignment_operator
-	: '='
-	| ASMUL
+	: ASMUL
 	| ASDIV
 	| ASMOD
 	| ASADD
@@ -228,13 +267,18 @@ assignment_operator
 
 expression
 	: assignment_expression
+	{
+	//reset fast stack
+	$$=$1;
+	//gen12(TYP_INT,"MOV",BASE_DATA,BASE_STACK0,BASE_DATA,POINTER_STACK0);
+	}
 	| expression ',' assignment_expression
 	;
 
 declaration
 	: declaration_specifiers init_declarator_list ';'
 		{
-		typeCheck($1.type,$2.type);
+		typeCheck($1,$2);
 		setMetaType($1.type);
 		}
 	;
@@ -246,7 +290,7 @@ init_declarator_list
 	: init_declarator
 		{$$=$1;}
 	| init_declarator_list ',' init_declarator
-		{typeCheck($1.type,$3.type);$$=$1.type>$3.type?$1:$3;}
+		{typeCheck($1,$3);$$=$1.type>$3.type?$1:$3;}
 	;
 
 init_declarator
@@ -305,6 +349,12 @@ block_item
 expression_statement
 	: ';'
 	| expression ';'
+	{
+	{
+	//reset fast stack
+	gen12(TYP_INT,"MOV",BASE_DATA,BASE_STACK0,BASE_DATA,POINTER_STACK0);
+	}
+	}
 	;
 
 selection_statement
@@ -334,8 +384,6 @@ iteration_statement
 jump_statement
 	: CONTINUE ';'
 	| BREAK ';'
-	| RETURN ';'
-	| RETURN expression ';'
 	;
 
 translation_unit
@@ -370,11 +418,11 @@ void yyerror(char const *s)
 	fflush(stdout);
 	printf("\n%*s\n%*s\n", column, "^", column, s);
 }
-void typeCheck(int l,int r)
+void typeCheck(struct value_and_type l,struct value_and_type r)
 {
-printf("$%d#%d$",l,r);
-if(l==TYP_META || r==TYP_META || l==r) return;
-	printf("type checking failure:%d/%d/",l,r);
+printf("$%d#%d$",l.type,r.type);
+if(l.type==TYP_META || r.type==TYP_META || l.type==r.type) return;
+	printf("type checking failure:%d/%d/",l.type,r.type);
 	yyerror(yytext);
 	exit(-1);
 }

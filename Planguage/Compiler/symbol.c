@@ -5,6 +5,9 @@ void symbolInit()
   identifiersCursor=0;
   constantsCursor=0;
   currentScope=0;
+  globalSegOfst=0;
+  stackSegOfst=0;
+  stackCounter=0;
 }
 id* addID(int typ,char* s)
 {

@@ -26,6 +26,8 @@ typedef struct identifierList
     char type;
     char name[LENGTH_ID];
     int scope;
+    char seg;
+    int ofst;
 }id;
 typedef struct constantList
 {
@@ -40,6 +42,10 @@ constant constants[SIZE_CONSTLIST];
 int constantsCursor;
 
 int currentScope;
+
+int globalSegOfst;
+int stackSegOfst;
+int stackCounter;
 /* buffer */
 /*#define STRING_BUFFER_SIZE 1024
 long bufferI;
