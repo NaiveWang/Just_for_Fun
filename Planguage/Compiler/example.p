@@ -22,4 +22,8 @@ int a,s,d=2442;
 real c=.222,f=(real)22;
 a=s;
 c=(real)(3234--);
+if(a)
+{
+real wewewew=(real)10011;
+}else{;;}
 }

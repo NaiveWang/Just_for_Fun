@@ -7,6 +7,7 @@ FS		(f|F|l|L)
 IS    ((u|U)|(u|U)?(u|U))
 %{
 #include "y.tab.h"
+#include "symbol.h"
 void yyerror (char *s);
 int yylex();
 void count(void);
@@ -33,18 +34,18 @@ void count(void);
 
 {L}({L}|{D})*		          {strcpy(yylval.name,yytext);count();return ID; }
 
-0[xX]{H}+{IS}?						{ sscanf(yytext,"%lx",&yylval.dec);count(); return(CONSTANT_INT); }
-0[0-7]*{IS}?							{ sscanf(yytext,"%lo",&yylval.dec);count(); return(CONSTANT_INT); }
-[1-9]{D}*{IS}?						{ sscanf(yytext,"%ld",&yylval.dec);count(); return(CONSTANT_INT); }
+0[xX]{H}+{IS}?						{ sscanf(yytext,"%lx",&yylval.vt.vali);count(); return(CONSTANT_INT); }
+0[0-7]*{IS}?							{ sscanf(yytext,"%lo",&yylval.vt.vali);count(); return(CONSTANT_INT); }
+[1-9]{D}*{IS}?						{ sscanf(yytext,"%ld",&yylval.vt.vali);count(); return(CONSTANT_INT); }
 
-{D}+{E}{FS}?							{ sscanf(yytext,"%lf",&yylval.real);count(); return(CONSTANT_REAL); }
-{D}*"."{D}+{E}?{FS}?			{ sscanf(yytext,"%lf",&yylval.real);count(); return(CONSTANT_REAL); }
-{D}+"."{D}*{E}?{FS}?			{ sscanf(yytext,"%lf",&yylval.real);count(); return(CONSTANT_REAL); }
-0[xX]{H}+{P}{FS}?					{ sscanf(yytext,"%lf",&yylval.real);count(); return(CONSTANT_REAL); }
-0[xX]{H}*"."{H}+{P}{FS}?  { sscanf(yytext,"%lf",&yylval.real);count(); return(CONSTANT_REAL); }
-0[xX]{H}+"."{H}*{P}{FS}?  { sscanf(yytext,"%lf",&yylval.real);count(); return(CONSTANT_REAL); }
+{D}+{E}{FS}?							{ sscanf(yytext,"%lf",&yylval.vt.valr);count(); return(CONSTANT_REAL); }
+{D}*"."{D}+{E}?{FS}?			{ sscanf(yytext,"%lf",&yylval.vt.valr);count(); return(CONSTANT_REAL); }
+{D}+"."{D}*{E}?{FS}?			{ sscanf(yytext,"%lf",&yylval.vt.valr);count(); return(CONSTANT_REAL); }
+0[xX]{H}+{P}{FS}?					{ sscanf(yytext,"%lf",&yylval.vt.valr);count(); return(CONSTANT_REAL); }
+0[xX]{H}*"."{H}+{P}{FS}?  { sscanf(yytext,"%lf",&yylval.vt.valr);count(); return(CONSTANT_REAL); }
+0[xX]{H}+"."{H}*{P}{FS}?  { sscanf(yytext,"%lf",&yylval.vt.valr);count(); return(CONSTANT_REAL); }
 L?\"(\\.|[^\\"\n])*\"			{ strcpy(yylval.name,yytext);count(); return(CONSTANT_STRING); }
-L?'(\\.|[^\\'\n])+'	{ count(); return(CONSTANT_CHAR); }
+L?'(\\.|[^\\'\n])+'	{ yylval.vt.valc = yytext[1];count(); return(CONSTANT_CHAR); }
 ">>>="			{ count(); return(ASSAR); }
 ">>="			{ count(); return(ASSHR); }
 "<<="			{ count(); return(ASSHL); }

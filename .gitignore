@@ -111,7 +111,3 @@ Planguage/Compiler/lexer
 Planguage/Compiler/Compiler_V0\.1
 
 Planguage/Compiler/example\.procs
-
-Planguage/Compiler/y\.tab\.c
-
-Planguage/Compiler/y\.tab\.h

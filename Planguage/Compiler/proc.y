@@ -7,6 +7,7 @@ int yylex();
 #include "y.tab.h"
 #include "codegen.h"
 //#define SIZE_NAME 128
+
 extern char* yytext;
 extern int currentScope;
 void typeCheck(int,int);
@@ -15,7 +16,18 @@ void typeErrRedeclared();
 void typeErrMismatch();
 id* temp;
 %}
-%union {char cr;int type;long dec;char name[128];double real;}
+%union
+{
+char name[128];
+struct value_and_type
+{
+	int type;
+	char isID;
+	long vali;
+	double valr;
+	char valc;
+} vt;
+}
 %token PROCESSOR
 %token IF ELSE WHILE FOR
 %token CONTINUE BREAK
@@ -26,25 +38,25 @@ id* temp;
 %token STRING
 %token STATIC VOID
 %token EQUAL DIFF GRTEQU LESEQU RAND ROR
-%token <real>CONSTANT_REAL
-%token <cr>CONSTANT_CHAR
+%token <vt>CONSTANT_REAL
+%token <vt>CONSTANT_CHAR
 %token <name>CONSTANT_STRING
-%token <dec>CONSTANT_HEX
-%token <dec>CONSTANT_OCT
+%token <vt>CONSTANT_HEX
+%token <vt>CONSTANT_OCT
 %token SHL SHR SAR INC DEC
 %token ASSAR ASSHL ASSHR ASADD ASSUB ASDIV ASMOD ASMUL ASAND ASOR ASEOR
 
-%token <dec>CONSTANT_INT
+%token <vt>CONSTANT_INT
 %token <name>ID
 
-%type <type>expression assignment_expression primary_expression postfix_expression
-%type <type>unary_expression cast_expression
-%type <type>multiplicative_expression additive_expression shift_expression relational_expression
-%type <type>equality_expression
-%type <type>and_expression exclusive_or_expression inclusive_or_expression
-%type <type>logical_or_expression logical_and_expression
-%type <type>type_specifier declaration_specifiers
-%type <type>init_declarator init_declarator_list
+%type <vt>expression assignment_expression primary_expression postfix_expression
+%type <vt>unary_expression cast_expression
+%type <vt>multiplicative_expression additive_expression shift_expression relational_expression
+%type <vt>equality_expression
+%type <vt>and_expression exclusive_or_expression inclusive_or_expression
+%type <vt>logical_or_expression logical_and_expression
+%type <vt>type_specifier declaration_specifiers
+%type <vt>init_declarator init_declarator_list
 %start translation_unit
 %%
 primary_expression
@@ -53,18 +65,19 @@ primary_expression
 			temp=findID($1);
 			if(temp)
 			{
-			$$=temp->type;
+			$$.type=temp->type;
+			$$.isID=1;
 			}
 			else
 			{
 			typeErrNotFound();
 			}
 		}
-	| CONSTANT_INT {$$=TYP_INT;genImmI("PUSH0I8 I",$1);}
-	| CONSTANT_REAL {$$=TYP_REAL;genImmR("PUSH0I8 R",$1);}
-	| CONSTANT_CHAR {$$=TYP_CHAR;}
-	| STRING {$$=TYP_STRING;}
-	| '(' expression ')' {$$=$2;}
+	| CONSTANT_INT
+	| CONSTANT_REAL
+	| CONSTANT_CHAR
+	| STRING
+	| '(' expression ')'
 	;
 
 postfix_expression
@@ -73,9 +86,9 @@ postfix_expression
 	| postfix_expression '[' expression ']'
 		{$$=$1;}
 	| postfix_expression INC
-		{$$=$1;gen2OP("INC",$1);}
+		{$$=$1;gen2OP("INC",$1.type);}
 	| postfix_expression DEC
-		{$$=$1;gen2OP("DEC",$1);}
+		{$$=$1;gen2OP("DEC",$1.type);}
 	;
 
 
@@ -87,7 +100,7 @@ unary_expression
 	| DEC unary_expression
 		{$$=$2;}
 	| unary_operator cast_expression
-		{$$=$2;gen2OP_1($2);}
+		{$$=$2;gen2OP_1($2.type);}
 	;
 
 unary_operator
@@ -110,93 +123,93 @@ multiplicative_expression
 	: cast_expression
 		{$$=$1;}
 	| multiplicative_expression '*' cast_expression
-		{typeCheck($1,$3);$$=$1;gen2OP("MUL",$1);}
+		{typeCheck($1.type,$3.type);$$=$1;gen2OP("MUL",$1.type);}
 	| multiplicative_expression '/' cast_expression
-	 	{typeCheck($1,$3);$$=$1;gen2OP("DIV",$1);}
+	 	{typeCheck($1.type,$3.type);$$=$1;gen2OP("DIV",$1.type);}
 	| multiplicative_expression '%' cast_expression
-		{typeCheck($1,$3);$$=$1;gen2OP("DIV",$1);}
+		{typeCheck($1.type,$3.type);$$=$1;gen2OP("DIV",$1.type);}
 	;
 
 additive_expression
 	: multiplicative_expression
 		{$$=$1;}
 	| additive_expression '+' multiplicative_expression
-	 	{typeCheck($1,$3);$$=$1;gen2OP("ADD",$1);}
+	 	{typeCheck($1.type,$3.type);$$=$1;gen2OP("ADD",$1.type);}
 	| additive_expression '-' multiplicative_expression
-	 	{typeCheck($1,$3);$$=$1;gen2OP("SUB",$1);}
+	 	{typeCheck($1.type,$3.type);$$=$1;gen2OP("SUB",$1.type);}
 	;
 
 shift_expression
 	: additive_expression
 		{$$=$1;}
 	| shift_expression SHL additive_expression
-		{typeCheck($1,$3);$$=$1;gen2OP("SHL",$1);}
+		{typeCheck($1.type,$3.type);$$=$1;gen2OP("SHL",$1.type);}
 	| shift_expression SHR additive_expression
-		{typeCheck($1,$3);$$=$1;gen2OP("SHR",$1);}
+		{typeCheck($1.type,$3.type);$$=$1;gen2OP("SHR",$1.type);}
 	;
 
 relational_expression
 	: shift_expression
 		{$$=$1;}
 	| relational_expression '<' shift_expression
-		{typeCheck($1,$3);$$=$1;}
+		{typeCheck($1.type,$3.type);$$=$1;}
 	| relational_expression '>' shift_expression
-		{typeCheck($1,$3);$$=$1;}
+		{typeCheck($1.type,$3.type);$$=$1;}
 	| relational_expression LESEQU shift_expression
-		{typeCheck($1,$3);$$=$1;}
+		{typeCheck($1.type,$3.type);$$=$1;}
 	| relational_expression GRTEQU shift_expression
-		{typeCheck($1,$3);$$=$1;}
+		{typeCheck($1.type,$3.type);$$=$1;}
 	;
 
 equality_expression
 	: relational_expression
 		{$$=$1;}
 	| equality_expression EQUAL relational_expression
-		{typeCheck($1,$3);$$=$1;}
+		{typeCheck($1.type,$3.type);$$=$1;}
 	| equality_expression DIFF relational_expression
-		{typeCheck($1,$3);$$=$1;}
+		{typeCheck($1.type,$3.type);$$=$1;}
 	;
 
 and_expression
 	: equality_expression
 		{$$=$1;}
 	| and_expression '&' equality_expression
-		{typeCheck($1,$3);$$=$1;gen2OP("AND",$1);}
+		{typeCheck($1.type,$3.type);$$=$1;gen2OP("AND",$1.type);}
 	;
 
 exclusive_or_expression
 	: and_expression
 		{$$=$1;}
 	| exclusive_or_expression '^' and_expression
-		{typeCheck($1,$3);$$=$1;gen2OP("XOR",$1);}
+		{typeCheck($1.type,$3.type);$$=$1;gen2OP("XOR",$1.type);}
 	;
 
 inclusive_or_expression
 	: exclusive_or_expression
 		{$$=$1;}
 	| inclusive_or_expression '|' exclusive_or_expression
-		{typeCheck($1,$3);$$=$1;gen2OP("OR",$1);}
+		{typeCheck($1.type,$3.type);$$=$1;gen2OP("OR",$1.type);}
 	;
 
 logical_and_expression
 	: inclusive_or_expression
 		{$$=$1;}
 	| logical_and_expression RAND inclusive_or_expression
-		{typeCheck($1,$3);$$=$1;}
+		{typeCheck($1.type,$3.type);$$=$1;}
 	;
 
 logical_or_expression
 	: logical_and_expression
 		{$$=$1;}
 	| logical_or_expression ROR logical_and_expression
-		{typeCheck($1,$3);$$=$1;}
+		{typeCheck($1.type,$3.type);$$=$1;}
 	;
 
 assignment_expression
 	: logical_or_expression
 		{$$=$1;}
 	| unary_expression assignment_operator assignment_expression
-		{typeCheck($1,$3);$$=$1;}
+		{typeCheck($1.type,$3.type);$$=$1;}
 	;
 
 assignment_operator
@@ -221,8 +234,8 @@ expression
 declaration
 	: declaration_specifiers init_declarator_list ';'
 		{
-		typeCheck($1,$2);
-		setMetaType($1);
+		typeCheck($1.type,$2.type);
+		setMetaType($1.type);
 		}
 	;
 declaration_specifiers
@@ -233,20 +246,19 @@ init_declarator_list
 	: init_declarator
 		{$$=$1;}
 	| init_declarator_list ',' init_declarator
-		{typeCheck($1,$3);$$=$1>$3?$1:$3;}
+		{typeCheck($1.type,$3.type);$$=$1.type>$3.type?$1:$3;}
 	;
 
 init_declarator
-	: direct_declarator {$$=TYP_META;}
+	: direct_declarator {$$.type=TYP_META;}
 	| direct_declarator '=' assignment_expression{$$=$3;}
 	;
 
 
 type_specifier
-	: VOID {$$=TYP_META;}
-	| CHAR {$$=TYP_CHAR;}
-	| REAL {$$=TYP_REAL;}
-	| INT {$$=TYP_INT;}
+	: CHAR {$$.type=TYP_CHAR;}
+	| REAL {$$.type=TYP_REAL;}
+	| INT {$$.type=TYP_INT;}
 	;
 
 
@@ -257,7 +269,7 @@ direct_declarator
 		if(!temp)
 			typeErrRedeclared();
 		}
-	| direct_declarator '[' assignment_expression ']'{if($3!=TYP_INT) typeErrMismatch();}
+	| direct_declarator '[' assignment_expression ']'{if($3.type!=TYP_INT) typeErrMismatch();}
 	| direct_declarator '[' ']'
 	;
 
@@ -296,13 +308,26 @@ expression_statement
 	;
 
 selection_statement
-	: IF '(' expression ')' statement
-	| IF '(' expression ')' statement ELSE statement
+	: IF '(' expression ')'
+	{
+	//here is the branch operation section
+	genFlagRelated("JMPC <flag> ",flagMarker);
+	fStackPush(flagMarker,TYP_BRANCH_FALSE);
+	flagMarker++;
+	}
+	statement
+	{
+	//recover the flag
+	genFlagRelated("#",fStackPop());
+	}
+	| IF '(' expression ')'
+	statement ELSE
+	statement
 	;
 
 iteration_statement
 	: WHILE '(' expression ')' statement
-	| FOR '(' expression_statement expression_statement ')' statement
+	| FOR '(' expression_statement expression_statement ')'  statement
 	| FOR '(' expression_statement expression_statement expression ')' statement
 	;
 
@@ -325,15 +350,18 @@ processor_declaration
 		temp = addID(TYP_PROC,$2);
 		if(!temp)
 			typeErrRedeclared();
-		genPHeader($2,$4,$6,$8);
-		gen(".code\n");
+		genPHeader($2,$4.vali,$6.vali,$8.vali);
+		gen(".code;start\n");
 		}
 		compound_statement
+		{
+		gen(";ended");
+		}
 	;
 
 %%
 #include <stdio.h>
-
+//#include "symbol.h"
 //extern char yytext[];
 extern int column;
 

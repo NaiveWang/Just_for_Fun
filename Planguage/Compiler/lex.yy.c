@@ -623,10 +623,11 @@ char *yytext;
 #line 1 "proc.l"
 #line 9 "proc.l"
 #include "y.tab.h"
+#include "symbol.h"
 void yyerror (char *s);
 int yylex();
 void count(void);
-#line 630 "lex.yy.c"
+#line 631 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -844,9 +845,9 @@ YY_DECL
 		}
 
 	{
-#line 14 "proc.l"
+#line 15 "proc.l"
 
-#line 850 "lex.yy.c"
+#line 851 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -905,381 +906,381 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 15 "proc.l"
+#line 16 "proc.l"
 {count();return PROCESSOR;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 17 "proc.l"
+#line 18 "proc.l"
 {count();return INT;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 18 "proc.l"
+#line 19 "proc.l"
 {count();return REAL;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 19 "proc.l"
+#line 20 "proc.l"
 {count();return CHAR;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 21 "proc.l"
+#line 22 "proc.l"
 {count();return _REBOOT;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 22 "proc.l"
+#line 23 "proc.l"
 {count();return _HALT;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 23 "proc.l"
+#line 24 "proc.l"
 {count();return _SUSPEND;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 24 "proc.l"
+#line 25 "proc.l"
 {count();return RETURN;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 26 "proc.l"
+#line 27 "proc.l"
 {count();return IF;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 27 "proc.l"
+#line 28 "proc.l"
 {count();return ELSE;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 28 "proc.l"
+#line 29 "proc.l"
 {count();return WHILE;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 29 "proc.l"
+#line 30 "proc.l"
 {count();return FOR;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 30 "proc.l"
+#line 31 "proc.l"
 {count();return CONTINUE;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 31 "proc.l"
+#line 32 "proc.l"
 {count();return BREAK;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 32 "proc.l"
+#line 33 "proc.l"
 {count();return STATIC;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 34 "proc.l"
+#line 35 "proc.l"
 {strcpy(yylval.name,yytext);count();return ID; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 36 "proc.l"
-{ sscanf(yytext,"%lx",&yylval.dec);count(); return(CONSTANT_INT); }
+#line 37 "proc.l"
+{ sscanf(yytext,"%lx",&yylval.vt.vali);count(); return(CONSTANT_INT); }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 37 "proc.l"
-{ sscanf(yytext,"%lo",&yylval.dec);count(); return(CONSTANT_INT); }
+#line 38 "proc.l"
+{ sscanf(yytext,"%lo",&yylval.vt.vali);count(); return(CONSTANT_INT); }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 38 "proc.l"
-{ sscanf(yytext,"%ld",&yylval.dec);count(); return(CONSTANT_INT); }
+#line 39 "proc.l"
+{ sscanf(yytext,"%ld",&yylval.vt.vali);count(); return(CONSTANT_INT); }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 40 "proc.l"
-{ sscanf(yytext,"%lf",&yylval.real);count(); return(CONSTANT_REAL); }
+#line 41 "proc.l"
+{ sscanf(yytext,"%lf",&yylval.vt.valr);count(); return(CONSTANT_REAL); }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 41 "proc.l"
-{ sscanf(yytext,"%lf",&yylval.real);count(); return(CONSTANT_REAL); }
+#line 42 "proc.l"
+{ sscanf(yytext,"%lf",&yylval.vt.valr);count(); return(CONSTANT_REAL); }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 42 "proc.l"
-{ sscanf(yytext,"%lf",&yylval.real);count(); return(CONSTANT_REAL); }
+#line 43 "proc.l"
+{ sscanf(yytext,"%lf",&yylval.vt.valr);count(); return(CONSTANT_REAL); }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 43 "proc.l"
-{ sscanf(yytext,"%lf",&yylval.real);count(); return(CONSTANT_REAL); }
+#line 44 "proc.l"
+{ sscanf(yytext,"%lf",&yylval.vt.valr);count(); return(CONSTANT_REAL); }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 44 "proc.l"
-{ sscanf(yytext,"%lf",&yylval.real);count(); return(CONSTANT_REAL); }
+#line 45 "proc.l"
+{ sscanf(yytext,"%lf",&yylval.vt.valr);count(); return(CONSTANT_REAL); }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 45 "proc.l"
-{ sscanf(yytext,"%lf",&yylval.real);count(); return(CONSTANT_REAL); }
+#line 46 "proc.l"
+{ sscanf(yytext,"%lf",&yylval.vt.valr);count(); return(CONSTANT_REAL); }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 46 "proc.l"
+#line 47 "proc.l"
 { strcpy(yylval.name,yytext);count(); return(CONSTANT_STRING); }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 47 "proc.l"
-{ count(); return(CONSTANT_CHAR); }
+#line 48 "proc.l"
+{ yylval.vt.valc = yytext[1];count(); return(CONSTANT_CHAR); }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 48 "proc.l"
+#line 49 "proc.l"
 { count(); return(ASSAR); }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 49 "proc.l"
+#line 50 "proc.l"
 { count(); return(ASSHR); }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 50 "proc.l"
+#line 51 "proc.l"
 { count(); return(ASSHL); }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 51 "proc.l"
+#line 52 "proc.l"
 { count(); return(ASADD); }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 52 "proc.l"
+#line 53 "proc.l"
 { count(); return(ASSUB); }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 53 "proc.l"
+#line 54 "proc.l"
 { count(); return(ASMUL); }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 54 "proc.l"
+#line 55 "proc.l"
 { count(); return(ASDIV); }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 55 "proc.l"
+#line 56 "proc.l"
 { count(); return(ASMOD); }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 56 "proc.l"
+#line 57 "proc.l"
 { count(); return(ASAND); }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 57 "proc.l"
+#line 58 "proc.l"
 { count(); return(ASEOR); }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 58 "proc.l"
+#line 59 "proc.l"
 { count(); return(ASOR); }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 59 "proc.l"
+#line 60 "proc.l"
 { count(); return(SAR); }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 60 "proc.l"
+#line 61 "proc.l"
 { count(); return(SHR); }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 61 "proc.l"
+#line 62 "proc.l"
 { count(); return(SHL); }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 62 "proc.l"
+#line 63 "proc.l"
 { count(); return(INC); }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 63 "proc.l"
+#line 64 "proc.l"
 { count(); return(DEC); }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 64 "proc.l"
+#line 65 "proc.l"
 { count(); return(RAND); }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 65 "proc.l"
+#line 66 "proc.l"
 { count(); return(ROR); }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 66 "proc.l"
+#line 67 "proc.l"
 { count(); return(LESEQU); }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 67 "proc.l"
+#line 68 "proc.l"
 { count(); return(GRTEQU); }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 68 "proc.l"
+#line 69 "proc.l"
 { count(); return(EQUAL); }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 69 "proc.l"
+#line 70 "proc.l"
 { count(); return(DIFF); }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 71 "proc.l"
+#line 72 "proc.l"
 { count(); return(';'); }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 72 "proc.l"
+#line 73 "proc.l"
 { count(); return('{'); }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 73 "proc.l"
+#line 74 "proc.l"
 { count(); return('}'); }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 74 "proc.l"
+#line 75 "proc.l"
 { count(); return(','); }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 75 "proc.l"
+#line 76 "proc.l"
 { count(); return(':'); }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 76 "proc.l"
+#line 77 "proc.l"
 { count(); return('='); }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 77 "proc.l"
+#line 78 "proc.l"
 { count(); return('('); }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 78 "proc.l"
+#line 79 "proc.l"
 { count(); return(')'); }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 79 "proc.l"
+#line 80 "proc.l"
 { count(); return('['); }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 80 "proc.l"
+#line 81 "proc.l"
 { count(); return(']'); }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 81 "proc.l"
+#line 82 "proc.l"
 { count(); return('.'); }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 82 "proc.l"
+#line 83 "proc.l"
 { count(); return('&'); }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 83 "proc.l"
+#line 84 "proc.l"
 { count(); return('!'); }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 84 "proc.l"
+#line 85 "proc.l"
 { count(); return('~'); }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 85 "proc.l"
+#line 86 "proc.l"
 { count(); return('-'); }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 86 "proc.l"
+#line 87 "proc.l"
 { count(); return('+'); }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 87 "proc.l"
+#line 88 "proc.l"
 { count(); return('*'); }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 88 "proc.l"
+#line 89 "proc.l"
 { count(); return('/'); }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 89 "proc.l"
+#line 90 "proc.l"
 { count(); return('%'); }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 90 "proc.l"
+#line 91 "proc.l"
 { count(); return('<'); }
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 91 "proc.l"
+#line 92 "proc.l"
 { count(); return('>'); }
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 92 "proc.l"
+#line 93 "proc.l"
 { count(); return('^'); }
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 93 "proc.l"
+#line 94 "proc.l"
 { count(); return('|'); }
 	YY_BREAK
 case 73:
 /* rule 73 can match eol */
 YY_RULE_SETUP
-#line 94 "proc.l"
+#line 95 "proc.l"
 {count();}
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 95 "proc.l"
+#line 96 "proc.l"
 
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 96 "proc.l"
+#line 97 "proc.l"
 ECHO;
 	YY_BREAK
-#line 1283 "lex.yy.c"
+#line 1284 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2280,7 +2281,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 96 "proc.l"
+#line 97 "proc.l"
 
 
 int yywrap(void)

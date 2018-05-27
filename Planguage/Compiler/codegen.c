@@ -1,4 +1,40 @@
 #include "codegen.h"
+void codeGeneratorInit()
+{
+  fStackPtr=1;
+  //reserved 0 for error handler
+  flagMarker=0;
+  //flag marker starts from 0
+}
+void fStackPush(int n,char t)
+{
+  if(fStackPtr==SIZE_FSTACK)
+  {
+    printf("fetal error : Code Generator Flag Stack Overflow.\n");
+    exit(-1);
+  }
+  //push here
+  fStack[fStackPtr].no=n;
+  fStack[fStackPtr].type=t;
+  fStackPtr++;
+}
+int fStackFind(char t)
+{
+  static int a0;
+  //find the nearst guy with same type
+  for(a0=fStackPtr-1;a0;a0--)
+  {
+    //conpare
+    if(t==fStack[fStackPtr].type) return fStack[fStackPtr].no;
+  }
+  //nothing find,  0 is the erroe handler
+  return 0;
+}
+int fStackPop()
+{
+  fStackPtr--;
+  return fStack[fStackPtr].no;
+}
 void initGen(char *s)
 {
   //open file
@@ -80,4 +116,8 @@ void genImmR(char* s,double v)
 void genImmC(char* s,char v)
 {
   fprintf(genOut, "%s %c\n", s, v);
+}
+void genFlagRelated(char* s,int n)
+{
+  fprintf(genOut,"%s%d\n",s,n);
 }
