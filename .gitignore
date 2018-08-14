@@ -115,3 +115,7 @@ Planguage/Compiler/example\.procs
 Others/pinglun\.sql
 
 Others/yonghu\.sql
+
+Others/subp
+
+*.out
