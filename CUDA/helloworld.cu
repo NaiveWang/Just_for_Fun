@@ -1,25 +1,35 @@
 /* This C file will be compiled by nvcc */
-#include <stdio.h>
-__global__ void add(int a,int b,int *c)
+#include "stdio.h"
+
+
+__global__ void add(float a,float b,float* c)
 {
-  *c = a+b;
+  *c = a + b;
 }
 int main()
 {
-  int a,b,c;
-  int *dev_c;
+  float a,b,c;
+  float *dev_c=NULL;
+  long status  = 0;
 
-  a=10;
-  b=100;
+  a=1.2f;
+  b=5.1f;
 
-  cudaMalloc(&dev_c,sizeof(int));
+  status = cudaMalloc(&dev_c,sizeof(float));
+  printf("%ld<<\n",status);
+  if(status == cudaSuccess)
+  {
+    add<<<1,1>>>(a,b,dev_c);
 
-  add<<<1,1>>>(a,b,dev_c);
+    cudaMemcpy(&c,dev_c,sizeof(float),cudaMemcpyDeviceToHost);
 
-  cudaMemcpy(&c,dev_c,sizeof(int),cudaMemcpyDeviceToHost);
+    printf(">>>%f\n",c);
 
-  printf(">>>%d\n",c);
-
-  cudaFree(dev_c);
+    cudaFree(dev_c);
+  }
+  else
+  {
+    printf("%ld>Allocating failed\n",(void*)dev_c);
+  }
   return 0;
 }

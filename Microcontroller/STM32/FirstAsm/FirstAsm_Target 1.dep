@@ -1,2 +1,0 @@
-Dependencies for Project 'FirstAsm', Target 'Target 1': (DO NOT MODIFY !)
-F (.\FirstAsm.s)(0x5944AF0F)(--cpu Cortex-M3 --pd "__EVAL SETA 1" -g --apcs=interwork -I D:\Keil\ARM\RV31\INC-I D:\Keil\ARM\CMSIS\Include-I D:\Keil\ARM\Inc\ST\STM32F10x--list .\firstasm.lst --xref -o .\firstasm.o --depend .\firstasm.d)
