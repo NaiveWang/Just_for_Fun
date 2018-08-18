@@ -6,6 +6,7 @@ __global__ void add(float a,float b,float* c)
 {
   *c = a + b;
 }
+
 int main()
 {
   float a,b,c;
