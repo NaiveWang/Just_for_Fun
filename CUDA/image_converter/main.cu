@@ -8,7 +8,7 @@
 #define LINEAR_R 0.2126f
 #define LINEAR_G 0.7152f
 #define LINEAR_B 0.0722f
-#define THREADS 768
+#define THREADS 1024
 
 double get_time()
 {
@@ -86,20 +86,14 @@ int convert_gpu(bmpa* a)
   {
     t=get_time();
     stat = cudaMemcpy(dev,a->array,sizeof(char)*a->w*a->h*3,cudaMemcpyHostToDevice);
-    t=get_time()-t;
-    printf("Data Transfer Deley: %lfms\n",t);
     //printf("W : %ld\n",stat);
     //computing section
-    t=get_time();
     gpu_thread_greyscaler<<<(a->w*a->h+THREADS-1)/THREADS,THREADS>>>(dev,a->w*a->h);
     //getchar();
-    t=get_time()-t;
-    printf("Time Elapsed:%lfms\n",t);
-    t=get_time();
+
     stat = cudaMemcpy(a->array,dev,sizeof(char)*a->w*a->h*3,cudaMemcpyDeviceToHost);
     t=get_time()-t;
-    printf("Data Transfer Deley: %lfms\n",t);
-    //printf("W : %ld\n",stat);
+    printf("Time Elapsed:%lfms\n",t);
     cudaFree(dev);
     return 0;
   }
