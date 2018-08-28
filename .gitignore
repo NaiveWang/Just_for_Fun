@@ -119,3 +119,7 @@ Others/yonghu\.sql
 Others/subp
 
 *.out
+
+CUDA/image_converter/a
+
+*.bmp
