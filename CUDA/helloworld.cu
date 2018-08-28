@@ -2,35 +2,51 @@
 #include "stdio.h"
 
 
-__global__ void add(float a,float b,float* c)
+unsigned char a[10]={2,3,4,5,6,7,8,9,10,1};
+unsigned char b[10]={1,2,3,4,5,6,7,8,9,10};
+__global__ void add(unsigned char* a,unsigned char* b,unsigned char* c,int n)
 {
-  *c = a + b;
+  int i=blockDim.x * blockIdx.x + threadIdx.x;
+  if(i<n)
+    c[i] = a[i]*0.7f + b[i]*0.3f;
 }
 
 int main()
 {
-  float a,b,c;
-  float *dev_c=NULL;
+  unsigned char* dev_c=NULL;
+  unsigned char* dev_a=NULL;
+  unsigned char* dev_b=NULL;
+  unsigned char c[10];
+
+  int counter;
+
   long status  = 0;
-
-  a=1.2f;
-  b=5.1f;
-
-  status = cudaMalloc(&dev_c,sizeof(float));
+  cudaMalloc(&dev_a,sizeof(unsigned char)*10);
+  cudaMalloc(&dev_b,sizeof(unsigned char)*10);
+  status = cudaMalloc(&dev_c,sizeof(unsigned char)*10);
   printf("%ld<<\n",status);
   if(status == cudaSuccess)
   {
-    add<<<1,1>>>(a,b,dev_c);
+    cudaMemcpy(dev_a,a,sizeof(unsigned char)*10,cudaMemcpyHostToDevice);
+    cudaMemcpy(dev_b,b,sizeof(unsigned char)*10,cudaMemcpyHostToDevice);
 
-    cudaMemcpy(&c,dev_c,sizeof(float),cudaMemcpyDeviceToHost);
+    add<<<10/256+1,256>>>(dev_a,dev_b,dev_c,10);
 
-    printf(">>>%f\n",c);
+    cudaMemcpy(c,dev_c,sizeof(unsigned char)*10,cudaMemcpyDeviceToHost);
 
+    for(counter=0;counter<10;counter++)
+    {
+      printf("%d ",c[counter]);
+    }
+    printf("\n");
+
+    cudaFree(dev_a);
+    cudaFree(dev_b);
     cudaFree(dev_c);
   }
   else
   {
-    printf("%ld>Allocating failed\n",(void*)dev_c);
+    printf("%ld>Allocating failed\n",(long)dev_c);
   }
   return 0;
 }
