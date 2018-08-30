@@ -123,3 +123,5 @@ Others/subp
 CUDA/image_converter/a
 
 *.bmp
+
+CUDA/helloworld/a
