@@ -176,3 +176,106 @@ def update_percentile(col):
         100*(float(r[1])-min)/(max-min),r[0]
         ))
     rdb.commit()
+def update_years():
+    rdb = pymysql.connect(host='10.6.12.3', user='cd_back', password='123456', database='gqcxnl',charset='utf8')
+    rc = rdb.cursor()
+    rc.execute('SELECT company_id,QC07 FROM tmse_high_tech_company_info_all where sYear="2015"')
+    rowz = rc.fetchall()
+    for row in rowz:
+        print(row)
+        rc.execute('UPDATE tmse_high_tech_company_info set QC07_2015="%s" where company_id="%s"'%(row[1],row[0]))
+    rc.execute('SELECT company_id,QC07 FROM tmse_high_tech_company_info_all where sYear="2016"')
+    rowz = rc.fetchall()
+    for row in rowz:
+        print(row)
+        rc.execute('UPDATE tmse_high_tech_company_info set QC07_2016="%s" where company_id="%s"'%(row[1],row[0]))
+    rdb.commit()
+
+def update_qc07():
+    rdb = pymysql.connect(host='10.6.12.3', user='cd_back', password='123456', database='gqcxnl',charset='utf8')
+    rc = rdb.cursor()
+    rc.execute('SELECT sRecordID,QC07,QC07_2016,QC07_2015 FROM tmse_high_tech_company_info')
+    rowz = rc.fetchall()
+    for row in rowz:
+        print(row)
+        rc.execute('UPDATE gqcxnl.cxnl_data_0904 set xssr_now=%s,xssr_pre1=%s,xssr_pre2=%s where record_id="%s"'%(
+        row[1],row[2],row[3],row[0]
+        ))
+    rdb.commit()
+def update_qc38_11():
+    rdb = pymysql.connect(host='10.6.12.3', user='cd_back', password='123456', database='gqcxnl',charset='utf8')
+    rc = rdb.cursor()
+    rc.execute('SELECT sRecordID,QC38,QC11 FROM tmse_high_tech_company_info')
+    rowz = rc.fetchall()
+    for row in rowz:
+        print(row)
+        rc.execute('UPDATE gqcxnl.cxnl_data_0904 set gxjscp_ck=%s,ck=%s where record_id="%s"'%(
+        row[1],row[2],row[0]
+        ))
+    rdb.commit()
+def update_qc12_13():
+    rdb = pymysql.connect(host='10.6.12.3', user='cd_back', password='123456', database='gqcxnl',charset='utf8')
+    rc = rdb.cursor()
+    rc.execute('SELECT sRecordID,QC12,QC13 FROM tmse_high_tech_company_info')
+    rowz = rc.fetchall()
+    for row in rowz:
+        print(row)
+        rc.execute('UPDATE gqcxnl.cxnl_data_0904 set ls_jxr=%s,ls_shijishangjiao=%s where record_id="%s"'%(
+        row[1],row[2],row[0]
+        ))
+    rdb.commit()
+def update_qj71():
+    rdb = pymysql.connect(host='10.6.12.3', user='cd_back', password='123456', database='gqcxnl',charset='utf8')
+    rc = rdb.cursor()
+    rc.execute('SELECT sRecordID,QJ20 FROM tmse_high_tech_company_info')
+    rowz = rc.fetchall()
+    for row in rowz:
+        print(row)
+        rc.execute('UPDATE gqcxnl.cxnl_data_0904 set kjhd_jfzch=%s where record_id="%s"'%(
+        row[1],row[0]
+        ))
+    rdb.commit()
+def update_whatever1():
+    rdb = pymysql.connect(host='10.6.12.3', user='cd_back', password='123456', database='gqcxnl',charset='utf8')
+    rc = rdb.cursor()
+    rc.execute('SELECT sRecordID,QC05_0,QJ56 FROM tmse_high_tech_company_info')
+    rowz = rc.fetchall()
+    for row in rowz:
+        print(row)
+        rc.execute('UPDATE gqcxnl.cxnl_data_0904 set yysr=%s,fmzl_shenqing=%s where record_id="%s"'%(
+        row[1],row[2],row[0]
+        ))
+    rdb.commit()
+def update_whatever2():
+    rdb = pymysql.connect(host='10.6.12.3', user='cd_back', password='123456', database='gqcxnl',charset='utf8')
+    rc = rdb.cursor()
+    rc.execute('SELECT record_id,yftr,fmzl_lj FROM gqcxnl.cxnl_data_new')
+    rowz = rc.fetchall()
+    for row in rowz:
+        print(row)
+        rc.execute('UPDATE gqcxnl.cxnl_data_0904 set yftr=%s,fmzl_lj=%s where record_id="%s"'%(
+        row[1],row[2],row[0]
+        ))
+    rdb.commit()
+def init_score_table():
+    rdb = pymysql.connect(host='10.6.12.3', user='cd_back', password='123456', database='gqcxnl',charset='utf8')
+    rc = rdb.cursor()
+    rc.execute('SELECT record_id,Name FROM gqcxnl.cxnl_data_new')
+    rowz = rc.fetchall()
+    for row in rowz:
+        print(row)
+        rc.execute('INSERT INTO gqcxnl.cxnl_score(record_id,name)VALUES(%s,"%s")'%(
+        row[0],row[1]
+        ))
+    rdb.commit()
+def percentile(col,_col):
+    rdb = pymysql.connect(host='10.6.12.3', user='cd_back', password='123456', database='gqcxnl',charset='utf8')
+    rc = rdb.cursor()
+    rc.execute('SELECT 100.0-100.0*count(a.record_id)/458,a.record_id FROM gqcxnl.cxnl_data_0904 as b,gqcxnl.cxnl_data_0904 as a \
+    where a.%s > b.%s group by a.record_id order by count(a.record_id) desc'%(col,col))
+    rowz = rc.fetchall()
+    for row in rowz:
+        print(row[0],row[1])
+        rc.execute("update cxnl_score set %s=%s where record_id=%s"%(_col,row[0],row[1]))
+    rdb.commit()
+percentile('yysr','percentile5')
