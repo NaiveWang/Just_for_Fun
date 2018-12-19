@@ -2,6 +2,10 @@
 from urllib import request
 import json
 import key
+import sqlite3
+
+
 
 temp=json.loads(bytes.decode(request.urlopen(key.u_mwdl+'contract'+'?key='+key.k_mwdl).read()))
-print(json.dumps(temp, indent=4, sort_keys=True))
+for a in temp:
+    print(a["meta"])
