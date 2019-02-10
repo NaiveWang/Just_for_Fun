@@ -4,9 +4,11 @@ import json
 import key
 import sqlite3
 
-word = 'spring'
-
+word=input()
+print('searching '+word)
 temp=json.loads(bytes.decode(request.urlopen(key.u_mwdl+word+'?key='+key.k_mwdl).read()))
+print(temp)
+
 for a in temp:
     if a['hwi']['hw'].split(':',1)[0] == word:
         print('疯狂大宇宙',a['fl'])##voc
