@@ -127,3 +127,7 @@ CUDA/image_converter/a
 CUDA/helloworld/a
 
 *.user
+
+*.sqbpro
+
+*.pyc
