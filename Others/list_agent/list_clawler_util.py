@@ -55,7 +55,7 @@ def jsfree_multi_url(url, xpath):
             url[1]+=1
     except Exception as e:
         return dic
-def js_single(url, xpath, delay):
+def js_single(url, xpath, delay=1):
     dic={}
     _init_.bw.get(url)
     time.sleep(delay)
@@ -65,7 +65,7 @@ def js_single(url, xpath, delay):
         #print(e.text, e.get_attribute("href"))
     return dic
 
-def js_multi_click(url, xpath, xpath_next, delay, page=5):
+def js_multi_click(url, xpath, xpath_next, delay=1, page=5):
     dic={}
     try:
         _init_.bw.get(url)
@@ -84,4 +84,4 @@ def js_multi_click(url, xpath, xpath_next, delay, page=5):
 
 
 
-# print(js_multi_click(url2,xph2,xph2b))
+#print(js_multi_click("http://www.moe.gov.cn/jyb_xwfb/gzdt_gzdt/","/html/body/div[2]/div[1]/div[6]/div[2]/div[1]/ul/li/a",'//*[@id="page"]/li[7]/a'))
