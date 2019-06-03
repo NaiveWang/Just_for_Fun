@@ -41,7 +41,7 @@ int main(int argc, char** argv)
             }
             
         }
-        usleep(1000000);
+        usleep(59000000);
         //usleep(120000000);
         
     }
