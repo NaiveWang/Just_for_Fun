@@ -1,0 +1,32 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>request generator</title>
+</head>
+
+<body>
+  <form action = "/" method="post">
+    API:
+    <select name="api">
+    <option selected disabled hidden>Choose here</option>
+    <option value="jsfree">javascript free with single page</option>
+    <option value="jsfree/xpath">javascript free with multi page using xpath</option>
+    <option value="jsfree/url">javascript free with multi page using url</option>
+    <option value="js">javascript with single page</option>
+    <option value="js/click">javascript with multi page using xpath</option>
+    </select>
+    <br>
+    URL:<input type="text" name="url" id="url">
+    <br>
+    Xpath of list:<input type="text" name="xph" id="xph">
+    <br>
+    Xpath of next page:<input type="text" name="xphn">
+    <br>
+    delay:<input type="text" name="delay">
+    <br>
+      <input type="submit" value='generate'>
+  </form>
+  <a href="{{link}}">{{link}}</a>
+</body>
+</html>
