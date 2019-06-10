@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <title>easy peasy lemon squeezy</title>
+</head>
+<body>
+  <form action = "/cmp" method="post">
+  <br>
+  src id:<input type="text" name="src">
+  <br>
+  dst id:<input type="text" name="dst">
+  <br>
+  <input type="submit" value='generate'>
+  <br>
+  </form>
+
+  <ul>
+  {% for id,title,blah in tri %}
+    <li>{{id}}-{{title}}-{{blah}}</li>
+  {% endfor %}
+  </ul>
+  
+</body>
+
+</html>

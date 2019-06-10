@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <title>result page</title>
+</head>
+<style>
+body {
+  font-family: Arial;
+  color: 000000;
+}
+
+.split {
+  height: 100%;
+  width: 50%;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+
+.left {
+  left: 0;
+  background-color: #fffff0;
+}
+
+.right {
+  right: 0;
+  background-color: #fff0ff;
+}
+
+</style>
+
+<body>
+
+  <div class="split left">
+  
+    {% for pos,len,block in blocks_src %}
+        {% if pos > -1 %}
+            {{block[:pos]}}<mark>{{block[pos:pos+len]}}</mark>{{block[pos+len:]}}
+        {% else %}
+            {{block}}
+        {% endif %}
+    {% endfor %}
+  </div>
+
+  <div class="split right">
+    {% for pos, len, block in blocks_dst %}
+        {% if pos > -1 %}
+            {{block[:pos]}}<mark>{{block[pos:pos+len]}}</mark>{{block[pos+len:]}}
+        {% else %}
+            {{block}}
+        {% endif %}
+    {% endfor %}
+  </div>
+
+  <a href="/">GO BACK</a>
+</body>
+</html>
