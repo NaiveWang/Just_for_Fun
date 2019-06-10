@@ -94,7 +94,7 @@ def cmp_post():
             elm.append(result[3])
             elm.append(result[4])
             elm.append(_r[1])
-            print(elm)
+            #print(elm)
         else:
             elm.append(-1)
             elm.append(-1)
