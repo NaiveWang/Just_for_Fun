@@ -59,7 +59,8 @@ def cmp_post():
     
     match = get_cmp_result(dst,src)
     # penta : src(id,pos) dst(id,pos) length
-    
+    if match != False:
+        match=sorted(match, key=lambda tup: tup[1])
     
     
     c.execute("select id,content from content where pid=%s"%src)
