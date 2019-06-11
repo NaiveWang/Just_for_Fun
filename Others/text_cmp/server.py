@@ -9,26 +9,35 @@ app = Flask(__name__)
 def get_cmp_result(src,dst):
     r=os.popen("java -jar post_cmp.jar %s %s"%(src,dst)).read().split('\n')[0:-1]
     rtn = []
-    for er in r:
-        er=er.split(' ',4)
-        er[0]=int(er[0])
-        er[1]=int(er[1])
-        er[2]=int(er[2])
-        er[3]=int(er[3])
-        er[4]=len(er[4])
-        rtn.append(er)
+    print(r)
+    try:
+        for er in r:
+            er=er.split(' ',4)
+            er[0]=int(er[0])
+            er[1]=int(er[1])
+            er[2]=int(er[2])
+            er[3]=int(er[3])
+            er[4]=len(er[4])
+            rtn.append(er)
+    except Exception as e:
+        return False
+    print(rtn)
     return rtn
 def find_match(match, raw, ds):
+    i=0
+    if match == False:
+        return False, i
     for m in match:
         if m[ds] == raw:
-            return m
+            return m, i
+        i+=1
     else:
-        return False
+        return False, i
 @app.route('/')
 def root_get():
     db = sqlite3.connect("base")
     c = db.cursor()
-    c.execute("select id,title,blah from post")
+    c.execute("select id,title,company from post")
     tri=c.fetchall()
     c.close()
     db.close()
@@ -64,15 +73,18 @@ def cmp_post():
        
         # seq : pos len text
        
-        result = find_match(match,_r[0],0)
+        result, i = find_match(match,_r[0],0)
         if result!=False :
             elm.append(result[1])
             elm.append(result[4])
+            print(result[4], i)
             elm.append(_r[1])
+            elm.append(i)
         else:
             elm.append(-1)
             elm.append(-1)
             elm.append(_r[1])
+            elm.append(i)
             
         blocks_src.append(elm)
         
@@ -80,7 +92,6 @@ def cmp_post():
     
     c.execute("select id,content from content where pid=%s"%dst)
     r=c.fetchall()
-    i=0
     
     blocks_dst = []
     
@@ -89,16 +100,18 @@ def cmp_post():
         elm=[]
        
         # seq : pos len text
-        result = find_match(match,_r[0],2)
+        result, i = find_match(match,_r[0],2)
         if result!=False :
             elm.append(result[3])
             elm.append(result[4])
             elm.append(_r[1])
             #print(elm)
+            elm.append(i)
         else:
             elm.append(-1)
             elm.append(-1)
             elm.append(_r[1])
+            elm.append(i)
             
         blocks_dst.append(elm)
     
