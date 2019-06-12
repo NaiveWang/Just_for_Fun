@@ -7,10 +7,7 @@ public class post_cmp {
 	private static Connection c;
 	private static Statement qstmt;//,stmt;
 	private static ResultSet q;
-	private static final int S_START=3;
-	private static final int S_INNERLOOP=1;
-	private static final int S_OUTPUT=2;
-	private static final int S_QUIT=0;
+	
 	
 	//private String query = "select *";
 	public static void main(String[] args) {
@@ -34,10 +31,9 @@ public class post_cmp {
 			//System.out.println("asdasdasd");
 			
 			int idx_stale=-1,_idx_stale=-1;
-			int tag=0;
 			int idx=0,_idx=0,pos=0,_pos=0;
 			
-			String chunk="", chunk_stale="", dup="";
+			String chunk="", chunk_stale="";
 			if(q.next()) {
 				chunk_stale = q.getString(5);
 				idx_stale = q.getInt(1);

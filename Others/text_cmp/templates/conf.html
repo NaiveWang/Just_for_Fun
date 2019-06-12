@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <title>config page</title>
+</head>
+<style>
+body {
+  font-family: Arial;
+  color: 000000;
+}
+
+
+.split {
+  height: 100%;
+  width: 50%;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+
+.left {
+  left: 0;
+  background-color: #f0f0f0;
+  
+  height: 100%;
+  width: 40%;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+
+.right {
+  right: 0;
+  background-color: #ffffff;
+  
+  height: 100%;
+  width: 60%;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+
+</style>
+<body>
+  <div class="left">
+   <a href='/'>back</a>
+    <br>
+  <form action= "/conf" method="post">
+  <input type="submit" value='generate blocks' name="genB">
+  <br>
+  chunk size:<input type="text" name="csize">
+  <input type="submit" value='generate chunks' name="genC">
+  <br>
+  <input type="submit" value='purge chunks' name="delC">
+  <br>
+  post id:<input type="text" name="pid">
+  <input type="submit" value='delete post' name=delP>
+  <br>
+  <input type="text" name="a_t">
+  <input type="text" name="a_c">
+  <input type="text" name="blah">
+  <input type="submit" value='add post' name="newP">
+  
+  </form>
+ </div>
+<div class="right">
+  <ul>
+  {% for id,title,blah,is_split in quad %}
+    <li>{{id}}${{title}}${{blah}}${{is_split}}</li>
+  {% endfor %}
+  </ul>
+</div>
+</body>
+
+</html>

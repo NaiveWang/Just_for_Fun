@@ -4,23 +4,76 @@
    <meta charset="UTF-8">
    <title>easy peasy lemon squeezy</title>
 </head>
-<body>
-  <form action = "/cmp" method="post">
-  <br>
-  src id:<input type="text" name="src">
-  <br>
-  dst id:<input type="text" name="dst">
-  <br>
-  <input type="submit" value='generate'>
-  <br>
-  </form>
+<style>
+body {
+  font-family: Arial;
+  color: 000000;
+}
 
+
+.split {
+  height: 100%;
+  width: 50%;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+
+.left {
+  left: 0;
+  background-color: #f0f0f0;
+  
+  height: 100%;
+  width: 40%;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+
+.right {
+  right: 0;
+  background-color: #ffffff;
+  
+  height: 100%;
+  width: 60%;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+
+</style>
+<body>
+  <div class="left">
+      
+    <a href='/conf'>DB configuration/配置数据库</a>
+    <br>
+  Filter test/筛选测试
+  <form action = "/" method="post">
+  title:<input type="text" name="t">
+  company:<input type="text" name="c">
+  <input type="submit" value='generate'>
+  </form>
+  P2P/post to post/帖子比帖子
+  <br>
+  <form action = "/cmp" method="post">
+  src id:<input type="text" name="src">
+  dst id:<input type="text" name="dst">
+  <input type="submit" value='generate'>
+  </form>
+ </div>
+<div class="right">
   <ul>
   {% for id,title,blah in tri %}
     <li>{{id}}-{{title}}-{{blah}}</li>
   {% endfor %}
   </ul>
-  
+</div>
 </body>
 
 </html>

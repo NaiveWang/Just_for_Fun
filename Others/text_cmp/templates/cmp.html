@@ -2,25 +2,17 @@
 <html lang="en">
 <head>
    <meta charset="UTF-8">
-   <title>result page</title>
+   <title>p2p result page</title>
 </head>
 <style>
 body {
   font-family: Arial;
   color: 000000;
 }
-._split {
-  height: 10%;
-  width: 50%;
-  position: fixed;
-  z-index: 1;
-  top: 0;
-  overflow-x: hidden;
-  padding-top: 20px;
-}
+
 
 .split {
-  height: 90%;
+  height: 100%;
   width: 50%;
   position: fixed;
   z-index: 1;
@@ -43,7 +35,9 @@ body {
 
 <body>
   <div class="split left">
-  
+  {{c_o}}/{{c_t}} -> {{c_o*100.0/c_t}}%
+  <br>
+  <br>
     {% for pos, len, block, i in blocks_src %}
         {% if pos > -1 %}
             {{block[:pos]}}<font color="red"><strong>{{i}}</strong></font><mark>{{block[pos:pos+len]}}</mark>{{block[pos+len:]}}
@@ -54,6 +48,9 @@ body {
   </div>
 
   <div class="split right">
+  {{_c_o}}/{{_c_t}} -> {{_c_o*100.0/_c_t}}%
+  <br>
+  <br>
     {% for pos, len, block, i in blocks_dst %}
         {% if pos > -1 %}
             {{block[:pos]}}<font color="red"><strong>{{i}}</strong></font><mark>{{block[pos:pos+len]}}</mark>{{block[pos+len:]}}
