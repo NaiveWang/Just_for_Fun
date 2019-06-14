@@ -86,6 +86,7 @@ public class text_cmp_util {
 						_pos = q.getInt(4);
 					}catch(Exception e) {
 						//
+						
 						return r;
 					}
 				}
@@ -158,7 +159,7 @@ public class text_cmp_util {
 					}
 					
 					r.add(result_set.create(idx_stale, pos, _idx_stale, _pos, chunk_stale.length()));
-					System.out.println(">"+idx_stale+" "+pos+" "+_idx_stale+" "+_pos+" "+chunk_stale);
+					//System.out.println(">"+idx_stale+" "+pos+" "+_idx_stale+" "+_pos+" "+chunk_stale);
 					chunk_stale=chunk;
 					idx_stale=idx;
 					_idx_stale=_idx;
@@ -196,6 +197,7 @@ public class text_cmp_util {
 		 */
 		//the set[0,2,4] are needed. 
 		int idx, idx_s, pos, len;
+		boolean tag;
 		Iterator<result_set<Integer, Integer, Integer, Integer, Integer>> i = l.iterator();
 		result_set<Integer, Integer, Integer, Integer, Integer> ii,ii_s;
 		merge_algo a = new merge_algo();
@@ -211,12 +213,13 @@ public class text_cmp_util {
 				pos = ii_s.pos();
 				len = ii_s.match();
 				a.add_val(pos, pos + len);
-				a.debug();
-				ii_s.debug();
+				//a.debug();
+				//ii_s.debug();
 				
 				ii_s = ii;
+				tag=true;
 				while(idx == idx_s) {
-					
+					tag=false;
 					if(i.hasNext()) {
 						ii=i.next();
 						
@@ -224,8 +227,8 @@ public class text_cmp_util {
 						pos = ii_s.pos();
 						len = ii_s.match();
 						a.add_val(pos, pos + len);
-						a.debug();
-						ii_s.debug();
+						//a.debug();
+						//ii_s.debug();
 						
 						ii_s = ii;
 					}else {
@@ -233,22 +236,49 @@ public class text_cmp_util {
 						pos = ii_s.pos();
 						len = ii_s.match();
 						a.add_val(pos, pos + len);
-						a.debug();
-						ii_s.debug();
+						//a.debug();
+						//ii_s.debug();
 						
 						break;
 					}
 				}
-				idx_s = idx;
-				ii_s=ii;
-				count+=a.check_out();
-				a.debug();
-				a.purge();
+				if(tag) {
+					idx_s = idx;
+					ii_s=ii;
+					count+=a.check_out();
+					//System.out.println("- - - - - - - -");
+					//a.debug();
+					a.purge();
+				}
 				
 			}
+			pos = ii_s.pos();
+			len = ii_s.match();
+			a.add_val(pos, pos + len);
+			//ii_s.debug();
+			//System.out.println("- - - - - - - -");
+			count+=a.check_out();
 		}
 		
 		return count;
+	}
+	public static int post_word_count(int id) {
+		int rtn = 0;
+		try {
+			c = DriverManager.getConnection("jdbc:sqlite:base");
+			qstmt = c.createStatement();
+			q = qstmt.executeQuery("select content from content where pid = "+id);
+			while(q.next()) {
+				rtn += q.getString(1).length();
+			}
+			
+			
+		}catch(Exception e) {
+			System.out.println(e);
+			System.exit(0);
+		}
+			
+		return rtn;
 	}
 
 }

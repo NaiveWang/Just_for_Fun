@@ -46,18 +46,138 @@ def root_get():
 
 @app.route("/", methods=['POST'])
 def root_post():
-    t = request.form['t']
-    c = request.form['c']
     db = sqlite3.connect("base")
     cr = db.cursor()
-    
-    print("select id,title,company from post where title like '%%%s%%' and company like '%%%s%%'"%(t, c))
-    cr.execute("select id,title,company from post where title like '%%%s%%' and company like '%%%s%%'"%(t, c))
-    tri=cr.fetchall()
+    if 'getall' in request.form:
+        # generate excuusive form
+        src = request.form['src0']
+        # print(src)
+        cr.execute("select id,title,company from post where id!=%s"%src)
+        _tri=cr.fetchall()
+        tri = []
+        for e in _tri:
+            r=os.popen("java -jar getVal.jar %s %d"%(src, e[0])).read().split("\n")[0].split(' ')
+            print(r)
+            tmp = []
+            tmp.append(e[0])
+            tmp.append((float(r[0])*100.0/float(r[1])).__str__()+"% "+e[1])
+            tmp.append(e[2])
+            tri.append(tmp)
+        
+        
+    elif 'getfiltered' in request.form:
+        
+        t = request.form['t']
+        c = request.form['c']
+        src = request.form['src1']
+        
+        
+        # print("select id,title,company from post where title like '%%%s%%' and company like '%%%s%%'"%(t, c))
+        cr.execute("select id,title,company from post where title like '%%%s%%' and company like '%%%s%%'"%(t, c))
+        _tri=cr.fetchall()
+        tri = []
+        for e in _tri:
+            r=os.popen("java -jar getVal.jar %d %s"%(e[0], src)).read().split("\n")[0].split(" ")
+            #print(r)
+            tmp = []
+            tmp.append(e[0])
+            tmp.append((float(r[0])*100.0/float(r[1])).__str__()+"% "+e[1])
+            tmp.append(e[2])
+            tri.append(tmp)
+        
     cr.close()
+    
     db.close()
-    return render_template('hub.html', tri=tri)
-
+    return render_template('hub.html', tri=tri, src=src)
+@app.route("/cmp", methods=['GET'])
+def cmp_get():
+    
+    src = request.args.get('src')
+    dst = request.args.get('dst')
+    #print(src,dst)
+    db = sqlite3.connect("base")
+    c = db.cursor()
+    
+    #print(len(block_src))
+    
+    
+    
+    match = get_cmp_result(dst,src)
+    # penta : src(id,pos) dst(id,pos) length
+    if match != False:
+        match=sorted(match, key=lambda tup: tup[4], reverse=True)
+    
+    
+    c.execute("select id,content from content where pid=%s"%src)
+    r=c.fetchall()
+    
+    blocks_src = []
+    
+    c_total=0
+    c_overlap=0
+    _c_total=0
+    _c_overlap=0
+    
+    for _r in r:
+        # r : seq : id content
+        elm=[]
+       
+        # seq : pos len text
+       
+        result, i = find_match(match,_r[0],0)
+        if result!=False :
+            elm.append(result[1]) # position
+            elm.append(result[4]) # length
+            c_overlap+=result[4]
+            #print(result[4], i)
+            elm.append(_r[1]) # string
+            elm.append(i) # overlap id
+        else:
+            elm.append(-1)
+            elm.append(-1)
+            elm.append(_r[1])
+            elm.append(i)
+        c_total+=len(_r[1])
+            
+        blocks_src.append(elm)
+        
+    
+    
+    c.execute("select id,content from content where pid=%s"%dst)
+    r=c.fetchall()
+    
+    blocks_dst = []
+    
+    for _r in r:
+        # r : seq : id content
+        elm=[]
+       
+        # seq : pos len text
+        result, i = find_match(match,_r[0],2)
+        if result!=False :
+            elm.append(result[3])
+            elm.append(result[4])
+            elm.append(_r[1])
+            #print(elm)
+            elm.append(i)
+            _c_overlap+=result[4]
+            #print('>',result[4])
+        else:
+            elm.append(-1)
+            elm.append(-1)
+            elm.append(_r[1])
+            elm.append(i)
+        #print(">>>",_c_overlap, _c_total, len(_r[1]),_r[1])
+        _c_total+=len(_r[1])
+        #print(_c_overlap, _c_total, len(_r[1]),_r[1])
+        #print(_c_total,_c_overlap)
+        blocks_dst.append(elm)
+    
+    c.close()
+    db.close()
+    return render_template('cmp.html',blocks_src=blocks_src,blocks_dst=blocks_dst,
+                           c_t=c_total,c_o=c_overlap,_c_t=_c_total,_c_o=_c_overlap)
+    
 @app.route("/cmp", methods=['POST'])
 
 def cmp_post():

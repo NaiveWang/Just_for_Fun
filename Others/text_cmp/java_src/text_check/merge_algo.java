@@ -86,7 +86,7 @@ public class merge_algo {
 					}else {
 						//merge two
 						xen.r = yum.r;
-						yum.debug();
+						//yum.debug();
 						rm.add(yum);
 						//lst.remove(lst.indexOf(yum));
 						this.removeList(rm);

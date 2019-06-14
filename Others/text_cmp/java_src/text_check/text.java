@@ -5,8 +5,13 @@ public class text {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		int cnt = text_cmp_util.cmp_core_count(text_cmp_util.cmp_core_len(2, 2));
+		int cnt;
+		cnt = text_cmp_util.cmp_core_count(text_cmp_util.cmp_core_len(6, 1));
+		System.out.println(cnt);
+		cnt = text_cmp_util.cmp_core_count(text_cmp_util.cmp_core_len(6, 2));
+		System.out.println(cnt);
 		
+		cnt = text_cmp_util.post_word_count(9);
 		System.out.println(cnt);
 		/*
 		merge_algo i = new merge_algo();

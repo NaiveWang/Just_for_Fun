@@ -53,11 +53,7 @@ body {
       
     <a href='/conf'>DB configuration/配置数据库</a>
     <br>
-  Filter test/筛选测试
-  <form action = "/" method="post">
-  title:<input type="text" name="t">
-  company:<input type="text" name="c">
-  <input type="submit" value='generate'>
+
   </form>
   P2P/post to post/帖子比帖子
   <br>
@@ -66,11 +62,25 @@ body {
   dst id:<input type="text" name="dst">
   <input type="submit" value='generate'>
   </form>
+  search all/帖子比所有其他帖子
+  <br>
+  <form action = "/" method="post">
+  src id:<input type="text" name="src0">
+  <input type="submit" value='generate' name='getall'>
+  </form>
+  Filter test/筛选对比
+  <br>
+  <form action = "/" method="post">
+  src id:<input type="text" name="src1"><br>
+  title:<input type="text" name="t"><br>
+  company:<input type="text" name="c"><br>
+  <input type="submit" value='generate' name='getfiltered'>
+  </form>
  </div>
 <div class="right">
   <ul>
   {% for id,title,blah in tri %}
-    <li>{{id}}-{{title}}-{{blah}}</li>
+    <li><a href="/cmp?dst={{src}}&src={{id}}">{{id}}-{{title}}-{{blah}}</li>
   {% endfor %}
   </ul>
 </div>
