@@ -10,9 +10,9 @@ import text_check.merge_algo;
 import text_check.result_set;
 import text_check.db_conf;
 public class text_cmp_util {
-	private static String delimeter = ",.．?!、:;；。，\n：;；？！ 		";
+	private static String buf, delimeter = ",.．?!、:;；。，\n：;；？！ 		";
 	private static Connection c;
-	private static Statement qstmt;//, stmt;
+	private static Statement qstmt, stmt;
 	private static ResultSet q;
 	private static Connection initConnection() {
 		try {
@@ -299,27 +299,37 @@ public class text_cmp_util {
 			
 		return rtn;
 	}
-	public static void block_gen(Connection c, int pid) {
+	public static void gen_block() {
 		try {
+			c=initConnection();
 			PreparedStatement ps=c.prepareStatement("insert into content(pid,content)values(?, ?)");
-			
+			stmt = c.createStatement();
 			qstmt = c.createStatement();
-			q=qstmt.executeQuery("select blah from post where id = "+pid);
-			StringTokenizer st = new StringTokenizer(q.getString(1), delimeter);
-			while(st.hasMoreTokens()) {
-				String content = st.nextToken();
-				ps.setInt(1, pid);
-				ps.setString(2, content);
-				ps.addBatch();
+			q=qstmt.executeQuery("select id, blah from post where is_split=0");
+			
+			while(q.next()) {
+				
+				int id=q.getInt(1);
+				buf = q.getString(2);
+				//System.out.println(id);
+				StringTokenizer st = new StringTokenizer(buf,delimeter);
+				
+				while(st.hasMoreTokens()) {
+					String content = st.nextToken();
+					ps.setInt(1, id);
+					ps.setString(2, content);
+					ps.addBatch();
+				}
+				ps.executeBatch();
+				ps.clearParameters();
+				stmt.executeUpdate("update post set is_split=1 where id="+id);
 			}
-			ps.executeBatch();
-			ps.clearParameters();
 		}catch(Exception e) {
 			System.out.println(e);
 			System.exit(-1);
 		}
 	}
-	private static void block_gen_temp(Connection c, String post) {
+	private static void gen_block_temp(Connection c, String post) {
 		/*
 		 * We assumed that the temporary table is called '_blocks'
 		 */
@@ -339,7 +349,7 @@ public class text_cmp_util {
 			System.exit(-1);
 		}
 	}
-	public static void chunk_gen(Connection c, String chunk_table, String block_table, int lenB) {
+	private static void gen_chunk(Connection c, String chunk_table, String block_table, int lenB) {
 		try {
 			//stmt = c.createStatement();
 			qstmt = c.createStatement();
@@ -375,6 +385,10 @@ public class text_cmp_util {
 			System.exit(-1);
 		}
 	}
+	public static void gen_chunk_all(int lenB) {
+		c=initConnection();
+		gen_chunk(c, db_conf.chunks, db_conf.blocks, lenB);
+	}
 	private static Connection temp_core_init(Connection c, String post, int lenB) {
 		/*
 		 * This method would create a temporary table to extract the raw text in to a virtual table
@@ -390,7 +404,7 @@ public class text_cmp_util {
 					"	\"id\"	INTEGER PRIMARY KEY AUTOINCREMENT,\n" + 
 					"	\"content\"	TEXT" + 
 					")");
-			block_gen_temp(c, post);
+			gen_block_temp(c, post);
 			qstmt.execute("CREATE temp TABLE \""+db_conf.chunks_temp+"\" (\n" + 
 					"	\"id\"	INTEGER PRIMARY KEY AUTOINCREMENT,\n" + 
 					"	\"cid\"	INTEGER,\n" + 
@@ -398,7 +412,7 @@ public class text_cmp_util {
 					"	\"content\"	TEXT,\n" + 
 					"	\"checksum\"	INTEGER\n" + 
 					")");
-			chunk_gen(c, db_conf.chunks_temp, db_conf.blocks_temp, lenB);
+			gen_chunk(c, db_conf.chunks_temp, db_conf.blocks_temp, lenB);
 			q = qstmt.executeQuery("select _chunks.content from _chunks");
 			int cnt=0;
 			while(q.next()) {
