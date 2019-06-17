@@ -21,7 +21,7 @@ public class split_post_base {
 			PreparedStatement ps=c.prepareStatement("insert into content(pid,content)values(?, ?)");
 			stmt = c.createStatement();
 			qstmt = c.createStatement();
-			q=qstmt.executeQuery("select id, blah from post where is_split=0");
+			q = qstmt.executeQuery("select id, blah from post where is_split=0");
 			
 			while(q.next()) {
 				
