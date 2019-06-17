@@ -281,6 +281,13 @@ public class text_cmp_util {
 		
 		return count;
 	}
+	public static void cmp_core_count_batch(int src, List<Integer> l) {
+		Iterator<Integer> i = l.iterator();
+		System.out.println(post_word_count(src));
+		while(i.hasNext()) {
+			System.out.println(cmp_core_count(cmp_core_len(src, i.next())));
+		}
+	}
 	public static int post_word_count(int id) {
 		int rtn = 0;
 		try {
@@ -413,11 +420,11 @@ public class text_cmp_util {
 					"	\"checksum\"	INTEGER\n" + 
 					")");
 			gen_chunk(c, db_conf.chunks_temp, db_conf.blocks_temp, lenB);
-			q = qstmt.executeQuery("select _chunks.content from _chunks");
+			q = qstmt.executeQuery("select "+db_conf.blocks_temp+".id ,"+db_conf.blocks_temp+".content from "+db_conf.blocks_temp);
 			int cnt=0;
 			while(q.next()) {
-				System.out.println(q.getString(1));
-				cnt+=q.getString(1).length();
+				System.out.println(q.getString(1)+" "+q.getString(2));
+				cnt+=q.getString(2).length();
 			}
 			System.out.println(cnt+"\n");
 		}catch(Exception e) {
