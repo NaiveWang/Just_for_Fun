@@ -55,6 +55,7 @@ body {
     <br>
 
   </form>
+  <br>
   P2P/post to post/帖子比帖子
   <br>
   <form action = "/cmp" method="post">
@@ -62,12 +63,16 @@ body {
   dst id:<input type="text" name="dst">
   <input type="submit" value='generate'>
   </form>
+  <br>
+  <br>
   search all/帖子比所有其他帖子
   <br>
   <form action = "/" method="post">
   src id:<input type="text" name="src0">
   <input type="submit" value='generate' name='getall'>
   </form>
+  <br>
+  <br>
   Filter test/筛选对比
   <br>
   <form action = "/" method="post">
@@ -76,7 +81,19 @@ body {
   company:<input type="text" name="c"><br>
   <input type="submit" value='generate' name='getfiltered'>
   </form>
+  <br>
+  <br>
+  instance compare/现输
+  <br>
+  <form action = "/" method="post">
+  title:<input type="text" name="t"><br>
+  company:<input type="text" name="c"><br>
+  chunk size : <input type="text" name="cksz"><br>
+  <textarea name="ists">{{ins}}</textarea><br>
+  <input type="submit" value='generate' name='instance'>
+  </form>
  </div>
+ 
 <div class="right">
   <ul>
   {% for id,title,blah in tri %}

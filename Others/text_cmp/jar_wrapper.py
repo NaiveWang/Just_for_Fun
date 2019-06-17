@@ -9,9 +9,9 @@ import os
 def gen_block():
     os.popen("java -jar text_cmp.jar 0").read()
 def gen_chunk(lenB):
-    os.popen("java -jar text_cmp.jar 1 %d"%lenB).read()
+    os.popen("java -jar text_cmp.jar 1 %s"%lenB).read()
 def cmp_post(src, dst):
-    s=os.popen("java -jar text_cmp.jar 2 %d %d"%(src, dst)).read().split('\n')[:-1]
+    s=os.popen("java -jar text_cmp.jar 2 %s %s"%(src, dst)).read().split('\n')[:-1]
     lst = []
     
     for es in s:
@@ -25,15 +25,15 @@ def cmp_post_batch(src, dstL):
     s = ""
     for dst in dstL:
         s+=" "+dst.__str__()
-    s=os.popen("java -jar text_cmp.jar 3 %d %d %s"%(src, len(dstL), s)).read().split('\n')[:-1]
+    s=os.popen("java -jar text_cmp.jar 3 %s %d %s"%(src, len(dstL), s)).read().split('\n')[:-1]
     lst=[]
     for es in s:
         lst.append(int(es))
-    return lst
+    return lst[0], lst[1:]
     
     
 def cmp_instance(ins, lenB, dst):
-    s=os.popen('java -jar text_cmp.jar 4 "%s" %d %d'%(ins, lenB, dst)).read().split("\n\n")[:-1]
+    s=os.popen('java -jar text_cmp.jar 4 "%s" %s %s'%(ins, lenB, dst)).read().split("\n\n")[:-1]
     src=s[0].split('\n')
     lil=int(src[-1])
     del(src[-1])
@@ -55,7 +55,7 @@ def cmp_instance_batch(ins, lenB, dstL):
     s = ""
     for dst in dstL:
         s+=" "+dst.__str__()
-    s=os.popen('java -jar text_cmp.jar 5 "%s" %d %d %s'%(ins, lenB, len(dstL), s)).read().split("\n\n")[:-1]
+    s=os.popen('java -jar text_cmp.jar 5 "%s" %s %d %s'%(ins, lenB, len(dstL), s)).read().split("\n\n")[:-1]
     src=s[0].split('\n')
     lil=int(src[-1])
     del(src[-1])
@@ -78,9 +78,5 @@ def cmp_instance_batch(ins, lenB, dstL):
                 tees.append(int(eees))
             tes.append(tees)
         dstL.append(tes)
-            
-    
-    
-    
     
     return lil, li, dstL, dstcL
