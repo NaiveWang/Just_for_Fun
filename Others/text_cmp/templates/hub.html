@@ -59,8 +59,8 @@ body {
   P2P/post to post/帖子比帖子
   <br>
   <form action = "/cmp" method="post">
-  src id:<input type="text" name="src">
-  dst id:<input type="text" name="dst">
+  src id:<input type="number" required="required" name="src">
+  dst id:<input type="number" required="required" name="dst">
   <input type="submit" value='generate'>
   </form>
   <br>
@@ -68,7 +68,7 @@ body {
   search all/帖子比所有其他帖子
   <br>
   <form action = "/" method="post">
-  src id:<input type="text" name="src0">
+  src id:<input type="number" required="required" name="src0">
   <input type="submit" value='generate' name='getall'>
   </form>
   <br>
@@ -76,7 +76,7 @@ body {
   Filter test/筛选对比
   <br>
   <form action = "/" method="post">
-  src id:<input type="text" name="src1"><br>
+  src id:<input type="number" required="required" name="src1"><br>
   title:<input type="text" name="t"><br>
   company:<input type="text" name="c"><br>
   <input type="submit" value='generate' name='getfiltered'>
@@ -88,8 +88,8 @@ body {
   <form action = "/" method="post">
   title:<input type="text" name="t"><br>
   company:<input type="text" name="c"><br>
-  chunk size : <input type="text" name="cksz"><br>
-  <textarea name="ists">{{ins}}</textarea><br>
+  chunk size : <input type="number" required="required" name="cksz" value="7"><br>
+  <textarea name="ists" required="required">{{ins}}</textarea><br>
   <input type="submit" value='generate' name='instance'>
   </form>
  </div>
