@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <wchar.h>
+#include <glib.h>
 
 extern const char *db_name;
 extern const char *tb_post;
@@ -12,7 +13,8 @@ extern const char *tb_block;
 extern const char *tb_chunk;
 extern const char *tb_block_tmp;
 extern const char *tb_chunk_tmp;
-extern const wchar_t *delimiter;
+extern const char *delimiter;
+extern wchar_t *wdelimiter;
 
 sqlite3* db_init();
 void db_close(sqlite3*);
