@@ -261,7 +261,7 @@ public class text_cmp_util {
 						break;
 					}
 				}
-				if(tag) {
+				if(tag || i.hasNext()) {
 					idx_s = idx;
 					ii_s=ii;
 					count+=a.check_out();
@@ -285,7 +285,7 @@ public class text_cmp_util {
 		Iterator<Integer> i = l.iterator();
 		System.out.println(post_word_count(src));
 		while(i.hasNext()) {
-			System.out.println(cmp_core_count(cmp_core_len(src, i.next())));
+			System.out.println(cmp_core_count(cmp_core_len(i.next(), src)));
 		}
 	}
 	public static int post_word_count(int id) {
