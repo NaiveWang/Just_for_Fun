@@ -128,4 +128,38 @@ void gen_chunk(sqlite3* db, int size_chunk){
   sqlite3_exec(db, "BEGIN TRANSACTION", NULL, NULL, NULL);
   sqlite3_exec(db, "select id, content from content", sqlite_callback_gen_chunk, &data, NULL);
   sqlite3_exec(db, "END TRANSACTION", NULL, NULL, NULL);
+  sqlite3_finalize(stmt);
+}
+void cmp_core(sqlite3* db, int src, int dst){
+  int rowz;
+  sqlite3_stmt *stmt;
+  sqlite3_prepare_v2(db, "select chunks.cid,target.cid,chunks.pos,target.pos,\
+      chunks.content from chunks, content,\
+      (select chunks.* from chunks, content where chunks.cid = content.id and content.pid=@src\
+      ) as target where chunks.cid = content.id and content.pid=@dst\
+      and target.checksum=chunks.checksum and target.content=chunks.content\
+       order by chunks.cid,target.cid,chunks.pos asc;", -1, &stmt, NULL);
+  sqlite3_bind_int(stmt, 1, src);
+  sqlite3_bind_int(stmt, 2, dst);
+  while(sqlite3_step(stmt) == SQLITE_ROW){
+    printf("%d %d %d %d %s\n",  sqlite3_column_int(stmt, 0),
+                              sqlite3_column_int(stmt, 1),
+                              sqlite3_column_int(stmt, 2),
+                              sqlite3_column_int(stmt, 3),
+                            sqlite3_column_text(stmt, 4));
+  }
+  sqlite3_finalize(stmt);
+}
+
+cmp_node_v* build_node_v(int s, int d, int s_pos, int d_pos, char* chunk){
+  cmp_node_v* build = malloc(sizeof(cmp_node_v));
+
+  build->src = s;
+  build->dst = d;
+  build->pos_s = s_pos;
+  build->pos_d = d_pos;
+  build->content = malloc(sizeof(char)*(strlen(chunk)+1));
+  strcpy(build->content, chunk);
+
+  return build;
 }
