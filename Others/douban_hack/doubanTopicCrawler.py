@@ -4,8 +4,14 @@ import time
 
 douban_zhengyoudahui='https://www.douban.com/gallery/topic/51644/'
 
+profile = webdriver.FirefoxProfile()
+# 1 - Allow all images
+# 2 - Block all images
+# 3 - Block 3rd party images 
+profile.set_preference("permissions.default.image", 2)
 
-driver = webdriver.Firefox()
+driver = webdriver.Firefox(firefox_profile=profile)
+
 driver.get(douban_zhengyoudahui)
 
 i=2
