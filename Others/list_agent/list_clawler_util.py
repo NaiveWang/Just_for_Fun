@@ -44,9 +44,10 @@ def jsfree_multi_url(url, xpath):
     url[1] = int(url[1])
     dic={}
     try:
-        while(True):
+        for i in range(30):
             tree = html.parse(req.urlopen(url[0]+url[1].__str__()+url[2]))
             list = tree.xpath(xpath)
+            print(i)
             if len(list)==0:
                 return dic
             for e in list:
