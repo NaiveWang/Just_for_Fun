@@ -31,8 +31,10 @@ for e in l:
         table = jsfree_single(e[1], e[2])
         print(table)
         for col in table:
-            c.execute('insert into posts(url)values(?)', (col.attrib['href'], ))
-
+            try:
+            	c.execute('insert into posts(url)values(?)', (col.attrib['href'], ))
+            except Exception as err:
+                print(err)
         c.execute('update source set tag=? where id=?', (len(table), e[0]))
         db.commit()
     except Exception as err:
