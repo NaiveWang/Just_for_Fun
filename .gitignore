@@ -138,3 +138,9 @@ OpenCV/contour/data_raw/*/
 OpenCV/contour/data/*/
 
 Others/douban_hack/img/
+
+Others/douban_spider/img/
+
+Others/sarft_spider/base\.db
+
+Others/chgov_spider/_gov\.db
