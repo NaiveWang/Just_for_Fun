@@ -46,6 +46,10 @@ for j in js:
         #print(j['status']['images'])
         for group in j['status']['images']:
             add_image([int(j['status']['id']), group['large']['url']])
+            try:
+                add_image([int(j['status']['id']), group['raw']['url']])
+            except Exception as E:
+                print(E)
             #print()
             #print(group['normal']['url'])
 
