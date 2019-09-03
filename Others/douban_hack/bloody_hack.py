@@ -20,7 +20,7 @@ header={
 url='https://m.douban.com/rexxar/api/v2/gallery/topic/51644/items?sort=new&count=50&status_full_text=1&guest_only=0&ck=null&start='
 
 total=27253
-start=18600
+start=0
 while start < total:
     req = request.Request(url+str(start), headers=header)
 
@@ -28,7 +28,7 @@ while start < total:
     print(start, response.getcode())
 
     text = gzip.decompress(response.read())
-    f=open('corpus/'+str(start)+'.json', 'w')
+    f=open('raw/'+str(start)+'.json', 'w')
     j=json.loads(text.decode("utf-8", "ignore"))
     json.dump(j, f, ensure_ascii=False)
     start+=50

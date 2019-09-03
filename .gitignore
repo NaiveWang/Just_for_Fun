@@ -133,3 +133,8 @@ CUDA/helloworld/a
 *.pyc
 
 *.kate-swp
+
+OpenCV/contour/data_raw/*/
+OpenCV/contour/data/*/
+
+Others/douban_hack/img/
