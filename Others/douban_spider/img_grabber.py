@@ -7,7 +7,8 @@ m=re.findall(reg, text)
 for em in m:
     local = em.replace('/', '_-').replace('https:_-_-', 'img/')
     if os.path.isfile(local):
-        print('skipping', em)
+        continue
+        #print('skipping', em)
     else:
         try:
             print('grabbing', em)
