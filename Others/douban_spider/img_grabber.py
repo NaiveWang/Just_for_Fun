@@ -9,5 +9,9 @@ for em in m:
     if os.path.isfile(local):
         print('skipping', em)
     else:
-        request.urlretrieve(em, local)
-        print('grabbing', em)
+        try:
+            print('grabbing', em)
+            request.urlretrieve(em, local)
+            print('finished', em)
+        except Exception as e:
+            print(e)
