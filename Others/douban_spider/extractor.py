@@ -1,6 +1,7 @@
 import json
 import glob
-f=open('merged.json', 'a')
+import sys
+f=open(sys.argv[1]+'.json', 'a')
 jsonz=glob.glob('raw/*.json')
 for jfile in jsonz:
     j=json.load(open(jfile))

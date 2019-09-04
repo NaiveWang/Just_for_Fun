@@ -1,11 +1,12 @@
 import json
 import sqlite3
+import sys
 '''
 this script import user and loc to local database
 '''
 db=sqlite3.connect('_douban.db')
 c=db.cursor()
-js=open('merged.json')
+js=open(sys.argv[1]+'.json')
 def add_user(val):
     try:
         if val[-1] is None:

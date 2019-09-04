@@ -1,5 +1,6 @@
 import sqlite3
 import json
+import sys
 '''
     This file imports posts, commits and image links
 '''
@@ -7,7 +8,7 @@ import json
 
 db=sqlite3.connect('_douban.db')
 c=db.cursor()
-js=open('merged.json')
+js=open(sys.argv[1]+'.json')
 
 def add_post(val):
     try:
@@ -36,7 +37,7 @@ for j in js:
     j=json.loads(j)
     if 'status' in j:
         #print(j['status']['text'])
-        add_post([j['status']['uri'], int(j['status']['id']), 51644,
+        add_post([j['status']['uri'], int(j['status']['id']), int(sys.argv[1]),
                 j['status']['text'], j['status']['comments_count'],
                 j['status']['create_time'], j['status']['like_count']])
         for comment in j['comments']:
@@ -56,7 +57,7 @@ for j in js:
     else:
         #print(j)
         #print(j['title']+'.'+j['abstract'])
-        add_post([j['uri'], int(j['id']), 51644,
+        add_post([j['uri'], int(j['id']), int(sys.argv[1]),
             j['title']+'.'+j['abstract'], j['comments_count'],
             j['update_time'], j['likers_count']])
         #print(j['comments'])
