@@ -9,10 +9,10 @@ import time
 #m=re.findall(reg, text)
 db=sqlite3.connect('_douban.db')
 c=db.cursor()
-c.execute('select url from img order by random()')
+c.execute('select url_avatar from user order by random()')
 m=c.fetchall()
 for em in m:
-    local = em[0].replace('/', '_').replace('https:__', 'img/')
+    local = em[0].replace('/', '_').replace('https:__', 'img/avatar/')
     if os.path.isfile(local):
         continue
         #print('skipping', em)

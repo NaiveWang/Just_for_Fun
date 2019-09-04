@@ -1,11 +1,12 @@
 import json
 import sqlite3
+import sys
 '''
 this script import user and loc to local database
 '''
 db=sqlite3.connect('_douban.db')
 c=db.cursor()
-js=open('merged.json')
+js=open(sys.argv[1]+'.json')
 def add_user(val):
     try:
         if val[-1] is None:
@@ -13,13 +14,13 @@ def add_user(val):
         else:
             c.execute('insert into user(id, uid, name, url_avatar, loc)values(?, ?, ?, ?, ?)',[val[0], val[1], val[2], val[3], val[-1]['id']])
     except Exception as e:
-        print('user:', e)
+        print('user:', e, file=sys.stderr)
 def add_loc(val):
     try:
         val=val['loc']
         c.execute('insert into loc(id, name, uid)values(?, ?, ?)', (int(val['id']), val['name'], val['uid']))
     except Exception as e:
-        print('loc:', e)
+        print('loc:', e, file=sys.stderr)
 
 for j in js:
     j=json.loads(j)

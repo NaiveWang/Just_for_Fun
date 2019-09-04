@@ -146,3 +146,5 @@ Others/sarft_spider/base\.db
 Others/chgov_spider/_gov\.db
 
 Others/douban_spider/_douban\.db
+
+*.db

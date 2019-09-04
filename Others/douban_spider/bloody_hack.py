@@ -2,6 +2,7 @@ from urllib import request
 from io import StringIO
 import gzip
 import json
+import sys
 header={
 'Host': 'm.douban.com',
 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0',
@@ -17,9 +18,9 @@ header={
 'Cache-Control': 'no-cache',
 'Upgrade-Insecure-Requests': '1'}
 
-url='https://m.douban.com/rexxar/api/v2/gallery/topic/51644/items?sort=new&count=50&status_full_text=1&guest_only=0&ck=null&start='
+url='https://m.douban.com/rexxar/api/v2/gallery/topic/'+sys.argv[1]+'/items?sort=new&count=50&status_full_text=1&guest_only=0&ck=null&start='
 
-total=27253
+total=int(sys.argv[2])
 start=0
 while start < total:
     req = request.Request(url+str(start), headers=header)
