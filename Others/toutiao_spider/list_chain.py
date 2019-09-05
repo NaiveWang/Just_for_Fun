@@ -2,6 +2,10 @@ from urllib import request
 import sqlite3
 import json
 import gzip
+import key
+import time
+import math
+import random
 headerz={
 "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 "Accept-Encoding": "gzip, deflate, br",
@@ -18,10 +22,14 @@ c.execute('select seed from seeds')
 colz=c.fetchall()
 
 for col in colz:
+    hotkey='0'
+    hotkey_stale='0'
+    #is_closure=True
     while True:
-        hotkey='0'
-        hotkey_stale='0'
+        #hotkey='0'
+        #hotkey_stale='0'
         is_closure=True
+        #AS, CP=key.gen(int(hotkey))
         req = request.Request(col[0].replace(hotkey_stale, hotkey), headers=headerz)
         rep = request.urlopen(req)
         print(rep.getcode())
@@ -29,16 +37,18 @@ for col in colz:
         j = json.loads(jraw.decode('utf-8', 'ignore'))
         # get id list
         for newz in j['data']:
-            print(newz['item_id'], newz['tag'])
             try:
+                print(newz['item_id'], newz['tag'])
                 c.execute('insert into news(id, tag, title, source)values(?, ?, ?, ?)', (
                     newz['item_id'], newz['tag'], newz['title'], newz['source']
                 ))
                 db.commit()
                 is_closure=False
+                
             except Exception as E:
                 print(E)
         if is_closure is True:
             break
         hotkey_stale = hotkey
-        hotkey = j['next']['max_behot_time']
+        hotkey = str(random.randint(0, j['next']['max_behot_time']))
+        time.sleep(1.2)

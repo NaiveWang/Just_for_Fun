@@ -2,7 +2,7 @@ from urllib import request
 import sqlite3
 db=sqlite3.connect('_gov.db')
 c=db.cursor()
-c.execute('select id, url from posts where tag=0')
+c.execute('select id, url from posts where tag=0 order by random()')
 l=c.fetchall()
 
 for el in l:
