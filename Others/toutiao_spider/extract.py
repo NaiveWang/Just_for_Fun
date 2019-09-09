@@ -15,7 +15,7 @@ y=[]
 
 db=sqlite3.connect('toutiao.db')
 c=db.cursor()
-c.execute('select id, raw, tag from news where raw like " {%" and tag <> "forum_post" and tag in (select b from (select count(*) as a, tag as b from news where raw like " {%" group by tag) where a > 100) order by random()')
+c.execute('select id, raw, tag from news where raw like " {%" and tag <> "forum_post" and tag in (select b from (select count(*) as a, tag as b from news where raw like " {%" group by tag) where a > 500) order by random()')
 rs=c.fetchall()
 for r in rs:
     co=r[1].split('\'.slice(6, -6),')[1].split('content: \'', 1)[-1]
