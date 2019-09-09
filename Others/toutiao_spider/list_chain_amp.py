@@ -1,4 +1,4 @@
-from urllib import request
+import requests
 import sqlite3
 import json
 import gzip
@@ -21,20 +21,22 @@ db=sqlite3.connect('toutiao.db')
 c=db.cursor()
 c.execute('select seed, category from seeds')
 colz=c.fetchall()
+sess=requests.Session()
+kookiez=None
 for col in colz:
-    #req = request.Request(col[0].replace(hotkey_stale, hotkey), headers=headerz)
+
     for i in range(100):
         is_closure=True
         
-        req = request.Request(col[0].replace('0', str(time.time()-random.randint(0, 100000))), headers=headerz)
-        rep = request.urlopen(req)
-        kookie=rep.getheader('set-cookie')
+        req = sess.get(col[0], headers=headerz, cookies=kookiez)
+
+        kookiez=req.cookies
         
         #headerz['Cookie'] = kookie
         
-        print(rep.getcode(), col[1], kookie), 
-        jraw = gzip.decompress(rep.read())
-        j = json.loads(jraw.decode('utf-8', 'ignore'))
+        print(req.status_code, col[1], kookiez)
+        #jraw = req.text
+        j = json.loads(req.text)
         # get id list
         for newz in j['data']:
             try:
