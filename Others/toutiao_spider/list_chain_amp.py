@@ -38,18 +38,22 @@ for col in colz:
         #jraw = req.text
         j = json.loads(req.text)
         # get id list
-        for newz in j['data']:
-            try:
-                #print()
-                c.execute('insert into news(id, tag, title, source)values(?, ?, ?, ?)', (
-                    newz['item_id'], newz['tag'], newz['title'], newz['source']
-                ))
-                db.commit()
-                is_closure=False
-                print('success :',newz['item_id'], newz['tag'])
-            except Exception as E:
-                print('failed :', E)
-        
+        #print(j)
+        try:
+            
+            for newz in j['data']:
+                try:
+                    #print()
+                    c.execute('insert into news(id, tag, title, source)values(?, ?, ?, ?)', (
+                        newz['item_id'], newz['tag'], newz['title'], newz['source']
+                    ))
+                    db.commit()
+                    is_closure=False
+                    print('success :',newz['item_id'], newz['tag'])
+                except Exception as E:
+                    print('failed :', E)
+        except Exception as E:
+            print(E, j)
         #time.sleep(1.2)
         if is_closure is True:
             break
