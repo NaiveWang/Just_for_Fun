@@ -13,29 +13,34 @@ import argparse
 def text_gen(model, sslice, length, clen, i2c, idx=[]):
     # the text head initializer, random given when not given
     if len(idx) < 1:
-        idx = np.random.randint(0, clen, (sslice))
+        idx = np.random.randint(0, clen, (length))
 
     #print(idx)
     pd = np.zeros((1, length, clen))
     # predict loop
     pdstr=''
-    infer_point = len(idx)
+    #infer_point =
     # initialize the header of the predict text
-    for i in range(infer_point):
-        pd[0, i, idx] = 1
-        #print(idx)
-        pdstr+=i2c[idx[i]]
+    for i in range(len(idx)):
+        pd[0, i, idx[i]] = 1
+        ##print(idx)
+    pdstr+=i2c[idx[0]]
     #print(pdstr)
 
-    for i in range(0, length-infer_point):
+    for i in range(length-sslice):
         # assign value
         # the predict session, now it's just a random gen
         #idx = np.random.randint(0, clen, (sslice))
         # the predict session, now as it should be
-        idx = np.argmax(model.predict(pd[:, :i+infer_point, :])[0], 1)
-        pd[0, i+infer_point, idx] = 1
+        #print(p, p.shape)
+        #get the predicted index array
+        idx = np.argmax(model.predict(pd[:, i:i+sslice, :])[0], 1)
+        #print(idx)
+        # apply results on the output array
+        for j in range(len(idx)):
+            pd[0, i+j, idx[j]] = 1
         # print(idx)
-        pdstr+=i2c[idx[-1]]
+        pdstr+=i2c[idx[0]]
     #print(pdstr)
     return pdstr
 
@@ -61,7 +66,7 @@ def d_loader(fname, sslice, gap=1):
     # clen is the character set size
     clen=len(cmap)
 
-    #print("char mapping debug :", cmap, clen)
+    print("char mapping debug :", clen)
     # generate the 2-way char map
     i2c = {idx: c for idx, c in enumerate(cmap)}
     c2i = {c: idx for idx, c in enumerate(cmap)}
@@ -97,28 +102,32 @@ def d_loader(fname, sslice, gap=1):
 
 
 
-SIZE_BATCH=100
+SIZE_BATCH=512
 SIZE_WEIGHTS=None
 DIM_HIDDEN=1024
-SSLICE=64
-NUM_LAYER=2
+SSLICE=16
+NUM_LAYER=4
 WEIGHTS=''
-
-clen, i2c, c2i, x, y = d_loader('douban.txt', SSLICE, 31)
+print('generating dataset')
+clen, i2c, c2i, x, y = d_loader('dc.txt', SSLICE, 3)
 #print(i2c)
 #print(text_gen(None, SSLICE, 10, clen, i2c, [c2i[c] for c in '三天之内']))
 
 args = argparse.ArgumentParser()
-
+print('building model')
 model = Sequential()
 model.add(LSTM(DIM_HIDDEN, input_shape=(None, clen), return_sequences=True))
 for i in range(NUM_LAYER-1):
     model.add(LSTM(DIM_HIDDEN, return_sequences=True))
 model.add(TimeDistributed(Dense(clen)))
+model.add(Dropout(0.4))
 model.add(Activation('softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
-
+print('training')
 epoc = 0
 while True:
-    model.fit(x, y, batch_size=SIZE_BATCH, verbose=0, nb_epoch=1)
-    print(text_gen(model, SSLICE, 32, clen, i2c))#, [c2i[c] for c in '我草你妈']))
+    model.fit(x, y, batch_size=SIZE_BATCH, verbose=1, epochs=1)
+    epoc+=1
+    print(text_gen(model, SSLICE, 32, clen, i2c))#, [c2i[c] for c in '你好优秀']))
+    print(text_gen(model, SSLICE, 32, clen, i2c))
+    print(text_gen(model, SSLICE, 32, clen, i2c))
