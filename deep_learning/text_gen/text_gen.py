@@ -1,5 +1,4 @@
 import numpy as np
-import argparse
 
 from keras.models import Sequential, load_model, save_model
 from keras.layers.core import Dense, Activation, Dropout
@@ -8,7 +7,7 @@ from keras.layers.wrappers import TimeDistributed
 # from keras.callbacks import ModelCheckpoint
 
 import conf
-
+import dispatcher
 
 
 '''
@@ -135,67 +134,7 @@ def text_gen_endless(model, sslice, clen, i2c):
         flip=(flip+1)&1
     #print(pdstr)
     return pdstr
-def d_init(fname, sslice, gap=1):
-    '''
-        this function will map the raw data to a word tensors
-        for later use of the RNN,
-        it splits each line of the raw data and the count chars as char embedding size,
-        then this function creates a 3 ranking tensor with the length of the slice, the total
-        number of the slices and the size of embeddings, which looks like a cube.
-        "fname" is the name of the raw file
-        "sslice" is the size(length) of every slice
-        "gap" is the skips of every window, errors will occur when it is set smaller than 1
-    '''
-    # load raw text data from a given file name, it is assumed to be a plain text file.
-    raw = open(fname).read().split('\n')[:-1]
-    # create a set for character table
-    cmap = set('\002')
-    # generate character table
-    for row in raw:
-        cmap.update(list(row))
-    # clen is the character set size
-    clen=len(cmap)
 
-    print("char mapping debug :", clen)
-    # generate the 2-way char map
-    i2c = {idx: c for idx, c in enumerate(cmap)}
-    c2i = {c: idx for idx, c in enumerate(cmap)}
-    # generate preprocessed dataset, i as input and o as output
-    x=[]
-    y=[]
-    # for each row
-    for row in raw:
-        # x starts from 0 to max len - slice size - gap -1
-        # y starts from 1 to max len - slice size - gap
-        # append an end indicator to each line
-        row = row+'\002'
-        idx=0
-        while idx < len(row)-sslice:
-            # create one-hot matrixies
-            one_hotx = np.zeros((sslice, clen), dtype=np.int8)
-            one_hoty = np.zeros((sslice, clen), dtype=np.int8)
-            islice = [c2i[c] for c in row[idx:idx+sslice+1]]
-            # get index slices
-            islicex = islice[:-1]
-            islicey = islice[1:]
-            # print('slice debug :', islicex, islicey)
-            # convert index lists into onehot matrixies
-            for i in range(sslice):
-                # process each
-                one_hotx[i, islicex[i]]=1
-                one_hoty[i, islicey[i]]=1
-            # add one hots to list
-            x.append(one_hotx)
-            y.append(one_hoty)
-            #increase index
-            idx+=gap
-    #print('one hot debug :', x, y)
-    return clen, i2c, c2i, np.stack(x, axis=0), np.stack(x, axis=0)
-
-def d_loader():
-    '''
-        This function loads prepared data from local files directly.
-    '''
 def get_model(clen, msave=None, wsave=None):
     model=None
     if msave is not None:
@@ -214,7 +153,7 @@ def get_model(clen, msave=None, wsave=None):
             model.add(LSTM(conf.DIM_HIDDEN, return_sequences=True))
             model.add(Dropout(conf.DROPOUT))
         model.add(TimeDistributed(Dense(clen)))
-        #model.add(Dropout(conf.DROPOUT))
+        model.add(Dropout(conf.DROPOUT))
         model.add(Activation('softmax'))
         model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
         model.summary()
@@ -223,15 +162,30 @@ def get_model(clen, msave=None, wsave=None):
         model.load_weights(wsave)
     return model
 
-print('generating dataset')
-clen, i2c, c2i, x, y = d_init('dc.txt', conf.SSLICE, conf.GAP)
-args = argparse.ArgumentParser()
-print('getting model')
-model=get_model(clen)#, conf.SAVE_M, conf.SAVE_W)
-print('training')
+#print('generating dataset')
+# This is the old data preparation step, stale one
+#clen, i2c, c2i, x, y = dispatcher.data.d_init('douban.txt', conf.SSLICE, conf.GAP)
+
+
+
 epoc = 0
+print('loading dictionary')
+i2c, c2i = dispatcher.dict.load(conf.DATA_DIR+conf.DICT_I2C, conf.DATA_DIR+conf.DICT_C2I)
+clen=len(i2c)
+print('character set size is', clen)
+
+print('getting model')
+model=get_model(clen)#, conf.SAVE_M, conf.SAVE_W
+
+print('initizlizing data feeder')
+data_feeder = dispatcher.data(conf, True)
+data_feeder.get_list()
+print('training')
 while True:
-    model.fit(x, y, batch_size=conf.SIZE_BATCH, verbose=1, epochs=conf.EPOC_BATCH)
+    for x, y in data_feeder:
+        model.fit(x, y, batch_size=conf.SIZE_BATCH_TRAIN, verbose=1, epochs=conf.EPOC_BATCH)
+        del(x)
+        del(y)
     epoc+=1
     print('epoc :', epoc)
     save_model(model, conf.SAVE_M)
