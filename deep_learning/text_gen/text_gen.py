@@ -212,8 +212,9 @@ def get_model(clen, msave=None, wsave=None):
         for i in range(conf.NUM_LAYER-1):
             # multiple layer
             model.add(LSTM(conf.DIM_HIDDEN, return_sequences=True))
+            model.add(Dropout(conf.DROPOUT))
         model.add(TimeDistributed(Dense(clen)))
-        model.add(Dropout(conf.DROPOUT))
+        #model.add(Dropout(conf.DROPOUT))
         model.add(Activation('softmax'))
         model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
         model.summary()
@@ -225,7 +226,8 @@ def get_model(clen, msave=None, wsave=None):
 print('generating dataset')
 clen, i2c, c2i, x, y = d_init('dc.txt', conf.SSLICE, conf.GAP)
 args = argparse.ArgumentParser()
-model=get_model(clen, conf.SAVE_M, conf.SAVE_W)
+print('getting model')
+model=get_model(clen)#, conf.SAVE_M, conf.SAVE_W)
 print('training')
 epoc = 0
 while True:
