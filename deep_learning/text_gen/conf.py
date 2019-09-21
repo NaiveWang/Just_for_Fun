@@ -16,7 +16,7 @@ DROPOUT=0.1
 EPOC_BATCH=1
 SAVE_M='default.h5m'
 SAVE_W='default.h5w'
-GAP=7
+GAP=6
 
 DATA_DIR='data/'
 DATA_RAW='douban.txt'

@@ -175,22 +175,22 @@ clen=len(i2c)
 print('character set size is', clen)
 
 print('getting model')
-model=get_model(clen)#, conf.SAVE_M, conf.SAVE_W
+model=get_model(clen, conf.SAVE_M, conf.SAVE_W)
 
 print('initizlizing data feeder')
 data_feeder = dispatcher.data(conf, True)
 data_feeder.get_list()
 print('training')
 while True:
+    print('epoc :', epoc)
     for x, y in data_feeder:
         model.fit(x, y, batch_size=conf.SIZE_BATCH_TRAIN, verbose=1, epochs=conf.EPOC_BATCH)
         del(x)
         del(y)
+        print(text_gen_old(model, conf.SSLICE, 64, clen, i2c))#, [c2i[c] for c in '你好优秀']))
+        print(text_gen(model, conf.SSLICE, 64, clen, i2c))
+        print(text_gen_old(model, conf.SSLICE, 64, clen, i2c))
+        print(text_gen(model, conf.SSLICE, 64, clen, i2c))
     epoc+=1
-    print('epoc :', epoc)
     save_model(model, conf.SAVE_M)
     model.save_weights(conf.SAVE_W)
-    print(text_gen_old(model, conf.SSLICE, 32, clen, i2c))#, [c2i[c] for c in '你好优秀']))
-    print(text_gen(model, conf.SSLICE, 32, clen, i2c))
-    print(text_gen_old(model, conf.SSLICE, 32, clen, i2c))
-    print(text_gen(model, conf.SSLICE, 32, clen, i2c))
