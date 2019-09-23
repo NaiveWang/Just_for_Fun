@@ -155,7 +155,7 @@ def get_model(clen, msave=None, wsave=None):
         model.add(TimeDistributed(Dense(clen)))
         model.add(Dropout(conf.DROPOUT))
         model.add(Activation('softmax'))
-        model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
+        model.compile(loss='categorical_crossentropy', optimizer='adam')
         model.summary()
     if wsave is not None:
         print('loading weights')
@@ -175,7 +175,7 @@ clen=len(i2c)
 print('character set size is', clen)
 
 print('getting model')
-model=get_model(clen, conf.SAVE_M, conf.SAVE_W)
+model=get_model(clen)#, conf.SAVE_M, conf.SAVE_W)
 
 print('initizlizing data feeder')
 data_feeder = dispatcher.data(conf, True)
@@ -187,10 +187,10 @@ while True:
         model.fit(x, y, batch_size=conf.SIZE_BATCH_TRAIN, verbose=1, epochs=conf.EPOC_BATCH)
         del(x)
         del(y)
-        print(text_gen_old(model, conf.SSLICE, 64, clen, i2c))#, [c2i[c] for c in '你好优秀']))
-        print(text_gen(model, conf.SSLICE, 64, clen, i2c))
-        print(text_gen_old(model, conf.SSLICE, 64, clen, i2c))
-        print(text_gen(model, conf.SSLICE, 64, clen, i2c))
+    print(text_gen_old(model, conf.SSLICE, 100, clen, i2c))
+    print(text_gen(model, conf.SSLICE, 100, clen, i2c))
+    print(text_gen_old(model, conf.SSLICE, 100, clen, i2c))
+    print(text_gen(model, conf.SSLICE, 100, clen, i2c))
     epoc+=1
     save_model(model, conf.SAVE_M)
     model.save_weights(conf.SAVE_W)

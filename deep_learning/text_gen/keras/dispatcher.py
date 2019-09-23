@@ -108,22 +108,22 @@ class data:
             while idx < len(row)-self.conf.SSLICE:
                 # create one-hot matrixies
                 one_hotx = np.zeros((self.conf.SSLICE, self.clen), dtype=np.int8)
-                #one_hoty = np.zeros((self.conf.SSLICE, self.clen), dtype=np.int8)
+                one_hoty = np.zeros((self.conf.SSLICE, self.clen), dtype=np.int8)
                 islice = [c2i[c] for c in row[idx:idx+self.conf.SSLICE+1]]
                 # get index slices
                 islicex = islice[:-1]
-                #islicey = islice[1:]
+                islicey = islice[1:]
                 # print('slice debug :', islicex, islicey)
                 # convert index lists into onehot matrixies
                 for i in range(self.conf.SSLICE):
                     # process each
                     one_hotx[i, islicex[i]]=1
-                    #one_hoty[i, islicey[i]]=1
+                    one_hoty[i, islicey[i]]=1
                 # add one hots to list
                 x.append(one_hotx)
-                y.append(islice[1:])
+                y.append(one_hoty)
                 del(one_hotx)
-                #del(one_hoty)
+                del(one_hoty)
                 #increase index
                 idx+=self.conf.GAP
                 #print(i)
