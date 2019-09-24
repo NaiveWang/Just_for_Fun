@@ -1,8 +1,8 @@
-import dispatcher
+import data
 import conf
-d=dispatcher.data(conf, True)
+d=data.data(conf, True)
 d.gen()
 print('neat, then i\'ll bang ur memory.')
 d.get_list()
 for i, o in d:
-    print(i.shape, d.shape)
+    print(type(i), i.shape, o.shape)

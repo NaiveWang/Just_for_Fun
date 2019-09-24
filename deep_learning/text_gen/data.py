@@ -69,6 +69,13 @@ class data:
     def __iter__(self):
         self.index=0
         return self
+    def one_hot(clen, bow):
+        # this funtion convert a batch of bag of word to one hot tensors.
+        one_hot = np.zeros((bow.shape[0], bow.shape[1], clen), dtype=np.int8)
+        for x in range(bow.shape[0]):
+            for y in range(bow.shape[1]):
+                one_hot[x, y, bow[x, y]]=1
+        return one_hot
     def gen(self):
         '''
         v0
@@ -89,6 +96,10 @@ class data:
             managed transparently by system.
 
             I've made a special prefex to mark the data sets, for seeking them later.
+        v2 
+            the saved one hot matrix is deprecated, now it saves the big bag of word and
+            extract them at the runtime.
+            
         '''
         # load raw text data from a given file name, it is assumed to be a plain text file.
         raw = open(self.conf.DATA_RAW)
@@ -105,26 +116,14 @@ class data:
             # append an end indicator to each line
             row = row[:-1] + '\002'
             idx=0
+            # convet row to embedding(index)
+            irow = [c2i[c] for c in row]
             while idx < len(row)-self.conf.SSLICE:
-                # create one-hot matrixies
-                one_hotx = np.zeros((self.conf.SSLICE, self.clen), dtype=np.int8)
-                #one_hoty = np.zeros((self.conf.SSLICE, self.clen), dtype=np.int8)
-                islice = [c2i[c] for c in row[idx:idx+self.conf.SSLICE+1]]
-                # get index slices
-                islicex = islice[:-1]
-                #islicey = islice[1:]
-                # print('slice debug :', islicex, islicey)
-                # convert index lists into onehot matrixies
-                for i in range(self.conf.SSLICE):
-                    # process each
-                    one_hotx[i, islicex[i]]=1
-                    #one_hoty[i, islicey[i]]=1
-                # add one hots to list
-                x.append(one_hotx)
-                y.append(islice[1:])
-                del(one_hotx)
-                #del(one_hoty)
-                #increase index
+                # for each piece of slices
+                
+                
+                x.append(irow[idx:idx+self.conf.SSLICE])
+                y.append(irow[idx+1:idx+1+self.conf.SSLICE])
                 idx+=self.conf.GAP
                 #print(i)
                 save_tag+=1

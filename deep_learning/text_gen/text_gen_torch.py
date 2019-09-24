@@ -1,11 +1,13 @@
 import conf
-import dispatcher
+import data
 import numpy as np
 
 import torch
 from torch import nn
 from torch.optim import Adam
-import torch.nn.functional as F
+
+from sys import stdout
+import time
 
 class m_charRNN(nn.Module):
     def __init__(self, conf, i2c, c2i):
@@ -17,6 +19,7 @@ class m_charRNN(nn.Module):
         self.i2c = i2c
         self.c2i = c2i
 
+
     def forward(self, i, hidden):
         # build lstm layer
         o, hidden = self.layers_lstm(i.float(), hidden)
@@ -24,34 +27,45 @@ class m_charRNN(nn.Module):
         o_drop = o_drop.contiguous().view(-1, self.conf.DIM_HIDDEN)
         o_drop = self.layers_o(o_drop)
         return o_drop, hidden
+    
     def init_hidden(self):
         weight = next(self.parameters()).data
         return (
             weight.new(self.conf.NUM_LAYER, self.conf.SIZE_BATCH_TRAIN, self.conf.DIM_HIDDEN).zero_().cuda(),
             weight.new(self.conf.NUM_LAYER, self.conf.SIZE_BATCH_TRAIN, self.conf.DIM_HIDDEN).zero_().cuda())
 class text_gen:
-    def __init__(self, conf):
+    def __init__(self, conf, is_load=False):
+        
         self.conf = conf
-        self.i2c, self.c2i = dispatcher.dict.load(conf.DATA_DIR+conf.DICT_I2C, conf.DATA_DIR+conf.DICT_C2I)
+        self.i2c, self.c2i = data.dict.load(conf.DATA_DIR+conf.DICT_I2C, conf.DATA_DIR+conf.DICT_C2I)
         self.clen = len(self.i2c)
         self.model = m_charRNN(conf, self.i2c, self.c2i)
         self.loss_function = nn.CrossEntropyLoss()
         self.optimizer = Adam(self.model.parameters(), lr=conf.LEARNING_RATE)
-        self.hidden_state = self.model.init_hidden()
+  
+        if is_load:
+            # load weight
+            self.hidden_state = self.load_weight()
+            # print(self.hidden_state)
+            
+        else:
+            # initialize the hidden state
+            self.hidden_state = self.model.init_hidden()
+            
     def train(self, i, o, epochs=1):
         self.model.train()
         self.model.cuda()
         # loop memory batch for training batch
         for ep in range(epochs):
             index=0
-            while index < len(i) - conf.SIZE_BATCH_TRAIN:
+            losses=[]
+            while index < len(i) - self.conf.SIZE_BATCH_TRAIN:
                 # feed data
                 torch_i = torch.from_numpy(i[index:index+conf.SIZE_BATCH_TRAIN]).cuda()
                 torch_o = torch.from_numpy(o[index:index+conf.SIZE_BATCH_TRAIN]).cuda()
                 self.hidden_state = tuple([n.data for n in self.hidden_state])
                 self.model.zero_grad()
                 #print(torch_i)
-
                 pred, self.hidden_state = self.model(torch_i, self.hidden_state)
                 #print(pred.size(), torch_o.size())
                 loss = self.loss_function(pred, torch_o.view(-1))
@@ -59,17 +73,75 @@ class text_gen:
 
                 #nn.utils.clip_grad_norm_(self.model.parameters(), clip)
                 self.optimizer.step()
-
-
-                print(loss.item())
+                #print(loss.item())
+                losses.append(loss.item())
+                stdout.write(str(index)+'/'+str(self.conf.SIZE_BATCH_MEMORY)+' '+'MAX : %f, MIN : %f, MEAN : %f'%(max(losses), min(losses), sum(losses)/len(losses))+'\r')
+                #print(self.infer(36))
+                stdout.flush()
+                #self.save_weight()
+                #input()
                 index+=conf.SIZE_BATCH_TRAIN
-    def gen(size=conf.SSLICE):
+                
+            print('epoch batch finished, MAX : %d, MIN : %d, MEAN : %d'%(max(losses), min(losses), sum(losses)/len(losses)))
+    def infer(self, size=conf.SSLICE):
+        # generate strings
+        # generte a random seed
+        seed = np.random.randint(0, self.clen, (1, self.conf.SSLICE))
+        idx=0
+        s=''
+        for idx in range(size - self.conf.SSLICE):
+            # apply the first character to string
+            print(seed.shape)
+            s+=self.i2c[seed[0, 0]]
+            # reproduce seed to every batch channel
+            i = np.repeat(data.data.one_hot(self.clen, seed), self.conf.SIZE_BATCH_TRAIN, axis=0)
+            #print(i.shape)
+            #infer and refresh one hot 
+            #hidden_state_cpu=(self.hidden_state[0].cpu(), self.hidden_state[1].cpu())
+            o, _ = self.model(torch.from_numpy(i).cuda(), self.hidden_state)
+            #print(o.shape)
+            # override seed
+            seed = torch.argmax(torch.argmax(torch.reshape(o, (self.conf.SIZE_BATCH_TRAIN, self.conf.SSLICE, self.clen)), dim=0).data, dim=-1).data.reshape(1, -1).cpu().detach().numpy()
+            #print(pred)
+        # convert the last window to strings
+        for seed_idx in seed[0]:
+            # convert to str
+            s+=self.i2c[seed_idx]
+        return s
+    
+    def save_model(self):
+        # save this model
+        # this function is rare used and deprecated
+        print('save model')
+        torch.save(self.model, self.conf.SAVE_M)
+    def save_weight(self):
+        # save current weight and hidden state
+        state = {
+            'state_dict':self.model.state_dict(),
+            'optimizer' :self.optimizer.state_dict(),
+            'hidden_state': self.hidden_state
+            }
+        #print('save weights', type(self.hidden_state))
+        torch.save(state, self.conf.SAVE_W)
+    def load_model(self):
+        # load model instead 
+        # this function is rarely used and deprecated
+        print('load mode via config file name')
         
-G = text_gen(conf)
-data_feeder = dispatcher.data(conf, True)
+    def load_weight(self):
+        # load learned weight
+        print('load weight via config file name')
+        state = torch.load(self.conf.SAVE_W)
+        self.model.load_state_dict(state['state_dict'])
+        # DO NOT UNCOMMENT THE CODE BELOW, WILL CAUSE RUNTIME ISSUE
+        #self.optimizer.load_state_dict(state['optimizer'])
+        return state['hidden_state']
+G = text_gen(conf)#, True)
+data_feeder = data.data(conf, True)
 data_feeder.get_list()
-while True:
+for epoch in range(conf.EPOCHS):
+    print('start epoch %d'%(epoch+1))
     for x, y in data_feeder:
-        G.train(x, y)
-        del(x)
-        del(y)
+        G.train(data.data.one_hot(G.clen, x), y)
+        G.save_weight()
+        print(G.infer(36))
