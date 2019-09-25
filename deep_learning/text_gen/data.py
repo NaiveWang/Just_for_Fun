@@ -129,6 +129,11 @@ class data:
                 save_tag+=1
                 if save_tag % self.conf.SIZE_BATCH_MEMORY == 0:
                     # save and clean array
+                    order = np.arange(len(x))
+                    np.random.shuffle(order)
+                    print(order, len(x))
+                    x = [x[i] for i in order]
+                    y = [y[i] for i in order]
                     np.save(self.conf.DATA_DIR+self.conf.DATA_PREFEX_I+str(save_tag), np.stack(x, axis=0))
                     del(x)
                     x=[]
@@ -138,6 +143,10 @@ class data:
 
         if len(x) > 0:
             # The edge case
+            order = np.arange(len(x))
+            np.random.shuffle(order)
+            x = [x[i] for i in order]
+            y = [y[i] for i in order]
             np.save(self.conf.DATA_DIR+self.conf.DATA_PREFEX_I+str(save_tag), np.stack(x, axis=0))
             x=[]
             np.save(self.conf.DATA_DIR+self.conf.DATA_PREFEX_O+str(save_tag), np.stack(y, axis=0))
@@ -145,3 +154,10 @@ class data:
 
         #print('one hot debug :', x, y)
         #return clen, i2c, c2i, np.stack(x, axis=0), np.stack(x, axis=0)
+    def check(x, y):
+        for xx, yy in zip(x, y):
+            if np.array_equal(xx[1:], yy[:-1]):
+                continue
+            else:
+                print('error:', xx, yy)
+                print('integrity check failed.')
