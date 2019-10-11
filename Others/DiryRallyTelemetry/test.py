@@ -77,7 +77,7 @@
     this script is trying to show the velocity, and percentage of engine RPM, and code of GEAR
 
 '''
-import socket, struct
+import socket, struct, stdout
 # port & ip
 HOST='localhost'
 PORT=20777
@@ -105,7 +105,8 @@ for i in range(RETRY_MAX):
             if b:
                 # receieved, process em'
                 info = struct.unpack('64f', b[:256])
-                print('GEAR:%s\tPOW:%lf%%\tV:%lfkph\r'%(GEAR[info[POS_GEAR]], info[POS_RPM_CURR]*100./info[POS_RPM_MAX], info[POS_V]*3.6))
+                stdout.write('GEAR:%s\tPOW:%lf%%\tV:%03dkph\r'%(GEAR[info[POS_GEAR]], info[POS_RPM_CURR]*100./info[POS_RPM_MAX], int(info[POS_V]*3.6)))
+                stdout.flush()
             else:
                 # broken sock, fallback and reconnect
                 raise Exception('broken sock')
