@@ -104,7 +104,7 @@ for i in range(RETRY_MAX):
             b = sock.recv(BUFF_SIZE)
             if b:
                 # receieved, process em'
-                info = struct.unpack('64f', b)
+                info = struct.unpack('64f', b[:256])
                 print('GEAR:%s\tPOW:%lf%%\tV:%lfkph\r'%(GEAR[info[POS_GEAR]], info[POS_RPM_CURR]*100./info[POS_RPM_MAX], info[POS_V]*3.6))
             else:
                 # broken sock, fallback and reconnect
