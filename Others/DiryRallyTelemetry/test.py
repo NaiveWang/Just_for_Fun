@@ -77,7 +77,8 @@
     this script is trying to show the velocity, and percentage of engine RPM, and code of GEAR
 
 '''
-import socket, struct, stdout
+import socket, struct
+from sys import stdout
 # port & ip
 HOST='localhost'
 PORT=20777
