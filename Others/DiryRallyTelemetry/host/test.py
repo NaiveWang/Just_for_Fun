@@ -88,7 +88,7 @@ GEAR={0.:'N', 1.:'1', 2.:'2', 3.:'3', 4.:'4', 5.:'5', 6.:'6', 7.:'7', 8.:'8', 9.
 POS_GEAR=33
 POS_RPM_MAX=63
 POS_RPM_CURR=37
-POS_V=28
+POS_V=7
 
 RETRY_MAX=15
 BUFF_SIZE=512
