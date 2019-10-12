@@ -28,7 +28,7 @@ int main(int argc, char **argv)
             sizeof(broadcastPermission));
 
   saddr.sin_family = AF_INET;
-  saddr.sin_addr.s_addr = inet_addr("localhost");
+  saddr.sin_addr.s_addr = inet_addr("0.0.0.0");
   saddr.sin_port = htons(port);
 
   sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
