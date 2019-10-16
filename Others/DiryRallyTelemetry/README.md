@@ -47,7 +47,7 @@ Control flows for specified peripherals.
 There are :
 > 4 digites 7 segments driven by tm1650, controlled by i2c, could monitor velocity, elapsed time and distense
 
-> dual-color 8x8 matrix driven by tm1640, controlled by GPIO, could monitir G-force offset, gear, percentage of rpm and tyre pressure(?)
+> dual-color 8x8 matrix driven by tm1640, controlled by GPIO, could monitor G-force offset, gear, percentage of rpm and tyre pressure(?)
 
 > 5V DC voltmeter, controlled by PWM(Arduino analogWrite), use it best to monitor RPM(percentage) and Turbo(pity for not provided by Codemasters)
 
