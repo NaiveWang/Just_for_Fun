@@ -78,6 +78,7 @@
 
 '''
 import socket, struct
+from sys import stdout
 # port & ip
 HOST='localhost'
 PORT=20777
@@ -87,10 +88,10 @@ GEAR={0.:'N', 1.:'1', 2.:'2', 3.:'3', 4.:'4', 5.:'5', 6.:'6', 7.:'7', 8.:'8', 9.
 POS_GEAR=33
 POS_RPM_MAX=63
 POS_RPM_CURR=37
-POS_V=28
+POS_V=7
 
 RETRY_MAX=15
-BUFF_SIZE=512
+BUFF_SIZE=256
 
 
 for i in range(RETRY_MAX):
@@ -105,7 +106,8 @@ for i in range(RETRY_MAX):
             if b:
                 # receieved, process em'
                 info = struct.unpack('64f', b[:256])
-                print('GEAR:%s\tPOW:%lf%%\tV:%lfkph\r'%(GEAR[info[POS_GEAR]], info[POS_RPM_CURR]*100./info[POS_RPM_MAX], info[POS_V]*3.6))
+                stdout.write('GEAR:%s\tPOW:%lf%%\tV:%03dkph\r'%(GEAR[info[POS_GEAR]], info[POS_RPM_CURR]*100./info[POS_RPM_MAX], int(info[POS_V]*3.6)))
+                stdout.flush()
             else:
                 # broken sock, fallback and reconnect
                 raise Exception('broken sock')
