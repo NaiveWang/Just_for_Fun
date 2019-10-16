@@ -5,6 +5,7 @@
 byte digits_d[11]={0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0xff, 0x6f, 0x00};
 
 byte digits_d_r[11]={0x3f, 0x30, 0x5b, 0x79, 0x74, 0x6d, 0x6f, 0x38, 0xff, 0x7d, 0x00};
+//0x68, 0x6a, 0x6c, 0x6e
 byte digits_a[4]={0x34, 0x35, 0x36, 0x37};
 byte ctrl_a = 0x34;//0x48;
 byte ctrl_d = 0x31;
@@ -13,24 +14,13 @@ int i=0;
 
 void setup() {
   // put your setup code here, to run once:
-  
+
   Wire.begin();
-  Wire.beginTransmission(ctrl_a);
-  //Wire.write(ctrl_d);
-  Wire.endTransmission();
+  //0x48>>1 = 0x24 
   Wire.beginTransmission(0x24);
-  Wire.write(0x41);
+  //brightness 7, light on
+  Wire.write(0x71);
   Wire.endTransmission();
-  /**
-  Wire.beginTransmission(0x25);
-  Wire.write(0x81);
-  Wire.endTransmission();
-  Wire.beginTransmission(0x26);
-  Wire.write(0x41);
-  Wire.endTransmission();
-  Wire.beginTransmission(0x27);
-  Wire.write(0x01);
-  Wire.endTransmission();*/
 
 }
 void write_digit(byte a, int d){
@@ -39,6 +29,7 @@ void write_digit(byte a, int d){
   Wire.endTransmission();
 
 }
+//reversed code
 void write_digit_r(byte a, int d){
   Wire.beginTransmission(digits_a[a]);
   Wire.write(digits_d_r[d]);
@@ -53,6 +44,6 @@ void loop() {
   write_digit_r(2, i>100?(i/100)%10:10);
   write_digit_r(1, i>10?(i/10)%10:10);
   write_digit_r(0, i%10);
-  
-  delay(500);
+
+  delay(1000);
 }
