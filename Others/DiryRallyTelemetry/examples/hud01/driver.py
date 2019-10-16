@@ -36,7 +36,8 @@ for i in range(RETRY_MAX):
                 info = struct.unpack('64f', b[:256])
                 stdout.write('GEAR:%s\tPOW:%lf%%\tV:%03dkph\r'%(GEAR[info[POS_GEAR]], info[POS_RPM_CURR]*100./info[POS_RPM_MAX], int(info[POS_V]*3.6)))
                 stdout.flush()
-                device.write(struct.pack('<h', int(info[POS_V]*3.6)))
+
+                device.write(struct.pack('<hBB', int(info[POS_V]*3.6), int(info[POS_RPM_CURR]*256./info[POS_RPM_MAX]), int(info[POS_GEAR])))
                 device.flush()
             else:
                 # broken sock, fallback and reconnect
