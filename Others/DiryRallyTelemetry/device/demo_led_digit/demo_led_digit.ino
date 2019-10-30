@@ -19,7 +19,7 @@ void setup() {
   //0x48>>1 = 0x24 
   Wire.beginTransmission(0x24);
   //brightness 7, light on
-  Wire.write(0x71);
+  Wire.write(0x01);
   Wire.endTransmission();
 
 }

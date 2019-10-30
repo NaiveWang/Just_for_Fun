@@ -72,6 +72,8 @@ class data:
     def one_hot(clen, bow):
         # this funtion convert a batch of bag of word to one hot tensors.
         one_hot = np.zeros((bow.shape[0], bow.shape[1], clen), dtype=np.int8)
+        print(one_hot.shape)
+
         for x in range(bow.shape[0]):
             for y in range(bow.shape[1]):
                 one_hot[x, y, bow[x, y]]=1

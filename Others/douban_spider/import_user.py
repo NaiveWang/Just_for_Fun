@@ -4,7 +4,7 @@ import sys
 '''
 this script import user and loc to local database
 '''
-db=sqlite3.connect('_douban.db')
+db=sqlite3.connect(sys.argv[2])
 c=db.cursor()
 js=open(sys.argv[1]+'.json')
 def add_user(val):

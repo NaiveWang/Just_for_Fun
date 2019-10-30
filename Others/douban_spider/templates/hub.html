@@ -2,18 +2,70 @@
 <html  lang="en">
   <head>
     <meta charset="UTF-8">
-    <title>Big Dumb Classifier v0.1 Douban</title>
+    <title>Big Dumb Classifier v0.2 Douban</title>
   </head>
+  <style>
+    body {
+    font-family: Arial;
+    color: 000000;
+    }
+    .split {
+    height: 100%;
+    width: 10%;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    overflow-x: hidden;
+    padding-top: 20px;
+    }
+    .left {
+    left: 0;
+    background-color: #f0f0f0;
+    height: 100%;
+    width: 40%;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    overflow-x: hidden;
+    padding-top: 20px;
+    }
+    .right {
+    right: 0;
+    background-color: #ffffff;
+    height: 100%;
+    width: 50%;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    overflow-x: hidden;
+    padding-top: 20px;
+    }
+    </style>
   <body>
-    
-  <form action = "/" method="post">
-    {% for type, name, value in operations %}
-    <input type="{{type}}" name='{{name}}' value='{{value}}'>
-    {% endfor %}
-  </form>
+    <div class="left">
+    <h4>topic:{{topic}}</h4>
+    <br>
+    <img src="{{u[2]}}">
+    <h5>user:{{u[0]}} 
+    <br>
+    {{u[1]}} </h5>
   <br>
     {{content}}
     <br>
     <br>
+    <form action = "/" method="post">
+    {% for type, name, value in operations %}
+    <input type="{{type}}" name='{{name}}' value='{{value}}'>
+    {% endfor %}
+  </form>
+    </div>
+    <div class="split">
+    <br>
+    </div>
+    <div class="right">
+    {% for k, v in hotkeys %}
+        <li>{{k}} - {{v}}</li>
+    {% endfor %}
+    </div>
   </body>
 </html> 
