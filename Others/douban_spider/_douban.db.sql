@@ -12,10 +12,12 @@ CREATE TABLE IF NOT EXISTS "post" (
 	"uri"	TEXT,
 	"id"	INTEGER,
 	"topic"	INTEGER,
+	"author" INTEGER,
 	"text"	TEXT,
 	"comments_count"	INTEGER,
 	"create_time"	TEXT,
 	"like_count"	INTEGER,
+	"tag"  INTEGER,
 	PRIMARY KEY("uri")
 );
 CREATE TABLE IF NOT EXISTS "user" (

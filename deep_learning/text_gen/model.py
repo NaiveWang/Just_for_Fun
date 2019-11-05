@@ -51,7 +51,12 @@ class text_gen:
         else:
             # initialize the hidden state
             self.hidden_state = self.model.init_hidden()
-            
+    def to_str(self, v):
+        # convert a embedding to a string
+        s=''
+        for e in v[0]:
+            s+=self.i2c[e]
+        return s
     def train(self, i, o, epochs=1):
         self.model.train()
         self.model.cuda()
@@ -95,14 +100,17 @@ class text_gen:
             #print(seed.shape)
             s+=self.i2c[seed[0, 0]]
             # reproduce seed to every batch channel
+            print('<', self.to_str(seed))
             i = np.repeat(data.data.one_hot(self.clen, seed), self.conf.SIZE_BATCH_TRAIN, axis=0)
+            #i = np.repeat(data.data.one_hot(self.clen, seed), size, axis=0)
             #print(i.shape)
             #infer and refresh one hot 
-
             o, _ = self.model(torch.from_numpy(i).cuda(), self.hidden_state)#(self.hidden_state[0].cpu(), self.hidden_state[1].cpu()))
             #print(o.shape)
             # override seed
             seed = torch.argmax(torch.argmax(torch.reshape(o, (self.conf.SIZE_BATCH_TRAIN, self.conf.SSLICE, self.clen)), dim=0).data, dim=-1).data.reshape(1, -1).cpu().detach().numpy()
+            #seed = torch.argmax(torch.reshape(o, (self.conf.SIZE_BATCH_TRAIN, self.conf.SSLICE, self.clen))[0], dim=-1).data.reshape(1, -1).cpu().detach().numpy()
+            print('>', self.to_str(seed))
             #print(pred)
         # convert the last window to strings
         for seed_idx in seed[0]:

@@ -50,7 +50,7 @@ class algo:
         for freq in post_s:
             print(self.sp.IdToPiece(freq[0]), freq[1])
     def i2t(self, post_s):
-        return [[self.sp.IdToPiece(freq[0]), freq[1]] for freq in post_s]
+        return [[self.sp.IdToPiece(freq[0]), freq[1], self.dict[freq[0]]] for freq in post_s]
 '''
 a=algo('douban.model', 'db.txt.npy')
 

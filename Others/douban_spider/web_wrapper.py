@@ -8,19 +8,24 @@ import sqlite3
 import tf_idf
 app = Flask(__name__)
 global a
-a=tf_idf.algo('douban.model', 'db.txt.npy')
-dbn='20191030-1634.db'
+a=tf_idf.algo('tokenlizer/400000/douban_01.model', 'tokenlizer/400000/db.txt.npy')
+dbn='20191031-1446.db'
 #op : type, name, value
 operations = [
-    ['submit', '0', '这篇不要了, 再来一篇'], 
-    ['submit', '1', '不傻逼'], 
-    ['submit', '2', '真傻逼'], 
-    ['submit', '3', '真他妈傻逼'],
-    ['submit', '4', '操你妈']]
+    
+    ['/static/Neutral.jpg', '0', '一般'], 
+    ['/static/Disappointed.jpg', '1', '不强啊'], 
+    ['/static/Unhappy.jpg', '2', '垃圾'],
+    ['/static/Veryunhappy.jpg', '3', '傻逼'],
+    ['/static/Angry.jpg', '4', '真他妈傻逼'],
+    ['/static/Satisfied.jpg', '5', '妈了个逼的'],
+    ['/static/Happy.jpg', '6', '我日你爹'],
+    ['/static/Veryhappy.jpg', '7', '操你妈'],]
 id=-1
 post=''
 
 rand_grab='select post.id, post.text, topic.title, user.name, loc.name, user.url_avatar from post, user, topic, loc where post.topic=topic.id and post.author=user.id and user.loc=loc.id order by random()'
+get_comm='select text,uid,parent_comment_id where pid=?'
 
 
 @app.route('/', methods=['GET'])
@@ -30,13 +35,17 @@ def hub():
     c=db.cursor()
     c.execute(rand_grab)
     chosen = c.fetchone()
-    c.close()
-    db.close()
     id=chosen[0]
     post = chosen[1]
-
+    
+    c.execute('select url from img where pid=?', (id,))
+    img=c.fetchall()
+    #local = em[0].replace('/', '_').replace('https:__', 'static/img/')
+    
+    c.close()
+    db.close()
     return render_template('hub.html', operations = operations, content = post, hotkeys = a.i2t(a.key_miner(post.split('\n'))),
-                           topic=chosen[2], u=chosen[3:])
+                           topic=chosen[2], u=chosen[3:], imgs=img)
 @app.route('/', methods=['POST'])
 def hub_act():
     global id, post
@@ -72,8 +81,12 @@ def hub_act():
     db.close()
     id=chosen[0]
     post = chosen[1]
+    c.execute('select url from img where pid=?', (id,))
+    img=c.fetchall()
+    c.close()
+    db.close()
     return render_template('hub.html', operations = operations, content = post, hotkeys = a.i2t(a.key_miner(post.split('\n'))),
-                           topic=chosen[2], u=chosen[3:])
+                           topic=chosen[2], u=chosen[3:], imgs=img)
 if __name__ == "__main__":
-    app.run(debug=False)
+    app.run(host='0.0.0.0', port=5000, debug=False)
     

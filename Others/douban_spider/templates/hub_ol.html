@@ -48,7 +48,7 @@
     <div class="left">
     <h4>topic:{{topic}}</h4>
     <br>
-    <img src="{{u[2].replace('/', '_').replace('https:__', 'static/img/avatar/')}}">
+    <img src="{{u[2]}}">
     <h5>user:{{u[0]}} 
     <br>
     {{u[1]}} </h5>
@@ -70,7 +70,7 @@
     
     <br>
     {% for img in imgs %}
-    <img src="{{img[0].replace('/', '_').replace('https:__', 'static/img/')}}">
+    <img src="{{img[0]}}">
     {% endfor %}
     </div>
     <div class="split">

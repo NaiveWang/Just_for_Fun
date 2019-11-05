@@ -14,13 +14,13 @@ def add_user(val):
         else:
             c.execute('insert into user(id, uid, name, url_avatar, loc)values(?, ?, ?, ?, ?)',[val[0], val[1], val[2], val[3], val[-1]['id']])
     except Exception as e:
-        print('user:', e, file=sys.stderr)
+        print('user:', e, val, file=sys.stderr)
 def add_loc(val):
     try:
         val=val['loc']
         c.execute('insert into loc(id, name, uid)values(?, ?, ?)', (int(val['id']), val['name'], val['uid']))
     except Exception as e:
-        print('loc:', e, file=sys.stderr)
+        print('loc:', e, val, file=sys.stderr)
 
 for j in js:
     j=json.loads(j)
@@ -32,6 +32,7 @@ for j in js:
     #loc=0
     if 'status' in j:
         #print(j['status']['author'])
+
         add_user([int(j['status']['author']['id']),j['status']['author']['uid'],
         j['status']['author']['name'],j['status']['author']['avatar'],
         j['status']['author']['loc']])
