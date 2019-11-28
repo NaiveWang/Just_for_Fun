@@ -44,7 +44,7 @@ class algo:
                 else:
                     post[id] = 1
         for i in post:
-            post[i] = post[i]*1./(self.dict[i] * post_len)
+            post[i] = post[i]*1./(self.dict[i]**.5 * post_len)
         return sorted(post.items(), key=operator.itemgetter(1), reverse=True)
     def i2t_print(self, post_s):
         for freq in post_s:
