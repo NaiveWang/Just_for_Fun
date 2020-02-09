@@ -6,7 +6,7 @@ import sys
 '''
 
 
-db=sqlite3.connect('_douban.db')
+db=sqlite3.connect(sys.argv[2])
 c=db.cursor()
 js=open(sys.argv[1]+'.json')
 
@@ -14,25 +14,25 @@ def add_post(val):
     try:
         c.execute('insert into post(uri, id, topic, text, comments_count, create_time, like_count)values(?, ?, ?, ?, ?, ?, ?)', val)
     except Exception as e:
-        print(e, file=sys.stderr)
+        print('post', e, file=sys.stderr)
 def add_comment(val):
     if val[-1] is None:
         # update without parent
         try:
             c.execute('insert into comments(id, pid, uid, text, create_time)values(?, ?, ?, ?, ?)', val[:-1])
         except Exception as e:
-            print(e, file=sys.stderr)
+            print('comment if:', e, file=sys.stderr)
     else:
         # udpate with parent id
         try:
             c.execute('insert into comments(id, pid, uid, text, create_time, parent_comment_id)values(?, ?, ?, ?, ?, ?)', val)
         except Exception as e:
-            print(e, file=sys.stderr)
+            print('comment else:', e, file=sys.stderr)
 def add_image(val):
     try:
         c.execute('insert into img(pid, url)values(?, ?)', val)
     except Exception as e:
-        print(e, file=sys.stderr)
+        print('image:', e, file=sys.stderr)
 for j in js:
     j=json.loads(j)
     if 'status' in j:
@@ -50,7 +50,8 @@ for j in js:
             try:
                 add_image([int(j['status']['id']), group['raw']['url']])
             except Exception as E:
-                print(E, file=sys.stderr)
+
+                print('image wrapper loop:', E, file=sys.stderr)
             #print()
             #print(group['normal']['url'])
 

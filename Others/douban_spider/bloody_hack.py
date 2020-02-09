@@ -24,8 +24,14 @@ total=int(sys.argv[2])
 start=0
 while start < total:
     req = request.Request(url+str(start), headers=header)
+    while True:
+        try:
+            response = request.urlopen(req)
+            break
+        except Exception as E:
+            print(E)
+            req = request.Request(url+str(start), headers=header)
 
-    response = request.urlopen(req)
     print(start, response.getcode())
 
     text = gzip.decompress(response.read())

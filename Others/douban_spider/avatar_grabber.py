@@ -7,7 +7,7 @@ import time
 #text=open('merged.json').read()
 
 #m=re.findall(reg, text)
-db=sqlite3.connect('_douban.db')
+db=sqlite3.connect('202002091351.db')
 c=db.cursor()
 c.execute('select url_avatar from user order by random()')
 m=c.fetchall()
